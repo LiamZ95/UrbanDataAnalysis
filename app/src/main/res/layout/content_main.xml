@@ -8,15 +8,18 @@
     tools:context="liyuz.urbandataanalysis.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <ScrollView
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container">
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/fragment_container">
-        </LinearLayout>
-    </ScrollView>
+            android:layout_height="wrap_content"
+            android:text="@string/oops"
+            android:gravity="center"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
 
 </android.support.constraint.ConstraintLayout>

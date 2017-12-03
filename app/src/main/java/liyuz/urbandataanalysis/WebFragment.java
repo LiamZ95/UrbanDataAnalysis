@@ -15,6 +15,7 @@ import android.webkit.WebViewClient;
  * A simple {@link Fragment} subclass.
  */
 public class WebFragment extends Fragment {
+    private final String TAG = this.getClass().getSimpleName();
     WebView webView;
 
     public WebFragment() {
