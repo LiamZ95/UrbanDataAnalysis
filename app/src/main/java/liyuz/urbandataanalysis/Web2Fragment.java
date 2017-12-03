@@ -4,10 +4,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.webkit.WebSettings;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,14 +21,15 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class Web2Fragment extends Fragment {
+    private WebView webView;
+    private final String TAG = getClass().getSimpleName();
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -33,20 +37,11 @@ public class Web2Fragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Web2Fragment.
-     */
     // TODO: Rename and change types and number of parameters
-    public static Web2Fragment newInstance(String param1, String param2) {
+    public static Web2Fragment newInstance(String param1) {
         Web2Fragment fragment = new Web2Fragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,7 +51,6 @@ public class Web2Fragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -65,13 +59,25 @@ public class Web2Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_web2, container, false);
+        Log.i(TAG, mParam1);
+        // mParam1 is the parameter passed from MainActivity
+        String url = mParam1;
+        // Return url to MainActivity, no use
+        onButtonPressed(url);
+
+        webView = (WebView) mView.findViewById(R.id.web2_fragment);
+        webView.loadUrl(url);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
+
         return mView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(String data) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(data);
         }
     }
 
@@ -104,6 +110,6 @@ public class Web2Fragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String data);
     }
 }

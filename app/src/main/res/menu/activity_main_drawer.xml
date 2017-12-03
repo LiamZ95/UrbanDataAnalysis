@@ -44,11 +44,11 @@
         <menu>
             <item
                 android:id="@+id/nav_twitter"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_twitter"
                 android:title="Twitter" />
             <item
                 android:id="@+id/nav_facebook"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_menu_facebook"
                 android:title="Facebook" />
         </menu>
     </item>

@@ -5,6 +5,7 @@
     tools:context="liyuz.urbandataanalysis.Web2Fragment">
 
     <WebView
+        android:id="@+id/web2_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </WebView>

@@ -34,7 +34,8 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.util.Log;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        Web2Fragment.OnFragmentInteractionListener {
 
     private final String TAG = getClass().getSimpleName();
     private int capCount = 0;
@@ -157,19 +158,25 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_web) {
             Toast.makeText(this, "Going to AURIN", Toast.LENGTH_SHORT).show();
-            fragment = new WebFragment();
+            fragment = Web2Fragment.newInstance("https://aurin.org.au/");
         } else if (id == R.id.nav_terms) {
-
+            Toast.makeText(this, "Going to terms", Toast.LENGTH_SHORT).show();
+            fragment = Web2Fragment.newInstance("https://aurin.org.au/compliance/aurin-terms-of-use/");
         } else if (id == R.id.nav_copyright) {
-
+            Toast.makeText(this, "Going to copyrights", Toast.LENGTH_SHORT).show();
+            fragment = Web2Fragment.newInstance("https://aurin.org.au/compliance/copyright-and-attribution/");
         } else if (id == R.id.nav_help) {
-
+            Toast.makeText(this, "Going to help", Toast.LENGTH_SHORT).show();
+            fragment = Web2Fragment.newInstance("https://docs.aurin.org.au");
         } else if (id == R.id.nav_issue) {
-
+            Toast.makeText(this, "Going to report issue", Toast.LENGTH_SHORT).show();
+            fragment = Web2Fragment.newInstance("https://docs.aurin.org.au/aurin-online-bug-report/");
         } else if (id == R.id.nav_twitter) {
-
+            Toast.makeText(this, "Going to twitter", Toast.LENGTH_SHORT).show();
+            fragment = Web2Fragment.newInstance("https://mobile.twitter.com/aurin_org_au");
         } else if (id == R.id.nav_facebook) {
-
+            Toast.makeText(this, "Going to facebook", Toast.LENGTH_SHORT).show();
+            fragment = Web2Fragment.newInstance("https://m.facebook.com/aurin.org.au/");
         }
 
         if (fragment != null) {
@@ -435,5 +442,10 @@ public class MainActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(String data) {
+
     }
 }
