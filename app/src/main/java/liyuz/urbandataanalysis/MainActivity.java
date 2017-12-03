@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -25,6 +26,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.ArrayList;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = getClass().getSimpleName();
+    private int capCount = 0;
+
+    ArrayList<Capability> capList;
 
     private static final String[] state=
             {"Australian Capital Territory","New South Wales","Northern Territory",
@@ -79,6 +85,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Send http request and parse the received xml data
+//        sendRequestWithURLConnection();
+//        capList = new ArrayList<>(AllDataSets.capList);
+
+        // Default settings
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -140,19 +152,23 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_list) {
+            Toast.makeText(this, "Going to Data List", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_web) {
             Toast.makeText(this, "Going to AURIN", Toast.LENGTH_SHORT).show();
             fragment = new WebFragment();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_terms) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_copyright) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_help) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_issue) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_twitter) {
+
+        } else if (id == R.id.nav_facebook) {
 
         }
 
@@ -181,7 +197,7 @@ public class MainActivity extends AppCompatActivity
                 });
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?service=WFS&version=1.1.0&request=GetCapabilities");
-                    Log.i("Main###SendRequest", "Sent request to AURIN");
+                    Log.d(TAG, "Sent request to AURIN");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(8000);
@@ -196,9 +212,8 @@ public class MainActivity extends AppCompatActivity
                     }
                     // Store all data in the string
                     String data = response.toString();
-
+                    Log.d(TAG, "Received data from ARUIN");
                     parseXMLWithPull(data);
-
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -227,6 +242,7 @@ public class MainActivity extends AppCompatActivity
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 // nodeName is the current XML tag
                 String nodeName = xmlPullParser.getName();
+
                 switch (eventType) {
                     case XmlPullParser.START_TAG: {
                         if ("Name".equals(nodeName)) {
@@ -276,6 +292,7 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                     }
+
                     case XmlPullParser.END_TAG: {
                         // If END_TAG is met, then create a new Capability object to store all data get above
                         if ("FeatureType".equals(nodeName)) {
@@ -401,9 +418,9 @@ public class MainActivity extends AppCompatActivity
                             }
                             if(! BigData.big_data.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
-                                Log.i(TAG + "AllDataSets", "Received!");
+                                capCount += 1;
+                                Log.d(TAG, String.valueOf(capCount));
                             }
-
                         }
                         break;
                     }
@@ -412,11 +429,11 @@ public class MainActivity extends AppCompatActivity
                 }
                 eventType = xmlPullParser.next();
             }
+            Log.d(TAG, "final count: " + String.valueOf(capCount));
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

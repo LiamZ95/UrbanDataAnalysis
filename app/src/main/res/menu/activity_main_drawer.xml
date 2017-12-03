@@ -5,33 +5,51 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_list"
+            android:icon="@drawable/ic_menu_list"
+            android:title="All Data Set" />
+        <item
+            android:id="@+id/nav_web"
             android:icon="@drawable/ic_menu_website"
             android:title="AURIN Website" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="About">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_terms"
+                android:icon="@drawable/ic_menu_terms"
+                android:title="Terms" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_copyright"
+                android:icon="@drawable/ic_menu_copyright"
+                android:title="Copyright" />
+        </menu>
+    </item>
+
+    <item android:title="Support">
+        <menu>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_menu_help"
+                android:title="Help and Tutorials" />
+            <item
+                android:id="@+id/nav_issue"
+                android:icon="@drawable/ic_menu_issue"
+                android:title="Report issue" />
+        </menu>
+    </item>
+
+    <item android:title="Follow us">
+        <menu>
+            <item
+                android:id="@+id/nav_twitter"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Twitter" />
+            <item
+                android:id="@+id/nav_facebook"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="Facebook" />
         </menu>
     </item>
 
