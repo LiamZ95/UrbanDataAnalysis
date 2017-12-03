@@ -1,5 +1,6 @@
 package liyuz.urbandataanalysis;
 
+import android.content.res.AssetManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -91,6 +92,24 @@ public class MainActivity extends AppCompatActivity
 //        sendRequestWithURLConnection();
 //        capList = new ArrayList<>(AllDataSets.capList);
 
+        // Open the text file containing data from AURIN to reduce the usage of this API
+        AssetManager assetManager = this.getAssets();
+        try{
+            InputStream in = assetManager.open("cap_raw.xml");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+
+            String data = stringBuilder.toString();
+            Log.d(TAG, "All data read from txt file");
+            parseXMLWithPull(data);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Default settings
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -155,7 +174,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_list) {
             Toast.makeText(this, "Going to Data List", Toast.LENGTH_SHORT).show();
-
+            fragment = new ListFragment();
         } else if (id == R.id.nav_web) {
             Toast.makeText(this, "Going to AURIN", Toast.LENGTH_SHORT).show();
             fragment = Web2Fragment.newInstance("https://aurin.org.au/");
@@ -190,7 +209,6 @@ public class MainActivity extends AppCompatActivity
 
     // sending http request for all dataset, and then parse the received data
     private void sendRequestWithURLConnection() {
-//        System.out.println("URL connection");
         // Create a new thread for HttpURLConnection
         new Thread(new Runnable() {
             @Override
@@ -233,6 +251,7 @@ public class MainActivity extends AppCompatActivity
     // parsing the XML with pull method
     private void parseXMLWithPull (String xmlData) {
         try {
+
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser xmlPullParser = factory.newPullParser();
             xmlPullParser.setInput(new StringReader(xmlData));
@@ -242,7 +261,7 @@ public class MainActivity extends AppCompatActivity
             String title = "";
             String abstracts = "";
             String organization = "";
-            String geoname = "";
+            String geoName = "";
             BBOX bbox = new BBOX();
             String keywordsStr = "";
 
@@ -268,16 +287,16 @@ public class MainActivity extends AppCompatActivity
                             String [] array1 = abstracts1.split("\\.");
                             abstracts = array1[0];
                             if (abstracts1.contains("wkb_geometry")){
-                                geoname = "wkb_geometry";
+                                geoName = "wkb_geometry";
                             }
                             else if (abstracts1.contains("the_geom")){
-                                geoname = "the_geom";
+                                geoName = "the_geom";
                             }
                             else if (abstracts1.contains("ogr_geometry")){
-                                geoname = "ogr_geometry";
+                                geoName = "ogr_geometry";
                             }
                             else if (abstracts1.contains("SHAPE")){
-                                geoname = "SHAPE";
+                                geoName = "SHAPE";
                             }
                             break;
 
@@ -311,7 +330,7 @@ public class MainActivity extends AppCompatActivity
                             keywordsStr = keywordsStr.substring(2);
                             cap.capKeywords = keywordsStr;
                             keywordsStr = "";
-                            cap.capGeoname = geoname;
+                            cap.capGeoname = geoName;
 
                             cap.capBbox.setHigherLa(bbox.getHigherLa());
                             cap.capBbox.setHigherLon(bbox.getHigherLon());
