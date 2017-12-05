@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -264,6 +263,7 @@ public class MainActivity extends AppCompatActivity
             String geoName = "";
             BBOX bbox = new BBOX();
             String keywordsStr = "";
+            String corners = "";
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 // nodeName is the current XML tag
@@ -307,12 +307,16 @@ public class MainActivity extends AppCompatActivity
                             keywordsStr += keyword;
                         }
                         else if ("ows:LowerCorner".equals(nodeName)){
-                            String[] lowerCorner = xmlPullParser.nextText().split(" ");
+                            String temp1 = xmlPullParser.nextText();
+                            corners += temp1 + ", ";
+                            String[] lowerCorner = temp1.split(" ");
                             bbox.setLowerLon(Double.parseDouble(lowerCorner[0]));
                             bbox.setLowerLa(Double.parseDouble(lowerCorner[1]));
                         }
                         else if ("ows:UpperCorner".equals(nodeName)){
-                            String[] upperCorner = xmlPullParser.nextText().split(" ");
+                            String temp2 = xmlPullParser.nextText();
+                            corners += temp2;
+                            String[] upperCorner = temp2.split(" ");
                             bbox.setHigherLon(Double.parseDouble(upperCorner[0]));
                             bbox.setHigherLa(Double.parseDouble(upperCorner[1]));
                         }
@@ -330,7 +334,9 @@ public class MainActivity extends AppCompatActivity
                             keywordsStr = keywordsStr.substring(2);
                             cap.capKeywords = keywordsStr;
                             keywordsStr = "";
-                            cap.capGeoname = geoName;
+                            cap.capGeoName = geoName;
+                            cap.capCorners = corners;
+                            corners = "";
 
                             cap.capBbox.setHigherLa(bbox.getHigherLa());
                             cap.capBbox.setHigherLon(bbox.getHigherLon());

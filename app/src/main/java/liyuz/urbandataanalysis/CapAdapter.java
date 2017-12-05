@@ -53,7 +53,7 @@ public class CapAdapter extends BaseAdapter{
 
         capTitle.setText(capList.get(i).capTitle);
         capOrg.setText(capList.get(i).capOrganization);
-        String keywordsText = "Keywords" + capList.get(i).capKeywords;
+        String keywordsText = "Keywords: " + capList.get(i).capKeywords;
         capKeywords.setText(keywordsText);
         capImage.setImageResource(capList.get(i).image_id);
 

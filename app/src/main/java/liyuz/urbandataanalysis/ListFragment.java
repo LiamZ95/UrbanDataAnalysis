@@ -4,9 +4,12 @@ package liyuz.urbandataanalysis;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -64,7 +67,7 @@ public class ListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_list, container, false);
@@ -72,6 +75,16 @@ public class ListFragment extends Fragment {
         fragmentCapList = new ArrayList<>(AllDataSets.capList);
         CapAdapter capAdapter = new CapAdapter(this.getActivity().getApplicationContext(), fragmentCapList);
         lv.setAdapter(capAdapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Capability selectedCap = fragmentCapList.get(i);
+                Fragment fragment = DetailFragment.newInstance(selectedCap);
+                FragmentManager manager = getFragmentManager();
+                manager.beginTransaction().replace(R.id.list_layout, fragment, fragment.getTag()).commit();
+            }
+        });
         return mView;
     }
 
