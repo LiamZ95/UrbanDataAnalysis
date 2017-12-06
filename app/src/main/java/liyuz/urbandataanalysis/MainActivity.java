@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
         Web2Fragment.OnFragmentInteractionListener {
 
     private final String TAG = getClass().getSimpleName();
+    private Boolean homeFlag = false;
     private int capCount = 0;
 
     ArrayList<Capability> capList;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             String data = stringBuilder.toString();
-            Log.d(TAG, "All data read from txt file");
+            Log.i(TAG, "All data read from txt file");
             parseXMLWithPull(data);
 
         } catch (IOException e) {
@@ -130,6 +131,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Set ListFragment as default fragment shown in MainActivity
+        Fragment frag = new ListFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, frag)
+                .commit();
     }
 
     @Override
@@ -138,7 +145,13 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (! homeFlag) {
+                homeFlag = true;
+                Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -171,6 +184,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        // Clear fragment stack
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         if (id == R.id.nav_list) {
             Toast.makeText(this, "Going to Data List", Toast.LENGTH_SHORT).show();
             fragment = new ListFragment();
@@ -199,7 +215,11 @@ public class MainActivity extends AppCompatActivity
 
         if (fragment != null) {
             FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.fragment_container, fragment, fragment.getTag()).commit();
+            manager.beginTransaction()
+                    .add(new ListFragment(), "DefaultListFragment")
+                    .replace(R.id.fragment_container, fragment, fragment.getTag())
+                    .addToBackStack("DefaultListFragment") // Add fragment to stack
+                    .commit();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -221,7 +241,7 @@ public class MainActivity extends AppCompatActivity
                 });
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?service=WFS&version=1.1.0&request=GetCapabilities");
-                    Log.d(TAG, "Sent request to AURIN");
+                    Log.i(TAG, "Sent request to AURIN");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(8000);
@@ -236,7 +256,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     // Store all data in the string
                     String data = response.toString();
-                    Log.d(TAG, "Received data from ARUIN");
+                    Log.i(TAG, "Received data from ARUIN");
                     parseXMLWithPull(data);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -273,17 +293,20 @@ public class MainActivity extends AppCompatActivity
                     case XmlPullParser.START_TAG: {
                         if ("Name".equals(nodeName)) {
                             // get the content after nodeName
-                            name = xmlPullParser.nextText();
+                            name = safeNextText(xmlPullParser);
+                            Log.i("Name", name);
                         }
                         else if ("Title".equals(nodeName)){
-                            title = xmlPullParser.nextText();
+                            title = safeNextText(xmlPullParser);
 //                            Log.i("Main###title", title);
                             String[] tempArray = title.split(" Data provider: ");
                             title = tempArray[0];
+                            Log.i("Title", title);
                             organization = tempArray[1];
+                            Log.i("Organization", organization);
                         }
                         else if ("Abstract".equals(nodeName)){
-                            String abstracts1 = xmlPullParser.nextText();
+                            String abstracts1 = safeNextText(xmlPullParser);
                             String [] array1 = abstracts1.split("\\.");
                             abstracts = array1[0];
                             if (abstracts1.contains("wkb_geometry")){
@@ -302,19 +325,19 @@ public class MainActivity extends AppCompatActivity
 
                         }
                         else if ("ows:Keyword".equals(nodeName)){
-                            String keyword = xmlPullParser.nextText();
+                            String keyword = safeNextText(xmlPullParser);
                             keywordsStr += ", ";
                             keywordsStr += keyword;
                         }
                         else if ("ows:LowerCorner".equals(nodeName)){
-                            String temp1 = xmlPullParser.nextText();
+                            String temp1 = safeNextText(xmlPullParser);
                             corners += temp1 + ", ";
                             String[] lowerCorner = temp1.split(" ");
                             bbox.setLowerLon(Double.parseDouble(lowerCorner[0]));
                             bbox.setLowerLa(Double.parseDouble(lowerCorner[1]));
                         }
                         else if ("ows:UpperCorner".equals(nodeName)){
-                            String temp2 = xmlPullParser.nextText();
+                            String temp2 = safeNextText(xmlPullParser);
                             corners += temp2;
                             String[] upperCorner = temp2.split(" ");
                             bbox.setHigherLon(Double.parseDouble(upperCorner[0]));
@@ -332,17 +355,19 @@ public class MainActivity extends AppCompatActivity
                             cap.capOrganization = organization;
                             cap.capAbstracts = abstracts;
                             keywordsStr = keywordsStr.substring(2);
+                            Log.i("keywords", keywordsStr);
                             cap.capKeywords = keywordsStr;
                             keywordsStr = "";
                             cap.capGeoName = geoName;
+                            Log.i("GeoName", geoName);
                             cap.capCorners = corners;
+                            Log.i("Corners", corners);
                             corners = "";
 
                             cap.capBbox.setHigherLa(bbox.getHigherLa());
                             cap.capBbox.setHigherLon(bbox.getHigherLon());
                             cap.capBbox.setLowerLa(bbox.getLowerLa());
                             cap.capBbox.setLowerLon(bbox.getLowerLon());
-
                             // set the organization logo for each capability
                             switch (organization){
                                 case "Government of New South Wales - Department of Planning and Environment":
@@ -451,7 +476,7 @@ public class MainActivity extends AppCompatActivity
                             if(! BigData.big_data.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
                                 capCount += 1;
-                                Log.d(TAG, String.valueOf(capCount));
+                                Log.i(TAG, String.valueOf(capCount));
                             }
                         }
                         break;
@@ -461,7 +486,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 eventType = xmlPullParser.next();
             }
-            Log.d(TAG, "final count: " + String.valueOf(capCount));
+            Log.i(TAG, "final count: " + String.valueOf(capCount));
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -472,5 +497,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(String data) {
 
+    }
+
+    private String safeNextText(XmlPullParser parser)
+            throws XmlPullParserException, IOException {
+        String result = parser.nextText();
+        if (parser.getEventType() != XmlPullParser.END_TAG) {
+            parser.nextTag();
+        }
+        return result;
     }
 }

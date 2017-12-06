@@ -14,12 +14,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ListFragment extends Fragment {
 
     private ListView lv;
@@ -39,14 +33,6 @@ public class ListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static ListFragment newInstance(String param1, String param2) {
         ListFragment fragment = new ListFragment();
@@ -79,10 +65,15 @@ public class ListFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Capability selectedCap = fragmentCapList.get(i);
-                Fragment fragment = DetailFragment.newInstance(selectedCap);
-                FragmentManager manager = getFragmentManager();
-                manager.beginTransaction().replace(R.id.list_layout, fragment, fragment.getTag()).commit();
+//                Capability selectedCap = fragmentCapList.get(i);
+//                Fragment fragment = DetailFragment.newInstance(selectedCap);
+//                FragmentManager manager = getFragmentManager();
+//                manager.beginTransaction()
+//                        .replace(R.id.list_layout, fragment, fragment.getTag())
+//                        .addToBackStack(null)
+//                        .commit();
+
+
             }
         });
         return mView;
