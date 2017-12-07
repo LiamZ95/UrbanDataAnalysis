@@ -1,11 +1,13 @@
 package liyuz.urbandataanalysis;
 
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class ListFragment extends Fragment {
-
+    private final String TAG = getClass().getSimpleName();
     private ListView lv;
     private ArrayList<Capability> fragmentCapList;
 
@@ -58,7 +62,10 @@ public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_list, container, false);
         lv = mView.findViewById(R.id.list_fragment_list);
+//        Log.i(TAG + "caps in list fragment", String.valueOf(AllDataSets.capList.size()));
         fragmentCapList = new ArrayList<>(AllDataSets.capList);
+//        Log.i(TAG + "cap num after add: ", String.valueOf(fragmentCapList.size()));
+
         CapAdapter capAdapter = new CapAdapter(this.getActivity().getApplicationContext(), fragmentCapList);
         lv.setAdapter(capAdapter);
 
@@ -72,6 +79,12 @@ public class ListFragment extends Fragment {
 //                        .replace(R.id.list_layout, fragment, fragment.getTag())
 //                        .addToBackStack(null)
 //                        .commit();
+
+                Capability selectedCap = fragmentCapList.get(i);
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra("SelectedCapability", selectedCap);
+                startActivity(intent);
 
 
             }

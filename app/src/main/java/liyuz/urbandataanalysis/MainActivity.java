@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity
     private Boolean homeFlag = false;
     private int capCount = 0;
 
-    ArrayList<Capability> capList;
 
     private static final String[] state=
             {"Australian Capital Territory","New South Wales","Northern Territory",
@@ -90,12 +89,12 @@ public class MainActivity extends AppCompatActivity
 
         // Send http request and parse the received xml data
 //        sendRequestWithURLConnection();
-//        capList = new ArrayList<>(AllDataSets.capList);
+
 
         // Open the text file containing data from AURIN to reduce the usage of this API
         AssetManager assetManager = this.getAssets();
         try{
-            InputStream in = assetManager.open("cap_raw.xml");
+            InputStream in = assetManager.open("raw_data2.xml");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
@@ -110,6 +109,7 @@ public class MainActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         // Default settings
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -133,10 +133,35 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Set ListFragment as default fragment shown in MainActivity
-        Fragment frag = new ListFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, frag)
-                .commit();
+//        Fragment frag = new ListFragment();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.fragment_container, frag)
+//                .commit();
+
+//        Runnable whileLoop = new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    if (capCount > 1330) {
+//                        Fragment frag = new ListFragment();
+//                        getSupportFragmentManager().beginTransaction()
+//                                .replace(R.id.fragment_container, frag)
+//                                .commit();
+//                        Thread.interrupted();
+//                    } else {
+//                        try {
+//                            Thread.sleep(200);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//        };
+//
+//        Thread checkThread = new Thread(whileLoop);
+//        checkThread.start();
+
     }
 
     @Override
@@ -241,11 +266,12 @@ public class MainActivity extends AppCompatActivity
                 });
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?service=WFS&version=1.1.0&request=GetCapabilities");
-                    Log.i(TAG, "Sent request to AURIN");
+                    Log.i("Main####", "Sent request to AURIN");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(8000);
-                    connection.setReadTimeout(8000);
+                    // Set big timeout for testing, was 8000
+                    connection.setConnectTimeout(60000);
+                    connection.setReadTimeout(60000);
 
                     InputStream in = connection.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -256,7 +282,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     // Store all data in the string
                     String data = response.toString();
-                    Log.i(TAG, "Received data from ARUIN");
+                    Log.i("Main###", "Received data from ARUIN");
                     parseXMLWithPull(data);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -294,6 +320,7 @@ public class MainActivity extends AppCompatActivity
                         if ("Name".equals(nodeName)) {
                             // get the content after nodeName
                             name = safeNextText(xmlPullParser);
+//                            name = xmlPullParser.nextText();
                             Log.i("Name", name);
                         }
                         else if ("Title".equals(nodeName)){
@@ -331,7 +358,9 @@ public class MainActivity extends AppCompatActivity
                         }
                         else if ("ows:LowerCorner".equals(nodeName)){
                             String temp1 = safeNextText(xmlPullParser);
-                            corners += temp1 + ", ";
+                            corners += temp1;
+                            corners += ", ";
+
                             String[] lowerCorner = temp1.split(" ");
                             bbox.setLowerLon(Double.parseDouble(lowerCorner[0]));
                             bbox.setLowerLa(Double.parseDouble(lowerCorner[1]));
@@ -339,6 +368,7 @@ public class MainActivity extends AppCompatActivity
                         else if ("ows:UpperCorner".equals(nodeName)){
                             String temp2 = safeNextText(xmlPullParser);
                             corners += temp2;
+
                             String[] upperCorner = temp2.split(" ");
                             bbox.setHigherLon(Double.parseDouble(upperCorner[0]));
                             bbox.setHigherLa(Double.parseDouble(upperCorner[1]));
@@ -361,7 +391,7 @@ public class MainActivity extends AppCompatActivity
                             cap.capGeoName = geoName;
                             Log.i("GeoName", geoName);
                             cap.capCorners = corners;
-                            Log.i("Corners", corners);
+//                            Log.i("Corners", corners);
                             corners = "";
 
                             cap.capBbox.setHigherLa(bbox.getHigherLa());
@@ -476,7 +506,7 @@ public class MainActivity extends AppCompatActivity
                             if(! BigData.big_data.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
                                 capCount += 1;
-                                Log.i(TAG, String.valueOf(capCount));
+                                Log.i(TAG + "Total cap num: ", String.valueOf(capCount));
                             }
                         }
                         break;
@@ -486,13 +516,15 @@ public class MainActivity extends AppCompatActivity
                 }
                 eventType = xmlPullParser.next();
             }
-            Log.i(TAG, "final count: " + String.valueOf(capCount));
+
+            Log.i(TAG, "Parsing finished!: " + String.valueOf(capCount));
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void onFragmentInteraction(String data) {
