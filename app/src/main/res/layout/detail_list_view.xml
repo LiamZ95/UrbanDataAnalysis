@@ -2,22 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp">
     <TextView
         android:id="@+id/detail_lv_layout_tv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
+        android:text="Organization:"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"/>
     <TextView
         android:id="@+id/detail_lv_layout_tv2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:textSize="12sp"
+        android:text="Government of the Australian Capital Territory - Environment, Planning and Sustainable Development Directorate"
         android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"/>
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"/>
 
 </LinearLayout>
