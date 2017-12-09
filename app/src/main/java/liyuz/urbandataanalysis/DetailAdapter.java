@@ -47,7 +47,7 @@ public class DetailAdapter extends BaseAdapter {
         detailAdapterTitle = (TextView) mView.findViewById(R.id.detail_lv_layout_tv1);
         detailAdapterContent = (TextView) mView.findViewById(R.id.detail_lv_layout_tv2);
 
-        String[] tempList = detailList.get(i).split("/");
+        String[] tempList = detailList.get(i).split("#%");
 
         detailAdapterTitle.setText(tempList[0]);
         detailAdapterContent.setText(tempList[1]);

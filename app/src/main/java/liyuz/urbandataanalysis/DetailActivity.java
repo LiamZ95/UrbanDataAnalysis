@@ -3,6 +3,7 @@ package liyuz.urbandataanalysis;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -17,8 +18,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
+    private String TAG = getClass().getSimpleName() + ": ";
 
     private GoogleMap mMap;
     private Button chartBtn;
@@ -44,11 +47,19 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         mapBtn = (Button) findViewById(R.id.detail_activity_map_btn);
         detailLv = (ListView) findViewById(R.id.detail_activity_list_view);
 
-        String title = "Title:/" + selectedCap.capTitle;
-        String org = "Organization:/" + selectedCap.capOrganization;
-        String dataType = "Data type:/" + selectedCap.capGeoName;
-        String abs = "Abstract:/" + selectedCap.capAbstracts.split("Abstract: ")[1];
-        String corners = "Bounding box:/" + selectedCap.capCorners;
+        Log.i(TAG, selectedCap.capTitle);
+        Log.i(TAG, selectedCap.capAbstracts);
+
+        String[] cornerList = selectedCap.capCorners.split(" ");
+        Double[] cornerListRounded = new Double[]{roundOff(cornerList[0]), roundOff(cornerList[1]),
+                roundOff(cornerList[2]), roundOff(cornerList[3])};
+        String cornersContent = Arrays.toString(cornerListRounded);
+
+        String title = "Title:#%" + selectedCap.capTitle;
+        String org = "Organization:#%" + selectedCap.capOrganization;
+        String dataType = "Data type:#%" + selectedCap.capGeoName;
+        String abs = "Abstract:#%" + selectedCap.capAbstracts.split("Abstract: ")[1];
+        String corners = "Bounding box:#%" + cornersContent;
 
         detailList.add(title);
         detailList.add(org);
@@ -87,7 +98,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         LatLng center = new LatLng((lla+hla)/2.0,(llo+hlo)/2.0);
 
         // Set zoom ratio
-        int zoom = (int) Math.log(210/(hlo - llo)) + 1;
+        int zoom = (int) Math.log(320/(hlo - llo)) + 1;
 
         // Set the map
         mMap.addMarker(new MarkerOptions().position(center).title(selectedCap.capTitle));
@@ -103,5 +114,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .add(new LatLng(lla, hlo))
                 .add(new LatLng(lla, llo))
         );
+    }
+
+    public Double roundOff(String in) {
+        return Math.round(Double.parseDouble(in) * 100.0) / 100.0;
     }
 }

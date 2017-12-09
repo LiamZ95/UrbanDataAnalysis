@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity
                         }
                         else if ("Abstract".equals(nodeName)){
                             String abstracts1 = safeNextText(xmlPullParser);
-                            String [] array1 = abstracts1.split("\\.");
+                            String [] array1 = abstracts1.split(" Temporal extent start: ");
                             abstracts = array1[0];
                             if (abstracts1.contains("wkb_geometry")){
                                 geoName = "wkb_geometry";
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity
                         else if ("ows:LowerCorner".equals(nodeName)){
                             String temp1 = safeNextText(xmlPullParser);
                             corners += temp1;
-                            corners += ", ";
+                            corners += " ";
 
                             String[] lowerCorner = temp1.split(" ");
                             bbox.setLowerLon(Double.parseDouble(lowerCorner[0]));
@@ -384,6 +384,7 @@ public class MainActivity extends AppCompatActivity
                             cap.capTitle = title;
                             cap.capOrganization = organization;
                             cap.capAbstracts = abstracts;
+                            Log.i("Abstract: ", abstracts);
                             keywordsStr = keywordsStr.substring(2);
                             Log.i("keywords", keywordsStr);
                             cap.capKeywords = keywordsStr;
