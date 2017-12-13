@@ -44,8 +44,9 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
-        <activity android:name=".DetailActivity"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".DetailActivity" />
+        <activity android:name=".FilterActivity"></activity>
     </application>
 
 </manifest>

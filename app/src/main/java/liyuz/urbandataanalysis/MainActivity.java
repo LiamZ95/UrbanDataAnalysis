@@ -241,9 +241,8 @@ public class MainActivity extends AppCompatActivity
         if (fragment != null) {
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction()
-                    .add(new ListFragment(), "DefaultListFragment")
                     .replace(R.id.fragment_container, fragment, fragment.getTag())
-                    .addToBackStack("DefaultListFragment") // Add fragment to stack
+                    .addToBackStack(null) // Add fragment to stack
                     .commit();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
