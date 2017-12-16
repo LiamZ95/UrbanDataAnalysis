@@ -1,6 +1,7 @@
 package liyuz.urbandataanalysis;
 
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +34,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import android.util.Log;
 
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         Web2Fragment.OnFragmentInteractionListener {
@@ -40,6 +43,8 @@ public class MainActivity extends AppCompatActivity
     private final String TAG = getClass().getSimpleName();
     private Boolean homeFlag = false;
     private int capCount = 0;
+
+    MaterialSearchView materialSearchView;
 
 
     private static final String[] state=
@@ -114,6 +119,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // For search bar
+        getSupportActionBar().setTitle("Search keywords ");
+        toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +141,44 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        materialSearchView = (MaterialSearchView)findViewById(R.id.search_view);
+        materialSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                // If search view is closed, restore to original list view
+
+            }
+        });
+
+        materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText != null && ! newText.isEmpty()) {
+                    Boolean fit = false;
+                    ArrayList<Capability> allCaps = new ArrayList<>(AllDataSets.capList);
+                    ArrayList<Capability> filteredCaps = new ArrayList<>();
+                    if (newText.contains(" ")) {
+                        String[] textArray = newText.split(" ");
+
+                        for (Capability cap : allCaps) {
+
+                        }
+
+                    }
+                }
+                return true;
+            }
+        });
         // Set ListFragment as default fragment shown in MainActivity
 //        Fragment frag = new ListFragment();
 //        getSupportFragmentManager().beginTransaction()
@@ -184,6 +231,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        // Modified for search bar
+        MenuItem item = menu.findItem(R.id.action_search);
+        materialSearchView.setMenuItem(item);
+
+
         return true;
     }
 
@@ -195,7 +248,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
             return true;
         }
 
