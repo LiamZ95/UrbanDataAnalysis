@@ -162,19 +162,38 @@ public class MainActivity extends AppCompatActivity
             }
 
             @Override
+            // This function
             public boolean onQueryTextChange(String newText) {
                 if (newText != null && ! newText.isEmpty()) {
-                    Boolean fit = false;
                     ArrayList<Capability> allCaps = new ArrayList<>(AllDataSets.capList);
-                    ArrayList<Capability> filteredCaps = new ArrayList<>();
+                    ArrayList<Capability> targetCaps = new ArrayList<>();
+
+                    String[] inputKeywordsArray;
                     if (newText.contains(" ")) {
-                        String[] textArray = newText.split(" ");
+                        inputKeywordsArray = newText.split(" ");
+                    } else {
+                        inputKeywordsArray = new String[]{newText};
+                    }
 
-                        for (Capability cap : allCaps) {
-
+                    for (Capability cap : allCaps) {
+                        Boolean isTarget = false;
+                        String capKw = cap.capKeywords;
+                        for (String inputKw : inputKeywordsArray) {
+                            if (capKw.contains(inputKw)) {
+                                isTarget = true;
+                            }
                         }
 
+                        if (isTarget) {
+                            targetCaps.add(cap);
+                        }
                     }
+
+                    CapAdapter searchAdapter = new CapAdapter(MainActivity.this, targetCaps);
+
+
+                } else {
+
                 }
                 return true;
             }
