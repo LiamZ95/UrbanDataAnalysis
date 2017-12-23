@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main { res.srcDirs = ['src/main/res', 'src/main/res/color'] }
+        debug { res.srcDirs = ['src/debug/res', 'src/debug/res/color'] }
+    }
 }
 
 dependencies {
@@ -36,4 +40,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
+    implementation 'com.hannesdorfmann:swipeback:1.0.4'
+
 }

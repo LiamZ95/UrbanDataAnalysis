@@ -189,35 +189,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
-        // Set ListFragment as default fragment shown in MainActivity
-//        Fragment frag = new ListFragment();
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.fragment_container, frag)
-//                .commit();
 
-//        Runnable whileLoop = new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    if (capCount > 1330) {
-//                        Fragment frag = new ListFragment();
-//                        getSupportFragmentManager().beginTransaction()
-//                                .replace(R.id.fragment_container, frag)
-//                                .commit();
-//                        Thread.interrupted();
-//                    } else {
-//                        try {
-//                            Thread.sleep(200);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        };
-//
-//        Thread checkThread = new Thread(whileLoop);
-//        checkThread.start();
 
     }
 
@@ -640,9 +612,12 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String s) {
             progressDialog.dismiss();
-
+            // Set ListFragment as default fragment shown in MainActivity
+            Fragment frag = new ListFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, frag)
+                    .commit();
         }
     }
-
 }
 
