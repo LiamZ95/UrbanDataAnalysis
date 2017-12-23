@@ -14,17 +14,17 @@
 
 
     <TextView
+        android:id="@+id/nav_header_main_tv1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textSize="25sp"
         android:textStyle="bold"
         android:layout_marginTop="30dp"
-        android:text="Urban Data Analysis"
+        android:text="@string/nav_header_title_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15sp"

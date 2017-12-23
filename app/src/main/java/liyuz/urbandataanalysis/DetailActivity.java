@@ -55,11 +55,11 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 roundOff(cornerList[2]), roundOff(cornerList[3])};
         String cornersContent = Arrays.toString(cornerListRounded);
 
-        String title = "Title:#%" + selectedCap.capTitle;
-        String org = "Organization:#%" + selectedCap.capOrganization;
-        String dataType = "Data type:#%" + selectedCap.capGeoName;
-        String abs = "Abstract:#%" + selectedCap.capAbstracts.split("Abstract: ")[1];
-        String corners = "Bounding box:#%" + cornersContent;
+        String title = "Title#%" + selectedCap.capTitle;
+        String org = "Organization#%" + selectedCap.capOrganization;
+        String dataType = "Data type#%" + selectedCap.capGeoName;
+        String abs = "Abstract#%" + selectedCap.capAbstracts.split("Abstract: ")[1];
+        String corners = "Bounding box#%" + cornersContent;
 
         detailList.add(title);
         detailList.add(org);

@@ -45,8 +45,10 @@ public class MainActivity extends AppCompatActivity
     private final String TAG = getClass().getSimpleName();
     private ProgressDialog progressDialog;
     private Boolean homeFlag = false;
+    private Boolean hasTransac = false;
     private int capCount = 0;
-
+    private Fragment fragment = null;
+    private Fragment homeFragment;
     MaterialSearchView materialSearchView;
 
 
@@ -199,12 +201,19 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (! homeFlag) {
-                homeFlag = true;
-                Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+            if (hasTransac) {
+                homeFlag = false;
+                hasTransac = false;
+                super.onBackPressed();
             }
             else {
-                super.onBackPressed();
+                if (!homeFlag) {
+                    homeFlag = true;
+                    Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    super.onBackPressed();
+                }
             }
         }
     }
@@ -237,7 +246,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    Fragment fragment = null;
+//    Fragment fragment = null;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -274,14 +283,15 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (fragment != null) {
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction()
+            getSupportFragmentManager().beginTransaction()
+                    .add(new ListFragment(), "HomeFragment")
+                    .addToBackStack("HomeFragment") // Add home fragment to stack
                     .replace(R.id.fragment_container, fragment, fragment.getTag())
-                    .addToBackStack(null) // Add fragment to stack
                     .commit();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        hasTransac = true;
         return true;
     }
 
@@ -613,9 +623,9 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(String s) {
             progressDialog.dismiss();
             // Set ListFragment as default fragment shown in MainActivity
-            Fragment frag = new ListFragment();
+            homeFragment = new ListFragment();
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, frag)
+                    .replace(R.id.fragment_container, homeFragment)
                     .commit();
         }
     }

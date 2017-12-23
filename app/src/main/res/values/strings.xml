@@ -10,5 +10,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="search_hint"> Keywords, e.g., population</string>
+    <string name="nav_header_title_text">
+        Urban Data Analysis
+    </string>
 
 </resources>

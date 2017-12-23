@@ -72,13 +72,6 @@ public class ListFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Capability selectedCap = fragmentCapList.get(i);
-//                Fragment fragment = DetailFragment.newInstance(selectedCap);
-//                FragmentManager manager = getFragmentManager();
-//                manager.beginTransaction()
-//                        .replace(R.id.list_layout, fragment, fragment.getTag())
-//                        .addToBackStack(null)
-//                        .commit();
 
                 Capability selectedCap = fragmentCapList.get(i);
 
