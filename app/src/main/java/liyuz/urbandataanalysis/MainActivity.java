@@ -201,18 +201,22 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (hasTransac) {
-                homeFlag = false;
-                hasTransac = false;
-                super.onBackPressed();
-            }
-            else {
-                if (!homeFlag) {
-                    homeFlag = true;
-                    Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+            if (materialSearchView.isSearchOpen()) {
+                materialSearchView.closeSearch();
+            } else {
+                if (hasTransac) {
+                    homeFlag = false;
+                    hasTransac = false;
+                    super.onBackPressed();
                 }
                 else {
-                    super.onBackPressed();
+                    if (!homeFlag) {
+                        homeFlag = true;
+                        Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        super.onBackPressed();
+                    }
                 }
             }
         }

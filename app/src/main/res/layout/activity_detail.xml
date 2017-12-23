@@ -30,16 +30,26 @@
             <Button
                 android:id="@+id/detail_activity_chart_btn"
                 android:text="show in chart"
+                android:textStyle="bold"
+                android:background="@drawable/detail_btn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="1"/>
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:textColor="@color/white"
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/detail_activity_map_btn"
                 android:text="show on map"
+                android:textStyle="bold"
+                android:background="@drawable/detail_btn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="1"/>
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:textColor="@color/white"
+                android:layout_weight="1" />
         </LinearLayout>
 
         <ListView
