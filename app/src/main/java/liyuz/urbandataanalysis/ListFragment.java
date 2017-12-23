@@ -92,4 +92,7 @@ public class ListFragment extends Fragment {
         return mView;
     }
 
+    public void changeList(ArrayList<Capability> filteredList) {
+
+    }
 }

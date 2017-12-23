@@ -1,7 +1,9 @@
 package liyuz.urbandataanalysis;
 
+import android.app.ProgressDialog;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         Web2Fragment.OnFragmentInteractionListener {
 
     private final String TAG = getClass().getSimpleName();
+    private ProgressDialog progressDialog;
     private Boolean homeFlag = false;
     private int capCount = 0;
 
@@ -95,32 +98,17 @@ public class MainActivity extends AppCompatActivity
         // Send http request and parse the received xml data
 //        sendRequestWithURLConnection();
 
-
-        // Open the text file containing data from AURIN to reduce the usage of this API
-        AssetManager assetManager = this.getAssets();
-        try{
-            InputStream in = assetManager.open("raw_data2.xml");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-
-            String data = stringBuilder.toString();
-            Log.i(TAG, "All data read from txt file");
-            parseXMLWithPull(data);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Setting for progress dialog
+        LongOperation myTask = null;
+        myTask = new LongOperation();
+        myTask.execute();
 
         // Default settings
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // For search bar
-        getSupportActionBar().setTitle("Search keywords ");
+        getSupportActionBar().setTitle("Urban Data Analysis ");
         toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -132,6 +120,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // For navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -141,6 +130,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        // Settings for the search bar
         materialSearchView = (MaterialSearchView)findViewById(R.id.search_view);
         materialSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
@@ -189,7 +180,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
 
-                    CapAdapter searchAdapter = new CapAdapter(MainActivity.this, targetCaps);
+//                    CapAdapter searchAdapter = new CapAdapter(MainActivity.this, targetCaps);
 
 
                 } else {
@@ -611,4 +602,47 @@ public class MainActivity extends AppCompatActivity
         }
         return result;
     }
+
+    // This class works for receiving data from AURIN and showing pop-up window
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setTitle("Receiving data from AURIN");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            // Open the text file containing data from AURIN to reduce the usage of this API
+            AssetManager assetManager = getApplicationContext().getAssets();
+            try{
+                InputStream in = assetManager.open("raw_data2.xml");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+
+                String data = stringBuilder.toString();
+                Log.i(TAG, "All data read from txt file");
+                parseXMLWithPull(data);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            progressDialog.dismiss();
+
+        }
+    }
+
 }
+
