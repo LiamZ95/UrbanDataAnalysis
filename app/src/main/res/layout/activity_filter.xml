@@ -5,65 +5,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingStart="5dp"
-    android:paddingEnd="5dp"
     tools:context="liyuz.urbandataanalysis.FilterActivity">
 
     <TextView
-        android:id="@+id/filter_area_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:text="Area" />
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="Select Area"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="States &amp; Suburbs"/>
-        <Spinner
-            android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </Spinner>
-
-        <Spinner
-            android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </Spinner>
-
-        <TextView
-            android:layout_marginTop="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bounding Box"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/filter_area_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
 
     <TextView
-        android:id="@+id/filter_axis_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:text="Axis Setting" />
+        android:text="Select Attribute"/>
+
+    <Button
+        android:id="@+id/filter_attribute_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
 
     <TextView
-        android:id="@+id/filter_chart_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:text="Chart Appearance" />
+        android:text="Select Classifier"/>
+
+    <Button
+        android:id="@+id/filter_classifier_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Class Level"/>
+
+    <Button
+        android:id="@+id/filter_level_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Color Collection"/>
+
+    <Button
+        android:id="@+id/filter_color_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
 
 
 </LinearLayout>

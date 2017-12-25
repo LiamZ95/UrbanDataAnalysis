@@ -11,7 +11,7 @@
                 android:right="10dp"
                 android:top="10dp" />
             <corners
-                android:radius="5dp"/>
+                android:radius="2dp"/>
             <gradient
                 android:startColor="@color/colorAccentLight"
                 android:endColor="@color/colorAccent"
@@ -29,7 +29,7 @@
                 android:right="10dp"
                 android:top="10dp" />
             <corners
-                android:radius="5dp"/>
+                android:radius="2dp"/>
             <gradient
                 android:startColor="@color/colorAccent"
                 android:endColor="@color/colorAccentDark"

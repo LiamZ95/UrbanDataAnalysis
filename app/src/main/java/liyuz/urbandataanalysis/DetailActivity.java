@@ -81,6 +81,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Going to map", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
+                intent.putExtra("SelectedCapabilityForFilter", selectedCap);
+                startActivity(intent);
             }
         });
     }
