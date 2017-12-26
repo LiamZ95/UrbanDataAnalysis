@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity
     private int capCount = 0;
     private Fragment fragment = null;
     private Fragment homeFragment;
+    private Fragment currentShownFragment;
+    private FragmentManager theManager;
     MaterialSearchView materialSearchView;
 
 
@@ -97,6 +99,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Fragment manager
+        theManager = getSupportFragmentManager();
+
         // Send http request and parse the received xml data
 //        sendRequestWithURLConnection();
 
@@ -135,19 +140,27 @@ public class MainActivity extends AppCompatActivity
 
         // Settings for the search bar
         materialSearchView = (MaterialSearchView)findViewById(R.id.search_view);
+
         materialSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-
+                currentShownFragment = getCurrentFragment();
+                if (!(currentShownFragment instanceof ListFragment)) {
+                    theManager.beginTransaction()
+                            .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
+                            .commit();
+                }
             }
 
             @Override
             public void onSearchViewClosed() {
                 // If search view is closed, restore to original list view
-
+                ListFragment searchFragment = (ListFragment) getCurrentFragment();
+                searchFragment.restoreList();
             }
         });
 
+        // Search text matching and updating listView in the fragment
         materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -157,20 +170,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             // This function
             public boolean onQueryTextChange(String newText) {
-                if (newText != null && ! newText.isEmpty()) {
+                ListFragment searchFragment = (ListFragment) getCurrentFragment();
+                if (newText != null && !newText.isEmpty()) {
+                    String validText = newText.toLowerCase();
                     ArrayList<Capability> allCaps = new ArrayList<>(AllDataSets.capList);
                     ArrayList<Capability> targetCaps = new ArrayList<>();
 
                     String[] inputKeywordsArray;
-                    if (newText.contains(" ")) {
-                        inputKeywordsArray = newText.split(" ");
+                    if (validText.contains(" ")) {
+                        inputKeywordsArray = validText.split(" ");
                     } else {
-                        inputKeywordsArray = new String[]{newText};
+                        inputKeywordsArray = new String[]{validText};
                     }
 
                     for (Capability cap : allCaps) {
                         Boolean isTarget = false;
-                        String capKw = cap.capKeywords;
+                        String capKw = cap.capKeywords.toLowerCase();
                         for (String inputKw : inputKeywordsArray) {
                             if (capKw.contains(inputKw)) {
                                 isTarget = true;
@@ -182,11 +197,12 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
 
-//                    CapAdapter searchAdapter = new CapAdapter(MainActivity.this, targetCaps);
-
+                    // Update list view
+                    searchFragment.changeList(targetCaps);
 
                 } else {
-
+                    // Restore
+                    searchFragment.restoreList();
                 }
                 return true;
             }
@@ -195,6 +211,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    // Defined the behavior when back button is hit
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -250,7 +267,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-//    Fragment fragment = null;
+    // Define fragments which should change to in the navigation drawer
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -258,7 +275,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         // Clear fragment stack
-        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        theManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         if (id == R.id.nav_list) {
             Toast.makeText(this, "Going to Data List", Toast.LENGTH_SHORT).show();
@@ -287,7 +304,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (fragment != null) {
-            getSupportFragmentManager().beginTransaction()
+            theManager.beginTransaction()
                     .add(new ListFragment(), "HomeFragment")
                     .addToBackStack("HomeFragment") // Add home fragment to stack
                     .replace(R.id.fragment_container, fragment, fragment.getTag())
@@ -628,10 +645,15 @@ public class MainActivity extends AppCompatActivity
             progressDialog.dismiss();
             // Set ListFragment as default fragment shown in MainActivity
             homeFragment = new ListFragment();
-            getSupportFragmentManager().beginTransaction()
+            theManager.beginTransaction()
                     .replace(R.id.fragment_container, homeFragment)
                     .commit();
         }
+    }
+
+    private Fragment getCurrentFragment() {
+        Fragment currentFragment = theManager.findFragmentById(R.id.fragment_container);
+        return currentFragment;
     }
 }
 

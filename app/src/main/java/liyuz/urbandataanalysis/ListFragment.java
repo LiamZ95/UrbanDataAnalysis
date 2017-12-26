@@ -22,6 +22,7 @@ public class ListFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
     private ListView lv;
     private ArrayList<Capability> fragmentCapList;
+    private CapAdapter mainAdapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -66,8 +67,8 @@ public class ListFragment extends Fragment {
         fragmentCapList = new ArrayList<>(AllDataSets.capList);
 //        Log.i(TAG + "cap num after add: ", String.valueOf(fragmentCapList.size()));
 
-        CapAdapter capAdapter = new CapAdapter(this.getActivity().getApplicationContext(), fragmentCapList);
-        lv.setAdapter(capAdapter);
+        mainAdapter = new CapAdapter(this.getActivity().getApplicationContext(), fragmentCapList);
+        lv.setAdapter(mainAdapter);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,6 +87,11 @@ public class ListFragment extends Fragment {
     }
 
     public void changeList(ArrayList<Capability> filteredList) {
+        CapAdapter newCapAdapter = new CapAdapter(this.getActivity().getApplicationContext(), filteredList);
+        lv.setAdapter(newCapAdapter);
+    }
 
+    public void restoreList() {
+        lv.setAdapter(mainAdapter);
     }
 }
