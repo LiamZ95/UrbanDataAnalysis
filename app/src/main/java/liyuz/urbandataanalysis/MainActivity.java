@@ -53,47 +53,6 @@ public class MainActivity extends AppCompatActivity
     private FragmentManager theManager;
     MaterialSearchView materialSearchView;
 
-
-    private static final String[] state=
-            {"Australian Capital Territory","New South Wales","Northern Territory",
-                    "Queensland","South Australia","Tasmania","Victoria","Western Australia"};
-
-    private static final String[] act={"Australian Capital Territory"};
-
-    private static final String[] nsw={"Greater Sydney","Capital Region","Central Coast",
-            "Central West","Coffs Harbour","Far West and Orana","Hunter Valley exc Newcastle",
-            "Illawarra","Mid North Coast","Murray","Newcastle and Lake Macquarie",
-            "New England and North West","Riverina","Southern Highlands and Shoalhaven",
-            "Sydney - Baulkham Hills and Hawkesbury","Sydney - Blacktown","Sydney - City and Inner South",
-            "Sydney - Eastern Suburbs","Sydney - Inner South West","Sydney - Inner West",
-            "Sydney - Northern Beaches","Sydney - North Sydney and Hornsby",
-            "Sydney - Outer South West","Sydney - Outer West and Blue Mountains","Sydney - Parramatta",
-            "Sydney - Ryde","Sydney - South West","Sydney - Sutherland"};
-
-    private static final String[] nt={"Greater Darwin","Northern Territory - Outback"};
-
-    private static final String[] qld={"Greater Brisbane","Brisbane - East","Brisbane Inner City",
-            "Brisbane - North","Brisbane - South","Brisbane - West","Cairns","Darling Downs - Maranoa",
-            "Fitzroy","Gold Coast","Ipswich","Logan - Beaudesert","Mackay","Moreton Bay - North",
-            "Moreton Bay - South","Queensland - Outback","Sunshine Coast","Toowoomba","Townsville",
-            "Wide Bay"};
-
-    private static final String[] sau={"Greater Adelaide","Adelaide - Central and Hills",
-            "Adelaide - North","Adelaide - South","Adelaide - West","Barossa - Yorke - Mid North",
-            "South Australia - Outback","South Australia - South East"};
-
-    private static final String[] tas={"Greater Hobart","Launceston and North East","South East",
-            "West and North West"};
-
-    private static final String[] vic={"Greater Melbourne","Melbourne Inner","Melbourne Inner East",
-            "Melbourne Inner South","Melbourne North East","Melbourne North West","Melbourne Outer East",
-            "Melbourne South East","Melbourne West","Ballarat","Bendigo","Geelong","Hume","Shepparton",
-            "North West", "Mornington Peninsula","Warrnambool and South West","Latrobe Gippsland"};
-
-    private static final String[] wau={"Greater Perth","Bunbury","Mandurah","Perth - Inner",
-            "Perth - North East","Perth - North West","Perth - South East","Perth - South West",
-            "Western Australia - Outback","Western Australia - Wheat Belt"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +95,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         // Settings for the search bar
         materialSearchView = (MaterialSearchView)findViewById(R.id.search_view);
@@ -191,15 +149,12 @@ public class MainActivity extends AppCompatActivity
                                 isTarget = true;
                             }
                         }
-
                         if (isTarget) {
                             targetCaps.add(cap);
                         }
                     }
-
                     // Update list view
                     searchFragment.changeList(targetCaps);
-
                 } else {
                     // Restore
                     searchFragment.restoreList();
@@ -207,8 +162,6 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         });
-
-
     }
 
     // Defined the behavior when back button is hit

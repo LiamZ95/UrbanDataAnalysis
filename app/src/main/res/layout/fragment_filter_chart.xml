@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="liyuz.urbandataanalysis.FilterChartFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Area"/>
+
+    <Button
+        android:id="@+id/filter_chart_area_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Attribute"/>
+
+    <Button
+        android:id="@+id/filter_chart_attribute_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Classifier"/>
+
+    <Button
+        android:id="@+id/filter_chart_classifier_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Class Level"/>
+
+    <Button
+        android:id="@+id/filter_chart_level_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Color Collection"/>
+
+    <Button
+        android:id="@+id/filter_chart_color_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touch to select"/>
+
+
+</LinearLayout>

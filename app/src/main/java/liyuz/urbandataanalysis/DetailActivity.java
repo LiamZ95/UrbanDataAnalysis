@@ -122,4 +122,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     public Double roundOff(String in) {
         return Math.round(Double.parseDouble(in) * 100.0) / 100.0;
     }
+
+
 }
