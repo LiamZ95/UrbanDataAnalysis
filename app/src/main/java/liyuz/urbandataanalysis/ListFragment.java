@@ -75,9 +75,11 @@ public class ListFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 Capability selectedCap = fragmentCapList.get(i);
+
                 SelectedCap.seletedCap = selectedCap;
+
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra("SelectedCapability", selectedCap);
+//                intent.putExtra("SelectedCapability", selectedCap);
                 startActivity(intent);
 
 

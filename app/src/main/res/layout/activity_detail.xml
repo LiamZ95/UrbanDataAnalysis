@@ -57,12 +57,12 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/detail_activity_list_view"
+        <RelativeLayout
+            android:id="@+id/detail_activity_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:dividerHeight="5dp">
-        </ListView>
+            android:layout_height="wrap_content">
+        </RelativeLayout>
+
     </LinearLayout>
 
 </LinearLayout>

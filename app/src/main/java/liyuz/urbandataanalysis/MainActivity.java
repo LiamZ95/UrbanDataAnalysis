@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment fragment = null;
     private Fragment homeFragment;
     private Fragment currentShownFragment;
-    private FragmentManager theManager;
+    private FragmentManager mainFragmentManager;
     MaterialSearchView materialSearchView;
 
     @Override
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // Fragment manager
-        theManager = getSupportFragmentManager();
+        mainFragmentManager = getSupportFragmentManager();
 
         // Send http request and parse the received xml data
 //        sendRequestWithURLConnection();
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewShown() {
                 currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
-                    theManager.beginTransaction()
+                    mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .commit();
                 }
@@ -200,8 +200,6 @@ public class MainActivity extends AppCompatActivity
         // Modified for search bar
         MenuItem item = menu.findItem(R.id.action_search);
         materialSearchView.setMenuItem(item);
-
-
         return true;
     }
 
@@ -228,7 +226,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         // Clear fragment stack
-        theManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        mainFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         if (id == R.id.nav_list) {
             Toast.makeText(this, "Going to Data List", Toast.LENGTH_SHORT).show();
@@ -257,7 +255,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (fragment != null) {
-            theManager.beginTransaction()
+            mainFragmentManager.beginTransaction()
                     .add(new ListFragment(), "HomeFragment")
                     .addToBackStack("HomeFragment") // Add home fragment to stack
                     .replace(R.id.fragment_container, fragment, fragment.getTag())
@@ -270,7 +268,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // sending http request for all dataset, and then parse the received data
-    private void sendRequestWithURLConnection() {
+    private void sendRequest() {
         // Create a new thread for HttpURLConnection
         new Thread(new Runnable() {
             @Override
@@ -301,7 +299,7 @@ public class MainActivity extends AppCompatActivity
                     // Store all data in the string
                     String data = response.toString();
                     Log.i("Main###", "Received data from ARUIN");
-                    parseXMLWithPull(data);
+                    parseXML(data);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -312,7 +310,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // parsing the XML with pull method
-    private void parseXMLWithPull (String xmlData) {
+    private void parseXML(String xmlData) {
         try {
 
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -585,7 +583,7 @@ public class MainActivity extends AppCompatActivity
 
                 String data = stringBuilder.toString();
                 Log.i(TAG, "All data read from txt file");
-                parseXMLWithPull(data);
+                parseXML(data);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -598,14 +596,14 @@ public class MainActivity extends AppCompatActivity
             progressDialog.dismiss();
             // Set ListFragment as default fragment shown in MainActivity
             homeFragment = new ListFragment();
-            theManager.beginTransaction()
+            mainFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, homeFragment)
                     .commit();
         }
     }
 
     private Fragment getCurrentFragment() {
-        Fragment currentFragment = theManager.findFragmentById(R.id.fragment_container);
+        Fragment currentFragment = mainFragmentManager.findFragmentById(R.id.fragment_container);
         return currentFragment;
     }
 }

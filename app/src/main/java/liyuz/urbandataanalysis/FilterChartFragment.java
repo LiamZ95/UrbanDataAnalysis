@@ -125,12 +125,27 @@ public class FilterChartFragment extends Fragment {
                  builder.setSingleChoiceItems(attributes.toArray(new String[attributes.size()]), checkedItem, new DialogInterface.OnClickListener() {
                      @Override
                      public void onClick(DialogInterface dialogInterface, int i) {
-                         Toast.makeText(getActivity(), "Selected an item!", Toast.LENGTH_SHORT).show();
+                         Toast.makeText(getActivity(), "Selected an attribute", Toast.LENGTH_SHORT).show();
                          selectedAttribute = attributes.get(i);
-                         attrBtn.setText(attributes.get(i));
+                         attrBtn.setText(selectedAttribute);
                      }
                  });
 
+            }
+        });
+
+        clasBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.setTitle("Select an classifier");
+                builder.setSingleChoiceItems(classifiers.toArray(new String[classifiers.size()]), checkedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(getActivity(), "Selected an classifier", Toast.LENGTH_SHORT).show();
+                        selectedClassifier = classifiers.get(i);
+                        clasBtn.setText(selectedClassifier);
+                    }
+                });
             }
         });
 

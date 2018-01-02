@@ -1,9 +1,10 @@
 package liyuz.urbandataanalysis;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -18,7 +19,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
     private String TAG = getClass().getSimpleName() + ": ";
@@ -28,7 +28,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private Button mapBtn;
     private ListView detailLv;
     private Capability selectedCap;
-    private ArrayList<String> detailList = new ArrayList<>();
+    private FragmentManager detailFragmentManager;
+    private Fragment listFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,41 +40,32 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.detail_activity_map_fragment);
         mapFragment.getMapAsync(this);
-
         Intent intent = getIntent();
-        selectedCap = (Capability) intent.getSerializableExtra("SelectedCapability");
+
+        detailFragmentManager = getSupportFragmentManager();
+
+//        selectedCap = (Capability) intent.getSerializableExtra("SelectedCapability");
+        selectedCap = SelectedCap.seletedCap;
 
         chartBtn = (Button) findViewById(R.id.detail_activity_chart_btn);
         mapBtn = (Button) findViewById(R.id.detail_activity_map_btn);
-        detailLv = (ListView) findViewById(R.id.detail_activity_list_view);
 
-        Log.i(TAG, selectedCap.capTitle);
-        Log.i(TAG, selectedCap.capAbstracts);
-
-        String[] cornerList = selectedCap.capCorners.split(" ");
-        Double[] cornerListRounded = new Double[]{roundOff(cornerList[0]), roundOff(cornerList[1]),
-                roundOff(cornerList[2]), roundOff(cornerList[3])};
-        String cornersContent = Arrays.toString(cornerListRounded);
-
-        String title = "Title#%" + selectedCap.capTitle;
-        String org = "Organization#%" + selectedCap.capOrganization;
-        String dataType = "Data type#%" + selectedCap.capGeoName;
-        String abs = "Abstract#%" + selectedCap.capAbstracts.split("Abstract: ")[1];
-        String corners = "Bounding box#%" + cornersContent;
-
-        detailList.add(title);
-        detailList.add(org);
-        detailList.add(dataType);
-        detailList.add(abs);
-        detailList.add(corners);
-
-        DetailAdapter detailAdapter = new DetailAdapter(getApplicationContext(), detailList);
-        detailLv.setAdapter(detailAdapter);
+        // Set default fragment in the activity
+        listFragment = new DetailListFragment();
+        detailFragmentManager.beginTransaction()
+                .replace(R.id.detail_activity_container, listFragment)
+                .commit();
 
         chartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Going to chart", Toast.LENGTH_SHORT).show();
+                Fragment chartFragment = new FilterChartFragment();
+                detailFragmentManager.beginTransaction()
+                        .add(new DetailListFragment(), "previousFragment")
+                        .addToBackStack("previousFragment")
+                        .replace(R.id.detail_activity_container, chartFragment, chartFragment.getTag())
+                        .commit();
             }
         });
 
@@ -81,9 +73,11 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Going to map", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
-                intent.putExtra("SelectedCapabilityForFilter", selectedCap);
-                startActivity(intent);
+//                Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
+//                intent.putExtra("SelectedCapabilityForFilter", selectedCap);
+//                startActivity(intent);
+
+
             }
         });
     }
@@ -118,10 +112,4 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .add(new LatLng(lla, llo))
         );
     }
-
-    public Double roundOff(String in) {
-        return Math.round(Double.parseDouble(in) * 100.0) / 100.0;
-    }
-
-
 }
