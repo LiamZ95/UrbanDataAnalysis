@@ -624,6 +624,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // Get current shown fragment
     private Fragment getCurrentFragment() {
         Fragment currentFragment = mainFragmentManager.findFragmentById(R.id.fragment_container);
         return currentFragment;

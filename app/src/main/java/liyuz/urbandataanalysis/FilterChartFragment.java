@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,18 +31,10 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FilterChartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FilterChartFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class FilterChartFragment extends Fragment implements View.OnClickListener{
 
 //    private Button areaBtn;
+    private Button areaBtn;
     private Button attrBtn;
     private Button clasBtn;
     private Button lvlBtn;
@@ -67,41 +58,8 @@ public class FilterChartFragment extends Fragment {
 
     private String TAG = getClass().getSimpleName() + "### ";
 
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-
     public FilterChartFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FilterChartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FilterChartFragment newInstance(String param1, String param2) {
-        FilterChartFragment fragment = new FilterChartFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -110,64 +68,90 @@ public class FilterChartFragment extends Fragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_filter_chart, container, false);
 
-        LongOperation myTask = null;
-        myTask = new LongOperation();
+        // Show progress dialog
+        FilterProgressOperation myTask = null;
+        myTask = new FilterProgressOperation();
         myTask.execute();
 
-//        areaBtn = (Button) mView.findViewById(R.id.filter_chart_area_btn);
+        areaBtn = (Button) mView.findViewById(R.id.filter_chart_area_btn);
         attrBtn = (Button) mView.findViewById(R.id.filter_chart_attribute_btn);
         clasBtn = (Button) mView.findViewById(R.id.filter_chart_classifier_btn);
         lvlBtn = (Button) mView.findViewById(R.id.filter_chart_level_btn);
         colorBtn = (Button) mView.findViewById(R.id.filter_chart_color_btn);
 
-        // Setting the pop up window for attributes selection
-        builder = new AlertDialog.Builder(this.getActivity().getApplicationContext());
-
-        attrBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                 builder.setTitle("Select an attribute");
-                 builder.setSingleChoiceItems(attributes.toArray(new String[attributes.size()]), checkedItem, new DialogInterface.OnClickListener() {
-                     @Override
-                     public void onClick(DialogInterface dialogInterface, int i) {
-                         Toast.makeText(getActivity(), "Selected an attribute", Toast.LENGTH_SHORT).show();
-                         selectedAttribute = attributes.get(i);
-                         attrBtn.setText(selectedAttribute);
-                     }
-                 });
-
-            }
-        });
-
-        clasBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.setTitle("Select an classifier");
-                builder.setSingleChoiceItems(classifiers.toArray(new String[classifiers.size()]), checkedItem, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getActivity(), "Selected an classifier", Toast.LENGTH_SHORT).show();
-                        selectedClassifier = classifiers.get(i);
-                        clasBtn.setText(selectedClassifier);
-                    }
-                });
-            }
-        });
-
-        clasBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
+        areaBtn.setOnClickListener(this);
+        attrBtn.setOnClickListener(this);
+        clasBtn.setOnClickListener(this);
+        lvlBtn.setOnClickListener(this);
+        colorBtn.setOnClickListener(this);
+//        // Setting the pop up window for attributes selection
+//        builder = new AlertDialog.Builder(getActivity());
+//
+//        final String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
+//
+//        attrBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                 builder.setTitle("Select an attribute");
+//                 builder.setSingleChoiceItems(animals, checkedItem, new DialogInterface.OnClickListener() {
+//                     @Override
+//                     public void onClick(DialogInterface dialogInterface, int i) {
+//                         Toast.makeText(getActivity(), "Selected an attribute", Toast.LENGTH_SHORT).show();
+//                         selectedAttribute = animals[i];
+//                     }
+//                 });
+//
+//            }
+//        });
+//
+//        clasBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                builder.setTitle("Select an classifier");
+//                builder.setSingleChoiceItems(classifiers.toArray(new String[classifiers.size()]), checkedItem, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        Toast.makeText(getActivity(), "Selected an classifier", Toast.LENGTH_SHORT).show();
+//                        selectedClassifier = classifiers.get(i);
+//                        clasBtn.setText(selectedClassifier);
+//                    }
+//                });
+//            }
+//        });
         return  mView;
     }
 
-    private class LongOperation extends AsyncTask<String, Void, String> {
+    @Override
+    public void onClick(View view) {
+
+        builder = new AlertDialog.Builder(getActivity());
+
+        switch (view.getId()) {
+            case R.id.filter_chart_area_btn:
+                Toast.makeText(getActivity(), "Area button clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.filter_chart_attribute_btn:
+                Toast.makeText(getActivity(), "Attribute button clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.filter_chart_classifier_btn:
+                Toast.makeText(getActivity(), "Classifier button clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.filter_chart_color_btn:
+                Toast.makeText(getActivity(), "Color button clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.filter_chart_level_btn:
+                Toast.makeText(getActivity(), "Level button clicked", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+
+    private class FilterProgressOperation extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
+
             progressDialog = new ProgressDialog(getActivity());
+            Log.d(TAG, "progressDialog getActivity");
             progressDialog.setTitle("Receiving and data from AURIN");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
