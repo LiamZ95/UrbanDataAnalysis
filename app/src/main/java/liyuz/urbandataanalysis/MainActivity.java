@@ -104,10 +104,15 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewShown() {
                 currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
+                    Toast.makeText(getApplicationContext(), "Redirect to Data List", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
+//                            .add(currentShownFragment, "currentFragment")
+//                            .addToBackStack("currentFragment")
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
+                            .addToBackStack(null)
                             .commit();
                 }
+
             }
 
             @Override
@@ -128,37 +133,53 @@ public class MainActivity extends AppCompatActivity
             @Override
             // This function
             public boolean onQueryTextChange(String newText) {
-                ListFragment searchFragment = (ListFragment) getCurrentFragment();
-                if (newText != null && !newText.isEmpty()) {
-                    String validText = newText.toLowerCase();
-                    ArrayList<Capability> allCaps = new ArrayList<>(AllDataSets.capList);
-                    ArrayList<Capability> targetCaps = new ArrayList<>();
+                Fragment currentShownFragment = getCurrentFragment();
+                if (!(currentShownFragment instanceof ListFragment)) {
+                    if (currentShownFragment.isAdded()) {
 
-                    String[] inputKeywordsArray;
-                    if (validText.contains(" ")) {
-                        inputKeywordsArray = validText.split(" ");
-                    } else {
-                        inputKeywordsArray = new String[]{validText};
                     }
+                    Toast.makeText(getApplicationContext(), "Redirect to Data List", Toast.LENGTH_SHORT).show();
+                    mainFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
+//                            .add(currentShownFragment, "currentFragment")
+//                            .addToBackStack("currentFragment")
+                            .addToBackStack(null)
+                            .commit();
+                }
+                else {
+                    ListFragment searchFragment = (ListFragment) getCurrentFragment();
+                    if (newText != null && !newText.isEmpty()) {
+                        String validText = newText.toLowerCase();
+                        ArrayList<Capability> allCaps = new ArrayList<>(AllDataSets.capList);
+                        ArrayList<Capability> targetCaps = new ArrayList<>();
 
-                    for (Capability cap : allCaps) {
-                        Boolean isTarget = false;
-                        String capKw = cap.capKeywords.toLowerCase();
-                        for (String inputKw : inputKeywordsArray) {
-                            if (capKw.contains(inputKw)) {
-                                isTarget = true;
+                        String[] inputKeywordsArray;
+                        if (validText.contains(" ")) {
+                            inputKeywordsArray = validText.split(" ");
+                        } else {
+                            inputKeywordsArray = new String[]{validText};
+                        }
+
+                        for (Capability cap : allCaps) {
+                            Boolean isTarget = false;
+                            String capKw = cap.capKeywords.toLowerCase();
+                            for (String inputKw : inputKeywordsArray) {
+                                if (capKw.contains(inputKw)) {
+                                    isTarget = true;
+                                }
+                            }
+                            if (isTarget) {
+                                targetCaps.add(cap);
                             }
                         }
-                        if (isTarget) {
-                            targetCaps.add(cap);
-                        }
+                        // Update list view
+                        searchFragment.changeList(targetCaps);
+                    } else {
+                        // Restore
+                        searchFragment.restoreList();
                     }
-                    // Update list view
-                    searchFragment.changeList(targetCaps);
-                } else {
-                    // Restore
-                    searchFragment.restoreList();
                 }
+
                 return true;
             }
         });
@@ -180,6 +201,7 @@ public class MainActivity extends AppCompatActivity
                     super.onBackPressed();
                 }
                 else {
+                    // !homeFlag means current fragment is at listFragment and the back is not pressed before
                     if (!homeFlag) {
                         homeFlag = true;
                         Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();

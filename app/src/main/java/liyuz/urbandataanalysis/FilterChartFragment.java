@@ -65,6 +65,8 @@ public class FilterChartFragment extends Fragment {
 
     private int checkedItem = 0;
 
+    private String TAG = getClass().getSimpleName() + "### ";
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -108,6 +110,9 @@ public class FilterChartFragment extends Fragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_filter_chart, container, false);
 
+        LongOperation myTask = null;
+        myTask = new LongOperation();
+        myTask.execute();
 
 //        areaBtn = (Button) mView.findViewById(R.id.filter_chart_area_btn);
         attrBtn = (Button) mView.findViewById(R.id.filter_chart_attribute_btn);
@@ -175,6 +180,7 @@ public class FilterChartFragment extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             sendRequest();
+            Log.d(TAG, "Sent request");
             return null;
         }
 
@@ -199,6 +205,8 @@ public class FilterChartFragment extends Fragment {
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
                             "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
+                    Log.d(TAG, url.toString());
+
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(8000);
