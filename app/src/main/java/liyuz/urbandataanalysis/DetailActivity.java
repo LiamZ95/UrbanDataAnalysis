@@ -59,7 +59,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         chartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Going to chart", Toast.LENGTH_SHORT).show();
                 Fragment chartFragment = new FilterChartFragment();
                 detailFragmentManager.beginTransaction()
                         .add(new DetailListFragment(), "previousFragment")
@@ -72,7 +71,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Going to map", Toast.LENGTH_SHORT).show();
 //                Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
 //                intent.putExtra("SelectedCapabilityForFilter", selectedCap);
 //                startActivity(intent);

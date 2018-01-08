@@ -1,7 +1,6 @@
 package liyuz.urbandataanalysis;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,12 +14,12 @@ import android.webkit.WebSettings;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Web2Fragment.OnFragmentInteractionListener} interface
+ * {@link WebFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Web2Fragment#newInstance} factory method to
+ * Use the {@link WebFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Web2Fragment extends Fragment {
+public class WebFragment extends Fragment {
     private WebView webView;
     private final String TAG = getClass().getSimpleName();
 
@@ -33,13 +32,13 @@ public class Web2Fragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public Web2Fragment() {
+    public WebFragment() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static Web2Fragment newInstance(String param1) {
-        Web2Fragment fragment = new Web2Fragment();
+    public static WebFragment newInstance(String param1) {
+        WebFragment fragment = new WebFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);

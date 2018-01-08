@@ -60,5 +60,25 @@
         android:layout_height="wrap_content"
         android:text="Touch to select"/>
 
+    <TextView
+        android:id="@+id/seek_progress_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Opacity: 70%"/>
+    <SeekBar
+        android:layout_marginTop="20dp"
+        android:id="@+id/filter_chart_seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="70" />
+
+    <Button
+        android:id="@+id/filter_chart_show_btn"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="show"/>
+
 
 </LinearLayout>

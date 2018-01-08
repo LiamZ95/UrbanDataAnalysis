@@ -4,6 +4,7 @@ package liyuz.urbandataanalysis;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -40,6 +43,9 @@ public class FilterChartFragment extends Fragment {
     private Button classBtn;
     private Button lvlBtn;
     private Button colorBtn;
+    private SeekBar seekBar;
+    private Button showBtn;
+    private TextView progressTv;
 
     private ProgressDialog progressDialog;
 
@@ -51,8 +57,9 @@ public class FilterChartFragment extends Fragment {
 
     private String selectedAttribute = "No attribute";
     private String selectedClassifier = "No classifier";
-    private String selectedLevel;
-    private String selectedColor;
+    private String selectedLevel = "1";
+    private String selectedColor = "Red";
+    private int selectedOpacity = 70;
 
     public static final int SHOW_RESPONSE = 0;
 
@@ -90,6 +97,9 @@ public class FilterChartFragment extends Fragment {
         classBtn = (Button) mView.findViewById(R.id.filter_chart_classifier_btn);
         lvlBtn = (Button) mView.findViewById(R.id.filter_chart_level_btn);
         colorBtn = (Button) mView.findViewById(R.id.filter_chart_color_btn);
+        seekBar = (SeekBar) mView.findViewById(R.id.filter_chart_seek_bar);
+        progressTv = (TextView) mView.findViewById(R.id.seek_progress_tv);
+        showBtn = (Button) mView.findViewById(R.id.filter_chart_show_btn);
 
         // Show progress dialog
 //        FilterProgressOperation myTask = null;
@@ -167,7 +177,7 @@ public class FilterChartFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Select a class level");
 
-                builder.setSingleChoiceItems(levels, classCheckedItem, new DialogInterface.OnClickListener() {
+                builder.setSingleChoiceItems(levels, lvlCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         selectedLevel = levels[i];
@@ -222,34 +232,48 @@ public class FilterChartFragment extends Fragment {
             }
         });
 
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                String tvContent = "Select Opacity: " + i + "%";
+                selectedOpacity = i;
+                progressTv.setText(tvContent);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        showBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ChartSettings.selectedAttribute = selectedAttribute;
+                ChartSettings.selectedClassifier = selectedClassifier;
+                ChartSettings.selectedLevel = selectedLevel;
+                ChartSettings.selectedColor = selectedColor;
+                ChartSettings.selectedOpacity = selectedOpacity;
+
+                Log.d(TAG + "attr: ", selectedAttribute);
+                Log.d(TAG + "class", selectedClassifier);
+                Log.d(TAG + "lvl", selectedLevel);
+                Log.d(TAG + "color", selectedColor);
+                Log.d(TAG + "op", String.valueOf(selectedOpacity));
+
+                Intent intent = new Intent(getActivity(), ChartActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return  mView;
     }
-
-//    @Override
-//    public void onClick(View view) {
-//
-//        builder = new AlertDialog.Builder(getActivity());
-//
-//        switch (view.getId()) {
-//            case R.id.filter_chart_area_btn:
-//                Toast.makeText(getActivity(), "Area button clicked", Toast.LENGTH_SHORT).show();
-//                break;
-//            case R.id.filter_chart_attribute_btn:
-//                Toast.makeText(getActivity(), "Attribute button clicked", Toast.LENGTH_SHORT).show();
-////                builder.setTitle("Choose an attribute");
-//                break;
-//            case R.id.filter_chart_classifier_btn:
-//                Toast.makeText(getActivity(), "Classifier button clicked", Toast.LENGTH_SHORT).show();
-//                break;
-//            case R.id.filter_chart_color_btn:
-//                Toast.makeText(getActivity(), "Color button clicked", Toast.LENGTH_SHORT).show();
-//                break;
-//            case R.id.filter_chart_level_btn:
-//                Toast.makeText(getActivity(), "Level button clicked", Toast.LENGTH_SHORT).show();
-//                break;
-//        }
-//    }
 
 
     private class FilterProgressOperation extends AsyncTask<String, Void, String> {
@@ -263,8 +287,8 @@ public class FilterChartFragment extends Fragment {
             progressDialog.setCancelable(false);
             progressDialog.show();
 
-            attributes.add("No attributes");
-            classifiers.add("No classifier");
+            attributes.add("No Attributes");
+            classifiers.add("No Classifier");
         }
 
         @Override
@@ -341,8 +365,8 @@ public class FilterChartFragment extends Fragment {
             String attribute;
             String classifier;
 
-            attributes.add("No attribute");
-            classifiers.add("No classifier");
+            attributes.add("No Attribute");
+            classifiers.add("No Classifier");
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String nodeName = xmlPullParser.getName();
