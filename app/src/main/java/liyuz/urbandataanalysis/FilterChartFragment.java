@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +37,7 @@ public class FilterChartFragment extends Fragment {
 //    private Button areaBtn;
     private Button areaBtn;
     private Button attrBtn;
-    private Button clasBtn;
+    private Button classBtn;
     private Button lvlBtn;
     private Button colorBtn;
 
@@ -47,18 +45,21 @@ public class FilterChartFragment extends Fragment {
 
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<String> classifiers = new ArrayList<>();
+    private static String[] levels = {"1","2","3","4","5","6"};
     private static String[] colors = {"Red","Blue","Green","Gray","Purple"};
-    private static String[] level = {"1","2","3","4","5","6"};
     private String selectedState;
 
-    private String selectedAttribute;
-    private String selectedClassifier;
-    private String seletedLevel;
+    private String selectedAttribute = "No attribute";
+    private String selectedClassifier = "No classifier";
+    private String selectedLevel;
     private String selectedColor;
 
     public static final int SHOW_RESPONSE = 0;
 
-    private int checkedItem = 0;
+    private int attrCheckedItem = 0;
+    private int classCheckedItem = 0;
+    private int lvlCheckedItem = 0;
+    private int colorCheckedItem = 0;
 
     private String TAG = getClass().getSimpleName() + "### ";
 
@@ -86,18 +87,9 @@ public class FilterChartFragment extends Fragment {
 
         areaBtn = (Button) mView.findViewById(R.id.filter_chart_area_btn);
         attrBtn = (Button) mView.findViewById(R.id.filter_chart_attribute_btn);
-        clasBtn = (Button) mView.findViewById(R.id.filter_chart_classifier_btn);
+        classBtn = (Button) mView.findViewById(R.id.filter_chart_classifier_btn);
         lvlBtn = (Button) mView.findViewById(R.id.filter_chart_level_btn);
         colorBtn = (Button) mView.findViewById(R.id.filter_chart_color_btn);
-
-//        areaBtn.setOnClickListener(this);
-//        attrBtn.setOnClickListener(this);
-//        clasBtn.setOnClickListener(this);
-//        lvlBtn.setOnClickListener(this);
-//        colorBtn.setOnClickListener(this);
-
-        // Get data
-
 
         // Show progress dialog
 //        FilterProgressOperation myTask = null;
@@ -105,20 +97,18 @@ public class FilterChartFragment extends Fragment {
 //        myTask.execute();
 
         // Setting the pop up window for attributes selection
-
-        final String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
-
         attrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Select an attribute");
 
-                builder.setSingleChoiceItems(animals, checkedItem, new DialogInterface.OnClickListener() {
+                final String[] attrArray = attributes.toArray(new String[attributes.size()]);
+                builder.setSingleChoiceItems(attrArray, attrCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getActivity(), "Selected an attribute", Toast.LENGTH_SHORT).show();
-                        selectedAttribute = animals[i];
+                        selectedAttribute = attrArray[i];
+                        attrCheckedItem = i;
                     }
                 });
 
@@ -126,7 +116,7 @@ public class FilterChartFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
-
+                        attrBtn.setText(selectedAttribute);
                     }
                 });
 
@@ -137,21 +127,102 @@ public class FilterChartFragment extends Fragment {
                 dialog.show();
             }
         });
-//
-//        clasBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                builder.setTitle("Select an classifier");
-//                builder.setSingleChoiceItems(classifiers.toArray(new String[classifiers.size()]), checkedItem, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        Toast.makeText(getActivity(), "Selected an classifier", Toast.LENGTH_SHORT).show();
-//                        selectedClassifier = classifiers.get(i);
-//                        clasBtn.setText(selectedClassifier);
-//                    }
-//                });
-//            }
-//        });
+
+        // Setting the pop up window for classifier selection
+        classBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Select a classifier");
+
+                final String[] classArray = classifiers.toArray(new String[classifiers.size()]);
+                builder.setSingleChoiceItems(classArray, classCheckedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        selectedClassifier = classArray[i];
+                        classCheckedItem = i;
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Handles actions to perform when user confirm their operations
+                        classBtn.setText(selectedClassifier);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                // Create and show alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        // Setting the pop up window for class level selection
+        lvlBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Select a class level");
+
+                builder.setSingleChoiceItems(levels, classCheckedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        selectedLevel = levels[i];
+                        lvlCheckedItem = i;
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Handles actions to perform when user confirm their operations
+                        lvlBtn.setText(selectedLevel);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                // Create and show alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        // Setting the pop up window for color selection
+        colorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Select a color");
+
+                builder.setSingleChoiceItems(colors, colorCheckedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        selectedColor = colors[i];
+                        colorCheckedItem = i;
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Handles actions to perform when user confirm their operations
+                        colorBtn.setText(selectedColor);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                // Create and show alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+
         return  mView;
     }
 
@@ -269,6 +340,9 @@ public class FilterChartFragment extends Fragment {
 
             String attribute;
             String classifier;
+
+            attributes.add("No attribute");
+            classifiers.add("No classifier");
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String nodeName = xmlPullParser.getName();

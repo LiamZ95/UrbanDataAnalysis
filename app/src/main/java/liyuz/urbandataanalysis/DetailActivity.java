@@ -51,7 +51,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         mapBtn = (Button) findViewById(R.id.detail_activity_map_btn);
 
         // Set default fragment in the activity
-        listFragment = new DetailListFragment();
+        listFragment = new DetailInfoFragment();
         detailFragmentManager.beginTransaction()
                 .replace(R.id.detail_activity_container, listFragment)
                 .commit();
