@@ -261,12 +261,15 @@ public class FilterChartFragment extends Fragment {
                 ChartSettings.selectedColor = selectedColor;
                 ChartSettings.selectedOpacity = selectedOpacity;
 
-                Log.d(TAG + "attr: ", selectedAttribute);
-                Log.d(TAG + "class", selectedClassifier);
-                Log.d(TAG + "lvl", selectedLevel);
-                Log.d(TAG + "color", selectedColor);
-                Log.d(TAG + "op", String.valueOf(selectedOpacity));
+                Toast.makeText(getActivity(), "Show clicked", Toast.LENGTH_SHORT).show();
 
+                Log.i(TAG + "attr: ", selectedAttribute);
+                Log.i(TAG + "class", selectedClassifier);
+                Log.i(TAG + "lvl", selectedLevel);
+                Log.i(TAG + "color", selectedColor);
+                Log.i(TAG + "op", String.valueOf(selectedOpacity));
+
+                // Show chart in a new activity
                 Intent intent = new Intent(getActivity(), ChartActivity.class);
                 startActivity(intent);
             }
@@ -281,7 +284,6 @@ public class FilterChartFragment extends Fragment {
         protected void onPreExecute() {
 
             progressDialog = new ProgressDialog(getActivity());
-            Log.d(TAG, "progressDialog getActivity");
             progressDialog.setTitle("Receiving and data from AURIN");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
@@ -293,7 +295,7 @@ public class FilterChartFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            sendRequest();
+
             Log.d(TAG, "Sent request");
             return null;
         }

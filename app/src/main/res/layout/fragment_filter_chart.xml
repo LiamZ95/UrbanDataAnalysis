@@ -6,6 +6,8 @@
     tools:context="liyuz.urbandataanalysis.FilterChartFragment">
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Area"/>
@@ -17,6 +19,8 @@
         android:text="Touch to select"/>
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Attribute"/>
@@ -28,6 +32,8 @@
         android:text="Touch to select"/>
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Classifier"/>
@@ -39,6 +45,8 @@
         android:text="Touch to select"/>
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Class Level"/>
@@ -50,6 +58,8 @@
         android:text="Touch to select"/>
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Color Collection"/>
@@ -61,6 +71,8 @@
         android:text="Touch to select"/>
 
     <TextView
+        android:layout_marginTop="10dp"
+        android:paddingStart="10dp"
         android:id="@+id/seek_progress_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
