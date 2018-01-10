@@ -2,12 +2,8 @@ package liyuz.urbandataanalysis;
 
 
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 public class ListFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
@@ -76,7 +70,7 @@ public class ListFragment extends Fragment {
 
                 Capability selectedCap = fragmentCapList.get(i);
 
-                SelectedCap.seletedCap = selectedCap;
+                SelectedData.seletedCap = selectedCap;
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
 //                intent.putExtra("SelectedCapability", selectedCap);

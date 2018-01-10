@@ -35,7 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class FilterChartFragment extends Fragment {
+public class DetailFilterFragment extends Fragment {
 
 //    private Button areaBtn;
     private Button areaBtn;
@@ -80,7 +80,7 @@ public class FilterChartFragment extends Fragment {
 //        }
 //    };
 
-    public FilterChartFragment() {
+    public DetailFilterFragment() {
         // Required empty public constructor
     }
 
@@ -308,7 +308,7 @@ public class FilterChartFragment extends Fragment {
 
     // sending the http request for type descriptions of certain data set
     private void sendRequest() {
-        final String typename = SelectedCap.seletedCap.capName;
+        final String typename = SelectedData.seletedCap.capName;
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,8 +16,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
     private String TAG = getClass().getSimpleName() + ": ";
@@ -45,7 +42,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         detailFragmentManager = getSupportFragmentManager();
 
 //        selectedCap = (Capability) intent.getSerializableExtra("SelectedCapability");
-        selectedCap = SelectedCap.seletedCap;
+        selectedCap = SelectedData.seletedCap;
 
         chartBtn = (Button) findViewById(R.id.detail_activity_chart_btn);
         mapBtn = (Button) findViewById(R.id.detail_activity_map_btn);
@@ -59,7 +56,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         chartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment chartFragment = new FilterChartFragment();
+                Fragment chartFragment = new DetailFilterFragment();
                 detailFragmentManager.beginTransaction()
                         .add(new DetailListFragment(), "previousFragment")
                         .addToBackStack("previousFragment")

@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -42,7 +41,7 @@ public class DetailInfoFragment extends Fragment {
         infoTv51 = mView.findViewById(R.id.detail_info_tv5_1);
         infoTv52 = mView.findViewById(R.id.detail_info_tv5_2);
 
-        selectedCap = SelectedCap.seletedCap;
+        selectedCap = SelectedData.seletedCap;
         String[] cornerList = selectedCap.capCorners.split(" ");
         Double[] cornerListRounded = new Double[]{roundOff(cornerList[0]), roundOff(cornerList[1]),
                 roundOff(cornerList[2]), roundOff(cornerList[3])};
