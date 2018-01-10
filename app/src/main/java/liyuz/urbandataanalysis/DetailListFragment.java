@@ -31,17 +31,17 @@ public class DetailListFragment extends Fragment {
         View mView = inflater.inflate(R.layout.fragment_detail_list, container, false);
         detailLv = (ListView) mView.findViewById(R.id.detail_fragment_list);
 
-        selectedCap = SelectedData.seletedCap;
+        selectedCap = SelectedData.selectedCap;
 
 
         String[] cornerList = selectedCap.capCorners.split(" ");
         Double[] cornerListRounded = new Double[]{roundOff(cornerList[0]), roundOff(cornerList[1]),
                 roundOff(cornerList[2]), roundOff(cornerList[3])};
 
-//        SelectedData.selectedBbox.setLowerLa();
-//        SelectedData.selectedBbox.setLowerLon();
-//        SelectedData.selectedBbox.setHigherLa();
-//        SelectedData.selectedBbox.setHigherLon();
+//        SelectedData.selectedBBox.setLowerLa();
+//        SelectedData.selectedBBox.setLowerLon();
+//        SelectedData.selectedBBox.setHigherLa();
+//        SelectedData.selectedBBox.setHigherLon();
 
         String cornersContent = Arrays.toString(cornerListRounded);
 

@@ -14,8 +14,8 @@ public class Capability implements Serializable{
     String capOrganization = "No organization";
     String capGeoName = "No geo type";
     String capKeywords;
-    BBOX capBbox = new BBOX();
+    BBox capBBox = new BBox();
     String capCorners = "No bounding box";
-//    BBOX capBbox = "No bounding box";
+//    BBox capBBox = "No bounding box";
     int image_id;
 }

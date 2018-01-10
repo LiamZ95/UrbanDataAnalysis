@@ -345,7 +345,10 @@ public class MainActivity extends AppCompatActivity
             String abstracts = "";
             String organization = "";
             String geoName = "";
-            BBOX bbox = new BBOX();
+            Double llo = 0.0;
+            Double lla = 0.0;
+            Double hlo = 0.0;
+            Double hla = 0.0;
             String keywordsStr = "";
             String corners = "";
 
@@ -400,16 +403,16 @@ public class MainActivity extends AppCompatActivity
                             corners += " ";
 
                             String[] lowerCorner = temp1.split(" ");
-                            bbox.setLowerLon(Double.parseDouble(lowerCorner[0]));
-                            bbox.setLowerLa(Double.parseDouble(lowerCorner[1]));
+                            llo = Double.parseDouble(lowerCorner[0]);
+                            lla = Double.parseDouble(lowerCorner[1]);
                         }
                         else if ("ows:UpperCorner".equals(nodeName)){
                             String temp2 = safeNextText(xmlPullParser);
                             corners += temp2;
 
                             String[] upperCorner = temp2.split(" ");
-                            bbox.setHigherLon(Double.parseDouble(upperCorner[0]));
-                            bbox.setHigherLa(Double.parseDouble(upperCorner[1]));
+                            hlo = Double.parseDouble(upperCorner[0]);
+                            hla = Double.parseDouble(upperCorner[1]);
                         }
                         break;
                     }
@@ -433,10 +436,10 @@ public class MainActivity extends AppCompatActivity
 //                            Log.i("Corners", corners);
                             corners = "";
 
-                            cap.capBbox.setHigherLa(bbox.getHigherLa());
-                            cap.capBbox.setHigherLon(bbox.getHigherLon());
-                            cap.capBbox.setLowerLa(bbox.getLowerLa());
-                            cap.capBbox.setLowerLon(bbox.getLowerLon());
+                            cap.capBBox.setHigherLa(hla);
+                            cap.capBBox.setHigherLon(hlo);
+                            cap.capBBox.setLowerLa(lla);
+                            cap.capBBox.setLowerLon(llo);
                             // set the organization logo for each capability
                             switch (organization){
                                 case "Government of New South Wales - Department of Planning and Environment":

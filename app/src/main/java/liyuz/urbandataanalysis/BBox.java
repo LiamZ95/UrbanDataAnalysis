@@ -5,7 +5,7 @@ package liyuz.urbandataanalysis;
  */
 import java.io.Serializable;
 
-public class BBOX implements Serializable{
+public class BBox implements Serializable{
     //private String name;
     private double lowerLon = 0.0;
     private double higherLon = 0.0;
@@ -13,11 +13,11 @@ public class BBOX implements Serializable{
     private double higherLa = 0.0;
 
     // constructors function
-    public BBOX(){
+    public BBox(){
 
     }
 
-    public BBOX(double lowerLon, double higherLon, double lowerLa, double higherLa){
+    public BBox(double lowerLon, double higherLon, double lowerLa, double higherLa){
         this.lowerLon = lowerLon;
         this.higherLon = higherLon;
         this.lowerLa = lowerLa;

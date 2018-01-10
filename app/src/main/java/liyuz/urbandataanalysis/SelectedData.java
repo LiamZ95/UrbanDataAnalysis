@@ -5,6 +5,6 @@ package liyuz.urbandataanalysis;
  */
 
 class SelectedData {
-    static Capability seletedCap;
-    static BBOX selectedBbox;
+    static Capability selectedCap;
+    static BBox selectedBBox;
 }

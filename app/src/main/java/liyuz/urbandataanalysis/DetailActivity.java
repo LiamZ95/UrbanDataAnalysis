@@ -42,7 +42,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         detailFragmentManager = getSupportFragmentManager();
 
 //        selectedCap = (Capability) intent.getSerializableExtra("SelectedCapability");
-        selectedCap = SelectedData.seletedCap;
+        selectedCap = SelectedData.selectedCap;
 
         chartBtn = (Button) findViewById(R.id.detail_activity_chart_btn);
         mapBtn = (Button) findViewById(R.id.detail_activity_map_btn);
@@ -81,10 +81,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Get the capability coordinates
-        Double lla = selectedCap.capBbox.getLowerLa();
-        Double hla = selectedCap.capBbox.getHigherLa();
-        Double llo = selectedCap.capBbox.getLowerLon();
-        Double hlo = selectedCap.capBbox.getHigherLon();
+        Double lla = selectedCap.capBBox.getLowerLa();
+        Double hla = selectedCap.capBBox.getHigherLa();
+        Double llo = selectedCap.capBBox.getLowerLon();
+        Double hlo = selectedCap.capBBox.getHigherLon();
 
         // Calculate the center of capability
         LatLng center = new LatLng((lla+hla)/2.0,(llo+hlo)/2.0);

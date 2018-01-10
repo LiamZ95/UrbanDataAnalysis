@@ -61,12 +61,12 @@ public class DetailFilterFragment extends Fragment {
     private String selectedColor = "Red";
     private int selectedOpacity = 70;
 
-    public static final int SHOW_RESPONSE = 0;
-
     private int attrCheckedItem = 0;
     private int classCheckedItem = 0;
     private int lvlCheckedItem = 0;
     private int colorCheckedItem = 0;
+
+    private Boolean hasSelectedOtherBBox = false;
 
     private String TAG = getClass().getSimpleName() + "### ";
 
@@ -269,6 +269,10 @@ public class DetailFilterFragment extends Fragment {
                 Log.i(TAG + "color", selectedColor);
                 Log.i(TAG + "op", String.valueOf(selectedOpacity));
 
+                if (!hasSelectedOtherBBox) {
+                    SelectedData.selectedBBox = SelectedData.selectedCap.capBBox;
+                }
+
                 // Show chart in a new activity
                 Intent intent = new Intent(getActivity(), ChartActivity.class);
                 startActivity(intent);
@@ -289,8 +293,8 @@ public class DetailFilterFragment extends Fragment {
             progressDialog.setCancelable(false);
             progressDialog.show();
 
-            attributes.add("No Attributes");
-            classifiers.add("No Classifier");
+//            attributes.add("No Attributes");
+//            classifiers.add("No Classifier");
         }
 
         @Override
@@ -308,7 +312,7 @@ public class DetailFilterFragment extends Fragment {
 
     // sending the http request for type descriptions of certain data set
     private void sendRequest() {
-        final String typename = SelectedData.seletedCap.capName;
+        final String typename = SelectedData.selectedCap.capName;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -367,8 +371,8 @@ public class DetailFilterFragment extends Fragment {
             String attribute;
             String classifier;
 
-            attributes.add("No Attribute");
-            classifiers.add("No Classifier");
+//            attributes.add("No Attribute");
+//            classifiers.add("No Classifier");
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String nodeName = xmlPullParser.getName();
@@ -435,6 +439,10 @@ public class DetailFilterFragment extends Fragment {
             String data = stringBuilder.toString();
             Log.d(TAG, "All data read from local xml file");
             parseXML(data);
+
+            for (String classifier : classifiers) {
+                Log.i(TAG, classifier);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

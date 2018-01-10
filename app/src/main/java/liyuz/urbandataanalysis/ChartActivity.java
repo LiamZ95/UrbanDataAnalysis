@@ -15,10 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
@@ -28,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ChartActivity extends AppCompatActivity {
+    private final String TAG = getClass().getSimpleName() + "###";
     private BarChart barChart;
     private Button btn;
     private ArrayList<String> attributes;
@@ -51,19 +49,22 @@ public class ChartActivity extends AppCompatActivity {
 //        myTask.execute();
 
 
-        final String typeName = SelectedData.seletedCap.capName;
-        final String geoName = SelectedData.seletedCap.capGeoName;
-        final double lla = SelectedData.selectedBbox.getLowerLa();
-        final double llo = SelectedData.selectedBbox.getLowerLon();
-        final double hla = SelectedData.selectedBbox.getHigherLa();
-        final double hlo = SelectedData.selectedBbox.getHigherLon();
+        final String typeName = SelectedData.selectedCap.capName;
+        final String geoName = SelectedData.selectedCap.capGeoName;
+
+        final double lla = SelectedData.selectedBBox.getLowerLa();
+        final double llo = SelectedData.selectedBBox.getLowerLon();
+        final double hla = SelectedData.selectedBBox.getHigherLa();
+        final double hlo = SelectedData.selectedBBox.getHigherLon();
 
         String url = "http://openapi.aurin.org.au/wfs?" +
                 "request=GetFeature&service=WFS&version=1.1.0&" +
                 "TypeName="+ typeName+ "&" +
-                "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBOX" +
+                "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
                 "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
                 + ChartSettings.selectedAttribute+","+ ChartSettings.selectedClassifier;
+
+        Log.i(TAG, url);
 
     }
 
@@ -90,12 +91,12 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void sendRequest() {
-        final String typeName = SelectedData.seletedCap.capName;
-        final String geoName = SelectedData.seletedCap.capGeoName;
-        final double lla = SelectedData.selectedBbox.getLowerLa();
-        final double llo = SelectedData.selectedBbox.getLowerLon();
-        final double hla = SelectedData.selectedBbox.getHigherLa();
-        final double hlo = SelectedData.selectedBbox.getHigherLon();
+        final String typeName = SelectedData.selectedCap.capName;
+        final String geoName = SelectedData.selectedCap.capGeoName;
+        final double lla = SelectedData.selectedBBox.getLowerLa();
+        final double llo = SelectedData.selectedBBox.getLowerLon();
+        final double hla = SelectedData.selectedBBox.getHigherLa();
+        final double hlo = SelectedData.selectedBBox.getHigherLon();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -109,7 +110,7 @@ public class ChartActivity extends AppCompatActivity {
                     URL url = new URL("http://openapi.aurin.org.au/wfs?" +
                             "request=GetFeature&service=WFS&version=1.1.0&" +
                             "TypeName="+ typeName+ "&" +
-                            "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBOX" +
+                            "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
                             "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
                             + ChartSettings.selectedAttribute+","+ ChartSettings.selectedClassifier);
 

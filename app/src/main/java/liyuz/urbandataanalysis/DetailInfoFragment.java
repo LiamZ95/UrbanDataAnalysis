@@ -41,7 +41,7 @@ public class DetailInfoFragment extends Fragment {
         infoTv51 = mView.findViewById(R.id.detail_info_tv5_1);
         infoTv52 = mView.findViewById(R.id.detail_info_tv5_2);
 
-        selectedCap = SelectedData.seletedCap;
+        selectedCap = SelectedData.selectedCap;
         String[] cornerList = selectedCap.capCorners.split(" ");
         Double[] cornerListRounded = new Double[]{roundOff(cornerList[0]), roundOff(cornerList[1]),
                 roundOff(cornerList[2]), roundOff(cornerList[3])};

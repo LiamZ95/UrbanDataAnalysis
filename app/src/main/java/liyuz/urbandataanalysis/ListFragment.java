@@ -70,7 +70,7 @@ public class ListFragment extends Fragment {
 
                 Capability selectedCap = fragmentCapList.get(i);
 
-                SelectedData.seletedCap = selectedCap;
+                SelectedData.selectedCap = selectedCap;
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
 //                intent.putExtra("SelectedCapability", selectedCap);
