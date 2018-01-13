@@ -30,15 +30,15 @@ public class DetailInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_detail_info, container, false);
 
-        infoTv11 = mView.findViewById(R.id.detail_info_tv1_1);
+//        infoTv11 = mView.findViewById(R.id.detail_info_tv1_1);
         infoTv12 = mView.findViewById(R.id.detail_info_tv1_2);
-        infoTv21 = mView.findViewById(R.id.detail_info_tv2_1);
+//        infoTv21 = mView.findViewById(R.id.detail_info_tv2_1);
         infoTv22 = mView.findViewById(R.id.detail_info_tv2_2);
-        infoTv31 = mView.findViewById(R.id.detail_info_tv3_1);
+//        infoTv31 = mView.findViewById(R.id.detail_info_tv3_1);
         infoTv32 = mView.findViewById(R.id.detail_info_tv3_2);
-        infoTv41 = mView.findViewById(R.id.detail_info_tv4_1);
+//        infoTv41 = mView.findViewById(R.id.detail_info_tv4_1);
         infoTv42 = mView.findViewById(R.id.detail_info_tv4_2);
-        infoTv51 = mView.findViewById(R.id.detail_info_tv5_1);
+//        infoTv51 = mView.findViewById(R.id.detail_info_tv5_1);
         infoTv52 = mView.findViewById(R.id.detail_info_tv5_2);
 
         selectedCap = SelectedData.selectedCap;
@@ -47,15 +47,15 @@ public class DetailInfoFragment extends Fragment {
                 roundOff(cornerList[2]), roundOff(cornerList[3])};
         String cornersContent = Arrays.toString(cornerListRounded);
 
-        infoTv11.setText("Title");
+//        infoTv11.setText("Title");
         infoTv12.setText(selectedCap.capTitle);
-        infoTv21.setText("Organization");
+//        infoTv21.setText("Organization");
         infoTv22.setText(selectedCap.capOrganization);
-        infoTv31.setText("Data type");
+//        infoTv31.setText("Data type");
         infoTv32.setText(selectedCap.capGeoName);
-        infoTv41.setText("Abstracts");
+//        infoTv41.setText("Abstracts");
         infoTv42.setText(selectedCap.capAbstracts);
-        infoTv51.setText("Bounding box");
+//        infoTv51.setText("Bounding box");
         infoTv52.setText(cornersContent);
 
         return mView;

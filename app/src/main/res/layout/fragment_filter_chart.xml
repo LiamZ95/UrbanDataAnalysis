@@ -6,6 +6,7 @@
     tools:context="liyuz.urbandataanalysis.DetailFilterFragment">
 
     <TextView
+        android:id="@+id/chart_filter_area_tv"
         android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:layout_width="match_parent"
@@ -16,9 +17,11 @@
         android:id="@+id/filter_chart_area_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touch to select"/>
+        android:text="Click to change"
+        android:textAllCaps="false"/>
 
     <TextView
+        android:id="@+id/chart_filter_attr_tv"
         android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:layout_width="match_parent"
@@ -29,9 +32,11 @@
         android:id="@+id/filter_chart_attribute_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touch to select"/>
+        android:text="Click to change"
+        android:textAllCaps="false"/>
 
     <TextView
+        android:id="@+id/chart_filter_class_tv"
         android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:layout_width="match_parent"
@@ -42,9 +47,11 @@
         android:id="@+id/filter_chart_classifier_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touch to select"/>
+        android:text="Click to change"
+        android:textAllCaps="false"/>
 
     <TextView
+        android:id="@+id/chart_filter_lvl_tv"
         android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:layout_width="match_parent"
@@ -55,9 +62,11 @@
         android:id="@+id/filter_chart_level_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touch to select"/>
+        android:text="Click to change"
+        android:textAllCaps="false"/>
 
     <TextView
+        android:id="@+id/chart_filter_color_tv"
         android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:layout_width="match_parent"
@@ -68,7 +77,8 @@
         android:id="@+id/filter_chart_color_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touch to select"/>
+        android:text="Click to change"
+        android:textAllCaps="false"/>
 
     <TextView
         android:layout_marginTop="10dp"
@@ -82,15 +92,24 @@
         android:id="@+id/filter_chart_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:progressTint="@color/colorPrimary"
         android:max="100"
-        android:progress="70" />
+        android:progress="70"
+
+        android:layout_marginBottom="10dp"/>
 
     <Button
         android:id="@+id/filter_chart_show_btn"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show"/>
+        android:background="@drawable/detail_btn"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="show"
+        android:layout_marginBottom="30dp"/>
 
 
 </LinearLayout>

@@ -1,0 +1,19 @@
+<xsd:schema xmlns:aurin="http://www.aurin.org.au" xmlns:gml="http://www.opengis.net/gml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.aurin.org.au">
+<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://openapi.aurin.org.au/schemas/gml/3.1.1/base/gml.xsd"/>
+<xsd:complexType name="datasource-INODE-UA_WISeR_internode_adelaide_free_wirelessType">
+<xsd:complexContent>
+<xsd:extension base="gml:AbstractFeatureType">
+<xsd:sequence>
+<xsd:element maxOccurs="1" minOccurs="1" name="objectid" nillable="true" type="xsd:int"/>
+<xsd:element maxOccurs="1" minOccurs="0" name="ogr_geometry" nillable="true" type="gml:GeometryPropertyType"/>
+<xsd:element maxOccurs="1" minOccurs="0" name="ap_name" nillable="true" type="xsd:string"/>
+<xsd:element maxOccurs="1" minOccurs="0" name="latitude" nillable="true" type="xsd:double"/>
+<xsd:element maxOccurs="1" minOccurs="0" name="longitude" nillable="true" type="xsd:double"/>
+<xsd:element maxOccurs="1" minOccurs="0" name="type" nillable="true" type="xsd:string"/>
+<xsd:element maxOccurs="1" minOccurs="0" name="bssid" nillable="true" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+<xsd:element name="datasource-INODE-UA_WISeR_internode_adelaide_free_wireless" substitutionGroup="gml:_Feature" type="aurin:datasource-INODE-UA_WISeR_internode_adelaide_free_wirelessType"/>
+</xsd:schema>

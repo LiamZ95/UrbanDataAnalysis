@@ -47,18 +47,20 @@ public class DetailFilterFragment extends Fragment {
     private Button showBtn;
     private TextView progressTv;
 
+    private TextView attributeTv, classifierTv, lvlTv, colorTv;
+
     private ProgressDialog progressDialog;
 
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<String> classifiers = new ArrayList<>();
     private static String[] levels = {"1","2","3","4","5","6"};
-    private static String[] colors = {"Red","Blue","Green","Gray","Purple"};
+    private static String[] colors = {"Material colors", "Red","Blue","Green","Gray","Purple"};
     private String selectedState;
 
-    private String selectedAttribute = "No attribute";
-    private String selectedClassifier = "No classifier";
-    private String selectedLevel = "1";
-    private String selectedColor = "Red";
+    private String selectedAttribute;
+    private String selectedClassifier;
+    private String selectedLevel;
+    private String selectedColor;
     private int selectedOpacity = 70;
 
     private int attrCheckedItem = 0;
@@ -68,7 +70,7 @@ public class DetailFilterFragment extends Fragment {
 
     private Boolean hasSelectedOtherBBox = false;
 
-    private String TAG = getClass().getSimpleName() + "### ";
+    private String TAG = getClass().getSimpleName() + "###";
 
 //    private Handler chartFragmentHandler = new Handler(){
 //        public void handleMessage(Message msg){
@@ -90,7 +92,33 @@ public class DetailFilterFragment extends Fragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_filter_chart, container, false);
 
+        // Load data
         openLocalFile();
+
+        // Values to be shown in textViews when the fragment is started
+        String preSelectedAttribute = attributes.get(0);
+        String preSelectedClassifier = classifiers.get(0);
+        String preSelectedLvl = levels[0];
+        String preSelectedColor = colors[0];
+
+        selectedAttribute = preSelectedAttribute;
+        selectedClassifier = preSelectedClassifier;
+        selectedLevel = preSelectedLvl;
+        selectedColor = preSelectedColor;
+
+        attributeTv = (TextView) mView.findViewById(R.id.chart_filter_attr_tv);
+        classifierTv = (TextView) mView.findViewById(R.id.chart_filter_class_tv);
+        lvlTv = (TextView) mView.findViewById(R.id.chart_filter_lvl_tv);
+        colorTv = (TextView) mView.findViewById(R.id.chart_filter_color_tv);
+
+        String attributeTvStr = "Selected Attribute: " + preSelectedAttribute;
+        attributeTv.setText(attributeTvStr);
+        String classifierTvStr = "Selected Classifier: " + preSelectedClassifier;
+        classifierTv.setText(classifierTvStr);
+        final String lvlTvStr = "Selected Class Level: " + preSelectedLvl;
+        lvlTv.setText(lvlTvStr);
+        String colorTvStr = "Selected Color Collection: " + preSelectedColor;
+        colorTv.setText(colorTvStr);
 
         areaBtn = (Button) mView.findViewById(R.id.filter_chart_area_btn);
         attrBtn = (Button) mView.findViewById(R.id.filter_chart_attribute_btn);
@@ -100,6 +128,11 @@ public class DetailFilterFragment extends Fragment {
         seekBar = (SeekBar) mView.findViewById(R.id.filter_chart_seek_bar);
         progressTv = (TextView) mView.findViewById(R.id.seek_progress_tv);
         showBtn = (Button) mView.findViewById(R.id.filter_chart_show_btn);
+
+        String typeName = SelectedData.selectedCap.capName;
+        String urlStr = "http://openapi.aurin.org.au/wfs?request=" +
+                "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typeName;
+        Log.i(TAG, urlStr);
 
         // Show progress dialog
 //        FilterProgressOperation myTask = null;
@@ -127,6 +160,8 @@ public class DetailFilterFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
                         attrBtn.setText(selectedAttribute);
+                        String tempStr = "Selected Attribute: " + selectedAttribute;
+                        attributeTv.setText(tempStr);
                     }
                 });
 
@@ -158,7 +193,9 @@ public class DetailFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        String temp = "Select Classifier: " + selectedClassifier;
                         classBtn.setText(selectedClassifier);
+                        classifierTv.setText(temp);
                     }
                 });
 
@@ -189,7 +226,10 @@ public class DetailFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        String temp = "Select Class Level: " + selectedLevel;
+                        lvlTv.setText(temp);
                         lvlBtn.setText(selectedLevel);
+
                     }
                 });
 
@@ -220,6 +260,8 @@ public class DetailFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        String temp = "Select Color Collection: " + selectedColor;
+                        colorTv.setText(temp);
                         colorBtn.setText(selectedColor);
                     }
                 });
@@ -263,11 +305,11 @@ public class DetailFilterFragment extends Fragment {
 
                 Toast.makeText(getActivity(), "Show clicked", Toast.LENGTH_SHORT).show();
 
-                Log.i(TAG + "attr: ", selectedAttribute);
-                Log.i(TAG + "class", selectedClassifier);
-                Log.i(TAG + "lvl", selectedLevel);
-                Log.i(TAG + "color", selectedColor);
-                Log.i(TAG + "op", String.valueOf(selectedOpacity));
+//                Log.i(TAG + "attr: ", selectedAttribute);
+//                Log.i(TAG + "class", selectedClassifier);
+//                Log.i(TAG + "lvl", selectedLevel);
+//                Log.i(TAG + "color", selectedColor);
+//                Log.i(TAG + "op", String.valueOf(selectedOpacity));
 
                 if (!hasSelectedOtherBBox) {
                     SelectedData.selectedBBox = SelectedData.selectedCap.capBBox;
@@ -293,8 +335,6 @@ public class DetailFilterFragment extends Fragment {
             progressDialog.setCancelable(false);
             progressDialog.show();
 
-//            attributes.add("No Attributes");
-//            classifiers.add("No Classifier");
         }
 
         @Override
@@ -400,11 +440,7 @@ public class DetailFilterFragment extends Fragment {
                                 Log.d("classifier", classifier);
                                 classifiers.add(classifier);
                             }
-                            else {
-                                classifier = xmlPullParser.getAttributeValue(null, "name");
-                                Log.d("classifier", classifier);
-                                classifiers.add(classifier);
-                            }
+
                         }
                         break;
                     }
@@ -428,7 +464,7 @@ public class DetailFilterFragment extends Fragment {
         AssetManager assetManager = getActivity().getApplicationContext().getAssets();
         try{
             InputStream in = assetManager
-                    .open("aurin-datasource-SA_Govt_RenewalSA-UA_WISeR_renewalsa_age_household_ref_person_2011.xml");
+                    .open("aurin-datasource-INODE-UA_WISeR_internode_adelaide_free_wireless.xml");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
