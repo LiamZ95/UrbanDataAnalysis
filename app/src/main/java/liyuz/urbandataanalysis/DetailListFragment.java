@@ -34,7 +34,7 @@ public class DetailListFragment extends Fragment {
         selectedCap = SelectedData.selectedCap;
 
 
-        String[] cornerList = selectedCap.capCorners.split(" ");
+                            String[] cornerList = selectedCap.capCorners.split(" ");
         Double[] cornerListRounded = new Double[]{roundOff(cornerList[0]), roundOff(cornerList[1]),
                 roundOff(cornerList[2]), roundOff(cornerList[3])};
 

@@ -422,22 +422,22 @@ public class DetailFilterFragment extends Fragment {
                             String type = xmlPullParser.getAttributeValue(null,"type");
                             if (type.equals("xsd:string")){
                                 attribute = xmlPullParser.getAttributeValue(null,"name");
-                                Log.d("attribute", attribute);
+//                                Log.d("attribute", attribute);
                                 attributes.add(attribute);
                             }
                             else if (type.equals("xsd:double")){
                                 classifier = xmlPullParser.getAttributeValue(null, "name");
-                                Log.d("classifier", classifier);
+//                                Log.d("classifier", classifier);
                                 classifiers.add(classifier);
                             }
                             else if (type.equals("xsd:float")){
                                 classifier = xmlPullParser.getAttributeValue(null, "name");
-                                Log.d("classifier", classifier);
+//                                Log.d("classifier", classifier);
                                 classifiers.add(classifier);
                             }
                             else if (type.equals("xsd:int")){
                                 classifier = xmlPullParser.getAttributeValue(null, "name");
-                                Log.d("classifier", classifier);
+//                                Log.d("classifier", classifier);
                                 classifiers.add(classifier);
                             }
 
@@ -473,7 +473,7 @@ public class DetailFilterFragment extends Fragment {
             }
 
             String data = stringBuilder.toString();
-            Log.d(TAG, "All data read from local xml file");
+//            Log.d(TAG, "All data read from local xml file");
             parseXML(data);
 
             for (String classifier : classifiers) {

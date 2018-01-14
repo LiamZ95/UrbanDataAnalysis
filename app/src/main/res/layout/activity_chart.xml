@@ -16,10 +16,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:background="@color/colorPrimary">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show more detail"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:paddingEnd="10dp"/>
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/chart_switch"
+            style="@style/SwitchCompatStyle"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:showDividers="middle"
-        android:divider="@drawable/divider_drawable"
-        android:layout_marginTop="10dp"
+
+        android:layout_marginTop="5dp"
         android:layout_weight="1">
 
         <LinearLayout

@@ -10,4 +10,7 @@
     <color name="grey">#7a7a7a</color>
     <color name="white">#FFFFFF</color>
     <color name="defaultGrey">#D3D3D3</color>
+    <color name="colorHigh">#d81b60</color>
+    <color name="colorHighLight">#ff5c8d</color>
+    <color name="colorHighDark">#a00037</color>
 </resources>
