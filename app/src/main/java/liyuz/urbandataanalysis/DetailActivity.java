@@ -56,6 +56,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         chartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Disable button after it is clicked
+                chartBtn.setEnabled(false);
+                mapBtn.setEnabled(true);
+
                 Fragment chartFragment = new DetailFilterFragment();
                 detailFragmentManager.beginTransaction()
                         .add(new DetailListFragment(), "previousFragment")
@@ -68,11 +72,16 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
-//                intent.putExtra("SelectedCapabilityForFilter", selectedCap);
-//                startActivity(intent);
+                // Disable button after it is clicked
+                mapBtn.setEnabled(false);
+                chartBtn.setEnabled(true);
 
-
+                Fragment mapFragment = new DetailMapFilterFragment();
+                detailFragmentManager.beginTransaction()
+                        .add(new DetailListFragment(), "previousFragment")
+                        .addToBackStack("previousFragment")
+                        .replace(R.id.detail_activity_container, mapFragment, mapFragment.getTag())
+                        .commit();
             }
         });
     }
@@ -106,5 +115,12 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .add(new LatLng(lla, hlo))
                 .add(new LatLng(lla, llo))
         );
+    }
+
+    @Override
+    public void onBackPressed() {
+        chartBtn.setEnabled(true);
+        mapBtn.setEnabled(true);
+        super.onBackPressed();
     }
 }

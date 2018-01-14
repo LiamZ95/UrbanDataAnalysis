@@ -1,6 +1,6 @@
 package liyuz.urbandataanalysis;
 
 public class ChartSettings {
-    static String selectedArea, selectedAttribute, selectedClassifier, selectedLevel, selectedColor;
-    static int selectedOpacity;
+    static String selectedChartArea, selectedChartAttribute, selectedChartClassifier, selectedChartLevel, selectedChartColor;
+    static int selectedChartOpacity;
 }

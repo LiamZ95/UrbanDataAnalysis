@@ -26,13 +26,13 @@
             android:text="Show more detail"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:textSize="15dp"
+            android:textSize="16dp"
             android:paddingEnd="10dp"/>
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/chart_switch"
             style="@style/SwitchCompatStyle"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
@@ -72,7 +72,7 @@
                 android:id="@+id/chart_x_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textColor="@color/black"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
@@ -103,7 +103,7 @@
                 android:id="@+id/chart_y_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
@@ -135,13 +135,33 @@
                 android:id="@+id/chart_attr_content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:textColor="@color/black"
                 android:layout_marginBottom="5dp"/>
         </LinearLayout>
+        
+        <net.cachapa.expandablelayout.ExpandableLayout
+            android:layout_marginTop="5dp"
+            android:id="@+id/chart_expandable_lo"
+            app:el_duration="1000"
+            app:el_expanded="false"
+            app:el_parallax="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
+            <TextView
+                android:id="@+id/expanded_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Detail information Detail information Detail information Detail information Detail information "
+                android:textColor="@color/white"
+                android:textSize="50sp"
+                android:layout_gravity="center"/>
+        </net.cachapa.expandablelayout.ExpandableLayout>
+
     </LinearLayout>
 
 </LinearLayout>

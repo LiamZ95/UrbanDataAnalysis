@@ -8,7 +8,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+
+import net.cachapa.expandablelayout.ExpandableLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,17 +53,19 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private ProgressDialog progressDialog;
 
     private TextView xTv, yTv, attrTv;
+    private SwitchCompat switchCompat;
+    private ExpandableLayout expandableLayout;
 
-    private String attributeTitle = ChartSettings.selectedAttribute;
-    private String classifierTitle = ChartSettings.selectedClassifier;
-    private final int handlerFlag = 0;
+    private String attributeTitle = ChartSettings.selectedChartAttribute;
+    private String classifierTitle = ChartSettings.selectedChartClassifier;
+    private final int HANDLERFLAG = 0;
 
     private int dataSetSize;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == handlerFlag) {
+            if (msg.what == HANDLERFLAG) {
                 visualizeChart(barChart);
             }
         }
@@ -84,16 +90,30 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         xTv = (TextView)findViewById(R.id.chart_x_content_tv);
         yTv = (TextView)findViewById(R.id.chart_y_content_tv);
         attrTv = (TextView)findViewById(R.id.chart_attr_content_tv);
+        switchCompat = (SwitchCompat) findViewById(R.id.chart_switch);
+        expandableLayout = (ExpandableLayout) findViewById(R.id.chart_expandable_lo);
 
         xTv.setText("objectid");
         yTv.setText(classifierTitle);
         attrTv.setText(attributeTitle);
 
-        //
+        // Set chart behaviour when bars are selected
         barChart.setOnChartValueSelectedListener(this);
+        // Set the action when switch is changed
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    expandableLayout.expand();
+                } else {
+                    expandableLayout.collapse();
+                }
+            }
+        });
 
     }
 
+    // Define task to execute when barChart item is selected
     @Override
     public void onValueSelected(Entry e, Highlight h) {
         int i = objectIdList.indexOf(e.getX());
@@ -115,6 +135,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     }
 
 
+    // Shown progress dialog
     private class LongOperation extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
@@ -130,7 +151,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 //            sendRequest();
             openLocalFile();
             Message message = new Message();
-            message.what = handlerFlag;
+            message.what = HANDLERFLAG;
             handler.sendMessage(message);
             return null;
         }
@@ -164,7 +185,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
                             "TypeName="+ typeName+ "&" +
                             "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
                             "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
-                            + ChartSettings.selectedAttribute+","+ ChartSettings.selectedClassifier);
+                            + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier);
 
                     Log.i("ChartUrl->", url.toString());
 
@@ -209,7 +230,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
                 "TypeName="+ typeName+ "&" +
                 "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
                 "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
-                + ChartSettings.selectedAttribute+","+ ChartSettings.selectedClassifier;
+                + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier;
 
         Log.i(TAG, url);
 
@@ -249,8 +270,8 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
                 String properties = jObject.getString("properties");
                 JSONObject propertyObj = new JSONObject(properties);
 
-                String selectedAttribute = ChartSettings.selectedAttribute;
-                String selectedClassifier = ChartSettings.selectedClassifier;
+                String selectedAttribute = ChartSettings.selectedChartAttribute;
+                String selectedClassifier = ChartSettings.selectedChartClassifier;
 
                 String attributeData = propertyObj.getString(selectedAttribute);
                 String classifierData = propertyObj.getString(selectedClassifier);
@@ -291,7 +312,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 //    }
 
 
-
+    // All setting about bar chart
     private void visualizeChart(BarChart b) {
         // Set background color
 //        b.setBackgroundColor(Color.parseColor("#00673d"));
@@ -330,8 +351,8 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         BarDataSet barDataSet = new BarDataSet(entryList, "Tap each entry to view attribute");
 
         // Set the bar color
-        if (ChartSettings.selectedColor != "Material colors") {
-            switch (ChartSettings.selectedColor) {
+        if (ChartSettings.selectedChartColor != "Material colors") {
+            switch (ChartSettings.selectedChartColor) {
                 case "Red":
                     barDataSet.setColors(Color.parseColor("#ff0000"));
                     break;
@@ -365,41 +386,5 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         b.invalidate();
 
     }
-
-//    private class MyEntry {
-//        private String attribute;
-//        private float objectId;
-//        private float classifier;
-//
-//        public MyEntry(String attribute, float objectId, float classifier) {
-//            this.attribute = attribute;
-//            this.objectId = objectId;
-//            this.classifier = classifier;
-//        }
-//
-//        public void setAttribute(String attribute) {
-//            this.attribute = attribute;
-//        }
-//
-//        public void setObjectId(float objectId) {
-//            this.objectId = objectId;
-//        }
-//
-//        public void setClassifier(float classifier) {
-//            this.classifier = classifier;
-//        }
-//
-//        public String getAttribute() {
-//            return attribute;
-//        }
-//
-//        public float getObjectId() {
-//            return objectId;
-//        }
-//
-//        public float getClassifier() {
-//            return classifier;
-//        }
-//    }
 
 }

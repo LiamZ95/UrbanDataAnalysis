@@ -6,7 +6,7 @@
     tools:context="liyuz.urbandataanalysis.DetailFilterFragment">
 
     <TextView
-        android:id="@+id/chart_filter_area_tv"
+        android:id="@+id/map_filter_area_tv"
         android:layout_marginTop="10dp"
         android:paddingStart="40dp"
         android:textSize="15sp"
@@ -16,7 +16,7 @@
         android:text="Select Area"/>
 
     <Button
-        android:id="@+id/filter_chart_area_btn"
+        android:id="@+id/filter_map_area_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Click to change"
@@ -28,7 +28,7 @@
         android:textAllCaps="false"/>
 
     <TextView
-        android:id="@+id/chart_filter_attr_tv"
+        android:id="@+id/map_filter_attr_tv"
         android:layout_marginTop="20dp"
         android:paddingStart="40dp"
         android:textSize="15sp"
@@ -38,7 +38,7 @@
         android:text="Select Attribute"/>
 
     <Button
-        android:id="@+id/filter_chart_attribute_btn"
+        android:id="@+id/filter_map_attribute_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Click to change"
@@ -50,7 +50,7 @@
         android:textAllCaps="false"/>
 
     <TextView
-        android:id="@+id/chart_filter_class_tv"
+        android:id="@+id/map_filter_class_tv"
         android:layout_marginTop="20dp"
         android:paddingStart="40dp"
         android:textSize="15sp"
@@ -60,7 +60,7 @@
         android:text="Select Classifier"/>
 
     <Button
-        android:id="@+id/filter_chart_classifier_btn"
+        android:id="@+id/filter_map_classifier_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Click to change"
@@ -72,7 +72,29 @@
         android:textAllCaps="false"/>
 
     <TextView
-        android:id="@+id/chart_filter_color_tv"
+        android:id="@+id/map_filter_lvl_tv"
+        android:layout_marginTop="20dp"
+        android:paddingStart="40dp"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="Select Class Level"/>
+
+    <Button
+        android:id="@+id/filter_map_level_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Click to change"
+        android:textColor="@color/white"
+        android:background="@drawable/filer_btn"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:textSize="20sp"
+        android:textAllCaps="false"/>
+
+    <TextView
+        android:id="@+id/map_filter_color_tv"
         android:layout_marginTop="20dp"
         android:paddingStart="40dp"
         android:textSize="15sp"
@@ -82,7 +104,7 @@
         android:text="Select Palette Color"/>
 
     <Button
-        android:id="@+id/filter_chart_color_btn"
+        android:id="@+id/filter_map_color_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Click to change"
@@ -97,14 +119,14 @@
         android:layout_marginTop="20dp"
         android:paddingStart="40dp"
         android:textSize="15sp"
-        android:id="@+id/seek_progress_tv"
+        android:id="@+id/map_seek_progress_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:text="Select Opacity: 70%"/>
     <SeekBar
         android:layout_marginTop="20dp"
-        android:id="@+id/filter_chart_seek_bar"
+        android:id="@+id/filter_map_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:progressTint="@color/colorPrimary"
@@ -114,7 +136,7 @@
         android:layout_marginBottom="10dp"/>
 
     <Button
-        android:id="@+id/filter_chart_show_btn"
+        android:id="@+id/filter_map_show_btn"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
