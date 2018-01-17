@@ -1,6 +1,7 @@
 package liyuz.urbandataanalysis;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -77,10 +78,12 @@ public class DetailMapFilterFragment extends Fragment {
 
     private String TAG = getClass().getSimpleName() + "###";
 
+    @SuppressLint("HandlerLeak")
     private Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == HANDLERFLAG) {
+
                 // Update UI
                 selectedAttribute = attributes.get(0);
                 selectedClassifier = classifiers.get(0);
@@ -312,7 +315,7 @@ public class DetailMapFilterFragment extends Fragment {
                 }
 
                 // Show chart in a new activity
-                Intent intent = new Intent(getActivity(), MapActivity.class);
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
                 startActivity(intent);
             }
         });
@@ -335,6 +338,8 @@ public class DetailMapFilterFragment extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             sendRequest();
+
+
             return null;
         }
 
@@ -359,7 +364,7 @@ public class DetailMapFilterFragment extends Fragment {
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
                             "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
-                    Log.d(TAG, url.toString());
+                    Log.i(TAG, url.toString());
 
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
@@ -379,11 +384,6 @@ public class DetailMapFilterFragment extends Fragment {
                     Message message = new Message();
                     message.what = HANDLERFLAG;
                     myHandler.sendMessage(message);
-
-//                    Message message = new Message();
-//                    message.what = SHOW_RESPONSE;
-//                    message.obj = data;
-//                    chartFragmentHandler.sendMessage(message);
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -429,6 +429,10 @@ public class DetailMapFilterFragment extends Fragment {
                                 classifiers.add(classifier);
                             }
                             else if (type.equals("xsd:int")){
+                                classifier = xmlPullParser.getAttributeValue(null, "name");
+                                classifiers.add(classifier);
+                            }
+                            else if (type.equals("xsd:decimal")){
                                 classifier = xmlPullParser.getAttributeValue(null, "name");
                                 classifiers.add(classifier);
                             }

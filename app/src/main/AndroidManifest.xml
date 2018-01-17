@@ -46,9 +46,7 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".DetailActivity" />
-        <activity android:name=".FilterActivity" />
         <activity android:name=".ChartActivity" />
-        <activity android:name=".MapActivity"></activity>
     </application>
 
 </manifest>

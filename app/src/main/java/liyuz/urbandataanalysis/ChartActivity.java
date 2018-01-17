@@ -1,5 +1,6 @@
 package liyuz.urbandataanalysis;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.res.AssetManager;
 import android.graphics.Color;
@@ -58,14 +59,15 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
     private String attributeTitle = ChartSettings.selectedChartAttribute;
     private String classifierTitle = ChartSettings.selectedChartClassifier;
-    private final int HANDLERFLAG = 0;
+    private final int HANDLER_FLAG = 0;
 
     private int dataSetSize;
 
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == HANDLERFLAG) {
+            if (msg.what == HANDLER_FLAG) {
                 visualizeChart(barChart);
             }
         }
@@ -151,7 +153,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 //            sendRequest();
             openLocalFile();
             Message message = new Message();
-            message.what = HANDLERFLAG;
+            message.what = HANDLER_FLAG;
             handler.sendMessage(message);
             return null;
         }
