@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity
                 });
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?service=WFS&version=1.1.0&request=GetCapabilities");
-                    Log.i("Main####", "Sent request to AURIN");
+//                    Log.i("Main####", "Sent request to AURIN");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     // Set big timeout for testing, was 8000
@@ -367,17 +367,15 @@ public class MainActivity extends AppCompatActivity
                         if ("Name".equals(nodeName)) {
                             // get the content after nodeName
                             name = safeNextText(xmlPullParser);
-//                            name = xmlPullParser.nextText();
-                            Log.i("Name", name);
+//                            Log.i("Name", name);
                         }
                         else if ("Title".equals(nodeName)){
                             title = safeNextText(xmlPullParser);
-//                            Log.i("Main###title", title);
                             String[] tempArray = title.split(" Data provider: ");
                             title = tempArray[0];
-                            Log.i("Title", title);
+//                            Log.i("Title", title);
                             organization = tempArray[1];
-                            Log.i("Organization", organization);
+//                            Log.i("Organization", organization);
                         }
                         else if ("Abstract".equals(nodeName)){
                             String abstracts1 = safeNextText(xmlPullParser);
@@ -431,13 +429,13 @@ public class MainActivity extends AppCompatActivity
                             cap.capTitle = title;
                             cap.capOrganization = organization;
                             cap.capAbstracts = abstracts;
-                            Log.i("Abstract: ", abstracts);
+
                             keywordsStr = keywordsStr.substring(2);
-                            Log.i("keywords", keywordsStr);
+
                             cap.capKeywords = keywordsStr;
                             keywordsStr = "";
                             cap.capGeoName = geoName;
-                            Log.i("GeoName", geoName);
+
                             cap.capCorners = corners;
 //                            Log.i("Corners", corners);
                             corners = "";
@@ -447,13 +445,17 @@ public class MainActivity extends AppCompatActivity
                             cap.capBBox.setLowerLa(lla);
                             cap.capBBox.setLowerLon(llo);
 
+//                            Log.i("Abstract: ", abstracts);
+//                            Log.i("keywords", keywordsStr);
+//                            Log.i("GeoName", geoName);
+
                             // set the organization logo for each capability
                             cap.image_id = getOrgLogo(organization);
 
                             if(! BigData.big_data.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
                                 capCount += 1;
-                                Log.i(TAG + "Total cap num: ", String.valueOf(capCount));
+//                                Log.i(TAG + "Total cap num: ", String.valueOf(capCount));
                             }
                         }
                         break;

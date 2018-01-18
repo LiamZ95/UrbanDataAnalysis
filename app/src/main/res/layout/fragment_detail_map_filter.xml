@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Select Area"/>
+        android:text="Select Area: None"/>
 
     <Button
         android:id="@+id/filter_map_area_btn"
@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Select Attribute"/>
+        android:text="Select Attribute: None"/>
 
     <Button
         android:id="@+id/filter_map_attribute_btn"
@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Select Classifier"/>
+        android:text="Select Classifier: None"/>
 
     <Button
         android:id="@+id/filter_map_classifier_btn"
@@ -79,7 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Select Class Level"/>
+        android:text="Select Class Level: None"/>
 
     <Button
         android:id="@+id/filter_map_level_btn"
@@ -101,7 +101,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Select Palette Color"/>
+        android:text="Select Palette Color: None"/>
 
     <Button
         android:id="@+id/filter_map_color_btn"

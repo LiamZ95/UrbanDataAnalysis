@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -30,7 +29,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.Authenticator;
-import java.net.ContentHandlerFactory;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
@@ -74,7 +72,7 @@ public class DetailMapFilterFragment extends Fragment {
     private int colorCheckedItem = 0;
 
     private Boolean hasSelectedOtherBBox = false;
-    private final int HANDLERFLAG = 0;
+    private final int HANDLER_FLAG = 0;
 
     private String TAG = getClass().getSimpleName() + "###";
 
@@ -82,7 +80,7 @@ public class DetailMapFilterFragment extends Fragment {
     private Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == HANDLERFLAG) {
+            if (msg.what == HANDLER_FLAG) {
 
                 // Update UI
                 selectedAttribute = attributes.get(0);
@@ -304,11 +302,11 @@ public class DetailMapFilterFragment extends Fragment {
                 MapSettings.selectedMapColor = selectedColor;
                 MapSettings.selectedMapOpacity = selectedOpacity;
 
-//                Log.i(TAG + "attr: ", selectedChartAttribute);
-//                Log.i(TAG + "class", selectedChartClassifier);
-//                Log.i(TAG + "lvl", selectedChartLevel);
-//                Log.i(TAG + "color", selectedChartColor);
-//                Log.i(TAG + "op", String.valueOf(selectedChartOpacity));
+                Log.i(TAG + "attr: ", selectedAttribute);
+                Log.i(TAG + "class", selectedClassifier);
+                Log.i(TAG + "lvl", selectedLevel);
+                Log.i(TAG + "color", selectedColor);
+                Log.i(TAG + "op", String.valueOf(selectedOpacity));
 
                 if (!hasSelectedOtherBBox) {
                     SelectedData.selectedBBox = SelectedData.selectedCap.capBBox;
@@ -338,8 +336,6 @@ public class DetailMapFilterFragment extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             sendRequest();
-
-
             return null;
         }
 
@@ -382,7 +378,7 @@ public class DetailMapFilterFragment extends Fragment {
                     parseXML(data);
 
                     Message message = new Message();
-                    message.what = HANDLERFLAG;
+                    message.what = HANDLER_FLAG;
                     myHandler.sendMessage(message);
 
                 } catch (MalformedURLException e) {
