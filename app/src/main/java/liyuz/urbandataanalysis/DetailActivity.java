@@ -118,12 +118,23 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     // This method works for updating the camera view of map fragment
-    void updateMap() {
-        // Get coordinates of selected city
-        Double lla = SelectedData.selectedBBox.getLowerLa();
-        Double hla = SelectedData.selectedBBox.getHigherLa();
-        Double llo = SelectedData.selectedBBox.getLowerLon();
-        Double hlo = SelectedData.selectedBBox.getHigherLon();
+    void updateMap(boolean showDefaultBBox) {
+
+        Double lla, hla, llo, hlo;
+
+        if (showDefaultBBox) {
+            BBox defaultBBox = SelectedData.selectedCap.capBBox;
+            lla = defaultBBox.getLowerLa();
+            hla = defaultBBox.getHigherLa();
+            llo = defaultBBox.getLowerLon();
+            hlo = defaultBBox.getHigherLon();
+        } else {
+            BBox customizedBBox = SelectedData.selectedBBox;
+            lla = customizedBBox.getLowerLa();
+            hla = customizedBBox.getHigherLa();
+            llo = customizedBBox.getLowerLon();
+            hlo = customizedBBox.getHigherLon();
+        }
 
         // Calculate the center of capability
         LatLng center = new LatLng((lla+hla)/2.0,(llo+hlo)/2.0);

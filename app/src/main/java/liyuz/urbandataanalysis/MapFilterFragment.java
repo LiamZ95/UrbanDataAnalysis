@@ -6,18 +6,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -36,9 +40,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class MapFilterFragment extends Fragment {
 
     private Button areaBtn;
@@ -48,17 +49,17 @@ public class MapFilterFragment extends Fragment {
     private Button colorBtn;
     private SeekBar seekBar;
     private Button showBtn;
-    private TextView progressTv;
 
-    private TextView attributeTv, classifierTv, lvlTv, colorTv;
+    private TextView attributeTv, classifierTv, lvlTv, colorTv, progressTv, stateTv, cityTv;
+    private Button stateBtn, cityBtn;
 
+    private SwitchCompat BBoxSwitch;
     private ProgressDialog progressDialog;
 
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<String> classifiers = new ArrayList<>();
     private static String[] levels = {"1","2","3","4","5","6"};
     private static String[] colors = {"Material colors", "Red","Blue","Green","Gray","Purple"};
-    private String selectedState;
 
     private String selectedAttribute;
     private String selectedClassifier;
@@ -66,12 +67,16 @@ public class MapFilterFragment extends Fragment {
     private String selectedColor;
     private int selectedOpacity = 70;
 
-    private int attrCheckedItem = 0;
-    private int classCheckedItem = 0;
-    private int lvlCheckedItem = 0;
-    private int colorCheckedItem = 0;
+    private String selectedState, selectedCity;
+    private String preSelectedState = GeoInfo.states[0];
+    private String tempAttribute, tempClassifier, tempLevel, tempColor;
+    private String tempState = GeoInfo.states[0], tempCity = GeoInfo.act[0];
 
-    private Boolean hasSelectedOtherBBox = false;
+    private int attrCheckedItem = 0, classCheckedItem = 0, colorCheckedItem = 0, stateCheckedItem = 0,
+            cityCheckedItem = 0, lvlCheckedItem = 0;
+
+    private boolean useDefaultBBox = true;
+
     private final int HANDLER_FLAG = 0;
 
     private String TAG = getClass().getSimpleName();
@@ -83,10 +88,17 @@ public class MapFilterFragment extends Fragment {
             if (msg.what == HANDLER_FLAG) {
 
                 // Update UI
+                selectedState = GeoInfo.states[0];
+                selectedCity = GeoInfo.act[0];
                 selectedAttribute = attributes.get(0);
                 selectedClassifier = classifiers.get(0);
                 selectedLevel = levels[0];
                 selectedColor = colors[0];
+
+                String stateTvStr = "Select State: Default";
+                stateTv.setText(stateTvStr);
+                String cityTvStr = "Select City: Default";
+                cityTv.setText(cityTvStr);
 
                 String attributeTvStr = "Selected Attribute: " + selectedAttribute;
                 attributeTv.setText(attributeTvStr);
@@ -96,6 +108,11 @@ public class MapFilterFragment extends Fragment {
                 lvlTv.setText(lvlTvStr);
                 String colorTvStr = "Selected Color Collection: " + selectedColor;
                 colorTv.setText(colorTvStr);
+
+                tempAttribute = selectedAttribute;
+                tempClassifier = selectedClassifier;
+                tempColor = selectedColor;
+                tempLevel = selectedLevel;
             }
         }
     };
@@ -112,7 +129,6 @@ public class MapFilterFragment extends Fragment {
         View mView = inflater.inflate(R.layout.fragment_filter_map, container, false);
 
         // Load data
-        // Show progress dialog
         LongOperation myTask = null;
         myTask = new LongOperation();
         myTask.execute();
@@ -122,9 +138,10 @@ public class MapFilterFragment extends Fragment {
         classifierTv = (TextView) mView.findViewById(R.id.map_filter_class_tv);
         lvlTv = (TextView) mView.findViewById(R.id.map_filter_lvl_tv);
         colorTv = (TextView) mView.findViewById(R.id.map_filter_color_tv);
+        stateTv = (TextView) mView.findViewById(R.id.map_state_tv);
+        cityTv = (TextView) mView.findViewById(R.id.map_city_tv);
 
 
-        areaBtn = (Button) mView.findViewById(R.id.filter_map_area_btn);
         attrBtn = (Button) mView.findViewById(R.id.filter_map_attribute_btn);
         classBtn = (Button) mView.findViewById(R.id.filter_map_classifier_btn);
         lvlBtn = (Button) mView.findViewById(R.id.filter_map_level_btn);
@@ -133,13 +150,143 @@ public class MapFilterFragment extends Fragment {
         progressTv = (TextView) mView.findViewById(R.id.map_seek_progress_tv);
         showBtn = (Button) mView.findViewById(R.id.filter_map_show_btn);
 
-//        String typeName = SelectedData.selectedCap.capName;
-//        String urlStr = "http://openapi.aurin.org.au/wfs?request=" +
-//                "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typeName;
-//        Log.i(TAG, urlStr);
+        stateBtn = (Button) mView.findViewById(R.id.map_state_btn);
+        cityBtn = (Button) mView.findViewById(R.id.map_city_btn);
 
+        BBoxSwitch = (SwitchCompat) mView.findViewById(R.id.filter_map_switch);
 
+        // Setting for the switch
+        BBoxSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    useDefaultBBox = true;
+                    Toast.makeText(getContext(), "Use default bounding box", Toast.LENGTH_SHORT)
+                            .show();
 
+                    DetailActivity activity = (DetailActivity)getActivity();
+                    activity.updateMap(true);
+
+                } else {
+                    useDefaultBBox = false;
+                    Toast.makeText(getContext(), "Use customized bounding box", Toast.LENGTH_SHORT)
+                            .show();
+                    String stateTvStr = "Select State: " + selectedState;
+                    String cityStr = "Select City: " + selectedCity;
+                    stateTv.setText(stateTvStr);
+                    cityTv.setText(cityStr);
+
+                    DetailActivity activity = (DetailActivity)getActivity();
+                    activity.updateMap(false);
+                }
+            }
+        });
+
+        cityBtn.setEnabled(false);
+
+        stateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Select a state");
+                final String[] stateArray = GeoInfo.states;
+                builder.setSingleChoiceItems(stateArray, stateCheckedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        tempState = stateArray[i];
+                        Log.i(TAG, tempState);
+                        stateCheckedItem = i;
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Handles actions to perform when user confirm their operations
+                        selectedState = tempState;
+                        if (selectedState != preSelectedState) {
+//                            warnState = true;
+                            preSelectedState = selectedState;
+                            Toast.makeText(getContext(), "You have changed state, please select a city in the new state.", Toast.LENGTH_LONG)
+                                    .show();
+                        }
+
+                        stateBtn.setText(selectedState);
+                        String tempStr = "Selected State: " + selectedState;
+                        stateTv.setText(tempStr);
+
+                        cityBtn.setEnabled(true);
+                        final String[] cityArray = GeoInfo.getCities(selectedState);
+                        selectedCity = cityArray[0];
+                        cityBtn.setText(selectedCity);
+                        String cityTempStr = "Selected City: " + selectedCity;
+                        cityTv.setText(cityTempStr);
+                        useDefaultBBox = false;
+
+                        // Set the BBox for changing mapView
+                        SelectedData.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
+
+                        // Update map view in parent activity
+                        DetailActivity activity = (DetailActivity)getActivity();
+                        activity.updateMap(false);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                // Create and show alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        // Alert dialog for select city
+        cityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Select a city");
+                // Get a array of cities of selected state
+                final String[] cityArray = GeoInfo.getCities(selectedState);
+                selectedCity = cityArray[0];
+
+                builder.setSingleChoiceItems(cityArray, cityCheckedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        tempCity = cityArray[i];
+                        Log.i(TAG, tempCity);
+                        cityCheckedItem = i;
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Handles actions to perform when user confirm their operations
+                        selectedCity = tempCity;
+                        cityBtn.setText(selectedCity);
+                        String tempStr = "Selected City: " + selectedCity;
+                        cityTv.setText(tempStr);
+//                        if (warnState) {
+//                            warnState = false;
+//                        }
+                        // Set the BBox for changing mapView
+                        SelectedData.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
+                        // Update map view in parent activity
+                        DetailActivity activity = (DetailActivity)getActivity();
+                        activity.updateMap(false);
+
+                        Log.i(TAG, selectedCity);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                // Create and show alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
         // Setting the pop up window for attributes selection
         attrBtn.setOnClickListener(new View.OnClickListener() {
@@ -152,8 +299,9 @@ public class MapFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(attrArray, attrCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedAttribute = attrArray[i];
+                        tempAttribute = attrArray[i];
                         attrCheckedItem = i;
+                        Log.i(TAG, tempAttribute);
                     }
                 });
 
@@ -161,6 +309,7 @@ public class MapFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedAttribute = tempAttribute;
                         attrBtn.setText(selectedAttribute);
                         String tempStr = "Selected Attribute: " + selectedAttribute;
                         attributeTv.setText(tempStr);
@@ -186,8 +335,9 @@ public class MapFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(classArray, classCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedClassifier = classArray[i];
+                        tempClassifier = classArray[i];
                         classCheckedItem = i;
+                        Log.i(TAG, tempClassifier);
                     }
                 });
 
@@ -195,6 +345,7 @@ public class MapFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedClassifier = tempClassifier;
                         String temp = "Select Classifier: " + selectedClassifier;
                         classBtn.setText(selectedClassifier);
                         classifierTv.setText(temp);
@@ -219,8 +370,9 @@ public class MapFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(levels, lvlCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedLevel = levels[i];
+                        tempLevel = levels[i];
                         lvlCheckedItem = i;
+                        Log.i(TAG, tempLevel);
                     }
                 });
 
@@ -228,6 +380,7 @@ public class MapFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedLevel = tempLevel;
                         String temp = "Select Class Level: " + selectedLevel;
                         lvlTv.setText(temp);
                         lvlBtn.setText(selectedLevel);
@@ -253,8 +406,9 @@ public class MapFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(colors, colorCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedColor = colors[i];
+                        tempColor = colors[i];
                         colorCheckedItem = i;
+                        Log.i(TAG, tempColor);
                     }
                 });
 
@@ -262,6 +416,7 @@ public class MapFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedColor = tempColor;
                         String temp = "Select Color Collection: " + selectedColor;
                         colorTv.setText(temp);
                         colorBtn.setText(selectedColor);
@@ -311,13 +466,21 @@ public class MapFilterFragment extends Fragment {
                 Log.i(TAG + "color", selectedColor);
                 Log.i(TAG + "op", String.valueOf(selectedOpacity));
 
-                if (!hasSelectedOtherBBox) {
+                Log.i(TAG + " Selected State", selectedState);
+                Log.i(TAG + " Selected City", selectedCity);
+
+                if (useDefaultBBox) {
+                    Log.i(TAG, "Use default BBox");
                     MapSettings.selectedBBox = SelectedData.selectedCap.capBBox;
+                    Log.i(TAG + "Selected BBox", String.valueOf(MapSettings.selectedBBox.getHigherLa()));
+                } else {
+                    Log.i(TAG, "Use other BBox");
+                    MapSettings.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
+                    Log.i(TAG + "Selected BBox", String.valueOf(MapSettings.selectedBBox.getHigherLa()));
                 }
 
-                // Show chart in a new activity
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), MapsActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -338,7 +501,8 @@ public class MapFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            sendRequest();
+//            sendRequest();
+            openLocalFile();
             return null;
         }
 
@@ -449,6 +613,36 @@ public class MapFilterFragment extends Fragment {
             }
         } catch (XmlPullParserException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openLocalFile() {
+        AssetManager assetManager = getActivity().getApplicationContext().getAssets();
+        try{
+            InputStream in = assetManager
+                    .open("aurin-datasource-INODE-UA_WISeR_internode_adelaide_free_wireless.xml");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+
+            String data = stringBuilder.toString();
+//            Log.d(TAG, "All data read from local xml file");
+            parseXML(data);
+
+            Message message = new Message();
+            message.what = HANDLER_FLAG;
+            myHandler.sendMessage(message);
+
+
+            for (String classifier : classifiers) {
+                Log.i(TAG, classifier);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

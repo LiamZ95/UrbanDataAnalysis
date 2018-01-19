@@ -61,17 +61,17 @@ public class ChartFilterFragment extends Fragment {
 
     private String selectedAttribute;
     private String selectedClassifier;
-    private String selectedColor;
+    private String selectedColor, selectedLevel;
+    private int selectedOpacity = 70;
+
     private String selectedState, selectedCity;
     private String preSelectedState = GeoInfo.states[0];
+    private String tempAttribute, tempClassifier, tempColor;
     private String tempState = GeoInfo.states[0], tempCity = GeoInfo.act[0];
-    private int selectedOpacity = 70;
 
     private int attrCheckedItem = 0, classCheckedItem = 0, colorCheckedItem = 0, stateCheckedItem = 0,
             cityCheckedItem = 0;
 
-//    private int preStateIndex = 0, preCityIndex = 0;
-    private boolean changedLocation = false;
     private boolean useDefaultBBox = true;
 
     private String TAG = getClass().getSimpleName();
@@ -92,10 +92,8 @@ public class ChartFilterFragment extends Fragment {
                 selectedClassifier = classifiers.get(0);
                 selectedColor = colors[0];
 
-//                String stateTvStr = "Select State: " + selectedState;
                 String stateTvStr = "Select State: Default";
                 stateTv.setText(stateTvStr);
-//                String cityTvStr = "Select City: " + selectedCity;
                 String cityTvStr = "Select City: Default";
                 cityTv.setText(cityTvStr);
 
@@ -105,6 +103,10 @@ public class ChartFilterFragment extends Fragment {
                 classifierTv.setText(classifierTvStr);
                 String colorTvStr = "Selected Color Collection: " + selectedColor;
                 colorTv.setText(colorTvStr);
+
+                tempAttribute = selectedAttribute;
+                tempClassifier = selectedClassifier;
+                tempColor = selectedColor;
             }
         }
     };
@@ -151,6 +153,8 @@ public class ChartFilterFragment extends Fragment {
                     useDefaultBBox = true;
                     Toast.makeText(getContext(), "Use default bounding box", Toast.LENGTH_SHORT)
                             .show();
+                    DetailActivity activity = (DetailActivity)getActivity();
+                    activity.updateMap(true);
                 } else {
                     useDefaultBBox = false;
                     Toast.makeText(getContext(), "Use customized bounding box", Toast.LENGTH_SHORT)
@@ -159,6 +163,9 @@ public class ChartFilterFragment extends Fragment {
                     String cityStr = "Select City: " + selectedCity;
                     stateTv.setText(stateTvStr);
                     cityTv.setText(cityStr);
+
+                    DetailActivity activity = (DetailActivity)getActivity();
+                    activity.updateMap(false);
                 }
             }
         });
@@ -217,7 +224,7 @@ public class ChartFilterFragment extends Fragment {
 
                         // Update map view in parent activity
                         DetailActivity activity = (DetailActivity)getActivity();
-                        activity.updateMap();
+                        activity.updateMap(false);
                     }
                 });
 
@@ -263,7 +270,7 @@ public class ChartFilterFragment extends Fragment {
                         SelectedData.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
                         // Update map view in parent activity
                         DetailActivity activity = (DetailActivity)getActivity();
-                        activity.updateMap();
+                        activity.updateMap(false);
                         Log.i(TAG, selectedCity);
                     }
                 });
@@ -287,8 +294,9 @@ public class ChartFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(attrArray, attrCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedAttribute = attrArray[i];
+                        tempAttribute = attrArray[i];
                         attrCheckedItem = i;
+                        Log.i(TAG, tempAttribute);
                     }
                 });
 
@@ -296,6 +304,7 @@ public class ChartFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedAttribute = tempAttribute;
                         attrBtn.setText(selectedAttribute);
                         String tempStr = "Selected Attribute: " + selectedAttribute;
                         attributeTv.setText(tempStr);
@@ -321,8 +330,9 @@ public class ChartFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(classArray, classCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedClassifier = classArray[i];
+                        tempClassifier = classArray[i];
                         classCheckedItem = i;
+                        Log.i(TAG, tempClassifier);
                     }
                 });
 
@@ -330,6 +340,7 @@ public class ChartFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedClassifier = tempClassifier;
                         String temp = "Select Classifier: " + selectedClassifier;
                         classBtn.setText(selectedClassifier);
                         classifierTv.setText(temp);
@@ -354,8 +365,9 @@ public class ChartFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(colors, colorCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedColor = colors[i];
+                        tempColor = colors[i];
                         colorCheckedItem = i;
+                        Log.i(TAG, tempColor);
                     }
                 });
 
@@ -363,6 +375,7 @@ public class ChartFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedColor = tempColor;
                         String temp = "Select Color Collection: " + selectedColor;
                         colorTv.setText(temp);
                         colorBtn.setText(selectedColor);
