@@ -12,11 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ public class DetailFilterFragment extends Fragment {
     private Button showBtn;
     private Button stateBtn, cityBtn;
     private TextView progressTv;
+    private SwitchCompat BBoxSwitch;
 
     private TextView attributeTv, classifierTv, colorTv, stateTv, cityTv;
 
@@ -54,7 +57,6 @@ public class DetailFilterFragment extends Fragment {
 
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<String> classifiers = new ArrayList<>();
-    private static String[] levels = {"1","2","3","4","5","6"};
     private static String[] colors = {"Material colors", "Red","Blue","Green","Gray","Purple"};
 
     private String selectedAttribute;
@@ -69,10 +71,7 @@ public class DetailFilterFragment extends Fragment {
 
 //    private int preStateIndex = 0, preCityIndex = 0;
     private boolean changedLocation = false;
-
-    private Boolean hasSelectedOtherBBox = false;
-//    private Boolean warnState = false;
-//    private Boolean hasNotChoseState = true;
+    private boolean useDefaultBBox = true;
 
     private String TAG = getClass().getSimpleName();
     private final int HANDLER_FLAG = 0;
@@ -92,10 +91,13 @@ public class DetailFilterFragment extends Fragment {
                 selectedClassifier = classifiers.get(0);
                 selectedColor = colors[0];
 
-                String stateTvStr = "Select State: " + selectedState;
+//                String stateTvStr = "Select State: " + selectedState;
+                String stateTvStr = "Select State: Default";
                 stateTv.setText(stateTvStr);
-                String cityTvStr = "Select City: " + selectedCity;
+//                String cityTvStr = "Select City: " + selectedCity;
+                String cityTvStr = "Select City: Default";
                 cityTv.setText(cityTvStr);
+
                 String attributeTvStr = "Selected Attribute: " + selectedAttribute;
                 attributeTv.setText(attributeTvStr);
                 String classifierTvStr = "Selected Classifier: " + selectedClassifier;
@@ -140,6 +142,26 @@ public class DetailFilterFragment extends Fragment {
         stateBtn = (Button) mView.findViewById(R.id.filter_chart_state_btn);
         cityBtn = (Button) mView.findViewById(R.id.filter_chart_city_btn);
 
+        BBoxSwitch = (SwitchCompat) mView.findViewById(R.id.filter_chart_switch);
+        BBoxSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    useDefaultBBox = true;
+                    Toast.makeText(getContext(), "Use default bounding box", Toast.LENGTH_SHORT)
+                            .show();
+                } else {
+                    useDefaultBBox = false;
+                    Toast.makeText(getContext(), "Use customized bounding box", Toast.LENGTH_SHORT)
+                            .show();
+                    String stateTvStr = "Select State: " + selectedState;
+                    String cityStr = "Select City: " + selectedCity;
+                    stateTv.setText(stateTvStr);
+                    cityTv.setText(cityStr);
+                }
+            }
+        });
+
         cityBtn.setEnabled(false);
 
 //        String typeName = SelectedData.selectedCap.capName;
@@ -181,11 +203,12 @@ public class DetailFilterFragment extends Fragment {
                         stateTv.setText(tempStr);
 
                         cityBtn.setEnabled(true);
-                        final String[] cityArray = getCities(selectedState);
+                        final String[] cityArray = GeoInfo.getCities(selectedState);
                         selectedCity = cityArray[0];
                         cityBtn.setText(selectedCity);
                         String cityTempStr = "Selected City: " + selectedCity;
                         cityTv.setText(cityTempStr);
+                        useDefaultBBox = false;
 
                     }
                 });
@@ -205,7 +228,7 @@ public class DetailFilterFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Select a city");
                 // Get a array of cities of selected state
-                final String[] cityArray = getCities(selectedState);
+                final String[] cityArray = GeoInfo.getCities(selectedState);
                 selectedCity = cityArray[0];
 
                 builder.setSingleChoiceItems(cityArray, cityCheckedItem, new DialogInterface.OnClickListener() {
@@ -382,14 +405,19 @@ public class DetailFilterFragment extends Fragment {
 //                Log.i(TAG + "class", selectedChartClassifier);
 //                Log.i(TAG + "color", selectedChartColor);
 //                Log.i(TAG + "op", String.valueOf(selectedChartOpacity));
-
-                if (!hasSelectedOtherBBox) {
-                    SelectedData.selectedBBox = SelectedData.selectedCap.capBBox;
+                if (useDefaultBBox) {
+                    Log.i(TAG, "Use default BBox");
+                    ChartSettings.selectedBBox = SelectedData.selectedCap.capBBox;
+                    Log.i(TAG + "Selected BBox", String.valueOf(ChartSettings.selectedBBox.getHigherLa()));
+                } else {
+                    Log.i(TAG, "Use other BBox");
+                    ChartSettings.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
+                    Log.i(TAG + "Selected BBox", String.valueOf(ChartSettings.selectedBBox.getHigherLa()));
                 }
 
                 // Show chart in a new activity
-                Intent intent = new Intent(getActivity(), ChartActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ChartActivity.class);
+//                startActivity(intent);
 
             }
         });
@@ -564,28 +592,4 @@ public class DetailFilterFragment extends Fragment {
         }
     }
 
-
-    private String[] getCities(String state) {
-        switch(state) {
-            case "Australian Capital Territory":
-                return GeoInfo.act;
-            case "New South Wales":
-                return GeoInfo.nsw;
-            case "Northern Territory":
-                return GeoInfo.nt;
-            case "Queensland":
-                return GeoInfo.qld;
-            case "South Australia":
-                return GeoInfo.sau;
-            case "Tasmania":
-                return GeoInfo.tas;
-            case "Victoria":
-                return GeoInfo.vic;
-            case "Western Australia":
-                return GeoInfo.wau;
-            default:
-                Log.i(TAG, "Something wrong in getCities");
-                return  GeoInfo.act;
-        }
-    }
 }

@@ -11,11 +11,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -74,7 +76,7 @@ public class DetailMapFilterFragment extends Fragment {
     private Boolean hasSelectedOtherBBox = false;
     private final int HANDLER_FLAG = 0;
 
-    private String TAG = getClass().getSimpleName() + "###";
+    private String TAG = getClass().getSimpleName();
 
     @SuppressLint("HandlerLeak")
     private Handler myHandler = new Handler() {
@@ -123,6 +125,7 @@ public class DetailMapFilterFragment extends Fragment {
         lvlTv = (TextView) mView.findViewById(R.id.map_filter_lvl_tv);
         colorTv = (TextView) mView.findViewById(R.id.map_filter_color_tv);
 
+
         areaBtn = (Button) mView.findViewById(R.id.filter_map_area_btn);
         attrBtn = (Button) mView.findViewById(R.id.filter_map_attribute_btn);
         classBtn = (Button) mView.findViewById(R.id.filter_map_classifier_btn);
@@ -136,6 +139,8 @@ public class DetailMapFilterFragment extends Fragment {
 //        String urlStr = "http://openapi.aurin.org.au/wfs?request=" +
 //                "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typeName;
 //        Log.i(TAG, urlStr);
+
+
 
 
         // Setting the pop up window for attributes selection
@@ -309,7 +314,7 @@ public class DetailMapFilterFragment extends Fragment {
                 Log.i(TAG + "op", String.valueOf(selectedOpacity));
 
                 if (!hasSelectedOtherBBox) {
-                    SelectedData.selectedBBox = SelectedData.selectedCap.capBBox;
+                    MapSettings.selectedBBox = SelectedData.selectedCap.capBBox;
                 }
 
                 // Show chart in a new activity

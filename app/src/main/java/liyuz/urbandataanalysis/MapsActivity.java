@@ -72,10 +72,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final String typeName = SelectedData.selectedCap.capName;
         final String geoName = SelectedData.selectedCap.capGeoName;
 
-        final double lla = SelectedData.selectedBBox.getLowerLa();
-        final double llo = SelectedData.selectedBBox.getLowerLon();
-        final double hla = SelectedData.selectedBBox.getHigherLa();
-        final double hlo = SelectedData.selectedBBox.getHigherLon();
+        final double lla = MapSettings.selectedBBox.getLowerLa();
+        final double llo = MapSettings.selectedBBox.getLowerLon();
+        final double hla = MapSettings.selectedBBox.getHigherLa();
+        final double hlo = MapSettings.selectedBBox.getHigherLon();
 
         String url = "http://openapi.aurin.org.au/wfs?" +
                 "request=GetFeature&service=WFS&version=1.1.0&" +
@@ -123,10 +123,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        final String typeName = SelectedData.selectedCap.capName;
 //        final String geoName = SelectedData.selectedCap.capGeoName;
 //
-//        final double lla = SelectedData.selectedBBox.getLowerLa();
-//        final double llo = SelectedData.selectedBBox.getLowerLon();
-//        final double hla = SelectedData.selectedBBox.getHigherLa();
-//        final double hlo = SelectedData.selectedBBox.getHigherLon();
+//        final double lla = MapSettings.selectedBBox.getLowerLa();
+//        final double llo = MapSettings.selectedBBox.getLowerLon();
+//        final double hla = MapSettings.selectedBBox.getHigherLa();
+//        final double hlo = MapSettings.selectedBBox.getHigherLon();
 
         try{
             InputStream in = assetManager

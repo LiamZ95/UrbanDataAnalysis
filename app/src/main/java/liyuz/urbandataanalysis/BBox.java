@@ -1,8 +1,5 @@
 package liyuz.urbandataanalysis;
 
-/**
- * Created by Administrator on 12/3/2017.
- */
 import java.io.Serializable;
 
 public class BBox implements Serializable{

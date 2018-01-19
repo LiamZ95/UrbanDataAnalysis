@@ -50,6 +50,31 @@
         android:textSize="20sp"
         android:textAllCaps="false"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:background="@color/colorPrimary">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use Default Bounding Box"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:paddingEnd="10dp"/>
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/filter_chart_switch"
+            style="@style/SwitchCompatStyle"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/chart_filter_attr_tv"
         android:layout_marginTop="20dp"

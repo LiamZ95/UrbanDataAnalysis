@@ -1,10 +1,7 @@
 package liyuz.urbandataanalysis;
 
-/**
- * Created by liam on 27/12/17.
- */
-
+// This class records which capability that user has
+// selected along with related Bounding box.
 class SelectedData {
     static Capability selectedCap;
-    static BBox selectedBBox;
 }

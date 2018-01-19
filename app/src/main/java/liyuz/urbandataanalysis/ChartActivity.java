@@ -49,7 +49,6 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<Float> classifiers = new ArrayList<>();
     private ArrayList<Float> objectIdList = new ArrayList<>();
-//    private ArrayList<MyEntry> myEntryArrayList = new ArrayList<>();
     private ArrayList<BarEntry> entryList = new ArrayList<>();
     private ProgressDialog progressDialog;
 
@@ -166,12 +165,14 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     }
 
     private void sendRequest() {
+
         final String typeName = SelectedData.selectedCap.capName;
         final String geoName = SelectedData.selectedCap.capGeoName;
-        final double lla = SelectedData.selectedBBox.getLowerLa();
-        final double llo = SelectedData.selectedBBox.getLowerLon();
-        final double hla = SelectedData.selectedBBox.getHigherLa();
-        final double hlo = SelectedData.selectedBBox.getHigherLon();
+        final double lla = ChartSettings.selectedBBox.getLowerLa();
+        final double llo = ChartSettings.selectedBBox.getLowerLon();
+        final double hla = ChartSettings.selectedBBox.getHigherLa();
+        final double hlo = ChartSettings.selectedBBox.getHigherLon();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -222,10 +223,10 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         final String typeName = SelectedData.selectedCap.capName;
         final String geoName = SelectedData.selectedCap.capGeoName;
 
-        final double lla = SelectedData.selectedBBox.getLowerLa();
-        final double llo = SelectedData.selectedBBox.getLowerLon();
-        final double hla = SelectedData.selectedBBox.getHigherLa();
-        final double hlo = SelectedData.selectedBBox.getHigherLon();
+        final double lla = ChartSettings.selectedBBox.getLowerLa();
+        final double llo = ChartSettings.selectedBBox.getLowerLon();
+        final double hla = ChartSettings.selectedBBox.getHigherLa();
+        final double hlo = ChartSettings.selectedBBox.getHigherLon();
 
         String url = "http://openapi.aurin.org.au/wfs?" +
                 "request=GetFeature&service=WFS&version=1.1.0&" +
@@ -234,7 +235,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
                 "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
                 + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier;
 
-        Log.i(TAG, url);
+        Log.i(TAG + "Open local file", url);
 
         try{
             InputStream in = assetManager

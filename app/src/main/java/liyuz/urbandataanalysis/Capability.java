@@ -2,9 +2,6 @@ package liyuz.urbandataanalysis;
 
 import java.io.Serializable;
 
-/**
- * Created by Administrator on 12/3/2017.
- */
 
 // A object containing info about each data set
 public class Capability implements Serializable{
