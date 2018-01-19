@@ -4,4 +4,5 @@ package liyuz.urbandataanalysis;
 // selected along with related Bounding box.
 class SelectedData {
     static Capability selectedCap;
+    static BBox selectedBBox;
 }

@@ -40,7 +40,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class DetailFilterFragment extends Fragment {
+public class ChartFilterFragment extends Fragment {
 
     private Button attrBtn;
     private Button classBtn;
@@ -64,6 +64,7 @@ public class DetailFilterFragment extends Fragment {
     private String selectedColor;
     private String selectedState, selectedCity;
     private String preSelectedState = GeoInfo.states[0];
+    private String tempState = GeoInfo.states[0], tempCity = GeoInfo.act[0];
     private int selectedOpacity = 70;
 
     private int attrCheckedItem = 0, classCheckedItem = 0, colorCheckedItem = 0, stateCheckedItem = 0,
@@ -108,7 +109,7 @@ public class DetailFilterFragment extends Fragment {
         }
     };
 
-    public DetailFilterFragment() {
+    public ChartFilterFragment() {
         // Required empty public constructor
     }
 
@@ -164,6 +165,8 @@ public class DetailFilterFragment extends Fragment {
 
         cityBtn.setEnabled(false);
 
+
+
 //        String typeName = SelectedData.selectedCap.capName;
 //        String urlStr = "http://openapi.aurin.org.au/wfs?request=" +
 //                "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typeName;
@@ -175,13 +178,12 @@ public class DetailFilterFragment extends Fragment {
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Select a state");
-
                 final String[] stateArray = GeoInfo.states;
                 builder.setSingleChoiceItems(stateArray, stateCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedState = stateArray[i];
-                        Log.i(TAG, selectedState);
+                        tempState = stateArray[i];
+                        Log.i(TAG, tempState);
                         stateCheckedItem = i;
                     }
                 });
@@ -190,7 +192,7 @@ public class DetailFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
-
+                        selectedState = tempState;
                         if (selectedState != preSelectedState) {
 //                            warnState = true;
                             preSelectedState = selectedState;
@@ -210,6 +212,12 @@ public class DetailFilterFragment extends Fragment {
                         cityTv.setText(cityTempStr);
                         useDefaultBBox = false;
 
+                        // Set the BBox for changing mapView
+                        SelectedData.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
+
+                        // Update map view in parent activity
+                        DetailActivity activity = (DetailActivity)getActivity();
+                        activity.updateMap();
                     }
                 });
 
@@ -234,8 +242,8 @@ public class DetailFilterFragment extends Fragment {
                 builder.setSingleChoiceItems(cityArray, cityCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        selectedCity = cityArray[i];
-                        Log.i(TAG, selectedCity);
+                        tempCity = cityArray[i];
+                        Log.i(TAG, tempCity);
                         cityCheckedItem = i;
                     }
                 });
@@ -244,12 +252,18 @@ public class DetailFilterFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
+                        selectedCity = tempCity;
                         cityBtn.setText(selectedCity);
                         String tempStr = "Selected City: " + selectedCity;
                         cityTv.setText(tempStr);
 //                        if (warnState) {
 //                            warnState = false;
 //                        }
+                        // Set the BBox for changing mapView
+                        SelectedData.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
+                        // Update map view in parent activity
+                        DetailActivity activity = (DetailActivity)getActivity();
+                        activity.updateMap();
                         Log.i(TAG, selectedCity);
                     }
                 });

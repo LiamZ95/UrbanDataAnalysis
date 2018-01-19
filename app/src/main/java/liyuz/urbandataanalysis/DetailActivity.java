@@ -60,7 +60,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 chartBtn.setEnabled(false);
                 mapBtn.setEnabled(true);
 
-                Fragment chartFragment = new DetailFilterFragment();
+                Fragment chartFragment = new ChartFilterFragment();
                 detailFragmentManager.beginTransaction()
                         .add(new DetailListFragment(), "previousFragment")
                         .addToBackStack("previousFragment")
@@ -76,7 +76,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 mapBtn.setEnabled(false);
                 chartBtn.setEnabled(true);
 
-                Fragment mapFragment = new DetailMapFilterFragment();
+                Fragment mapFragment = new MapFilterFragment();
                 detailFragmentManager.beginTransaction()
                         .add(new DetailListFragment(), "previousFragment")
                         .addToBackStack("previousFragment")
@@ -103,6 +103,33 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         // Set the map
         mMap.addMarker(new MarkerOptions().position(center).title(selectedCap.capTitle));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(center));
+        mMap.isMyLocationEnabled();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoom));
+
+        // Draw polyline to show area of Bbox
+        mMap.addPolyline(new PolylineOptions().geodesic(true)
+                .add(new LatLng(lla, llo))
+                .add(new LatLng(hla, llo))
+                .add(new LatLng(hla, hlo))
+                .add(new LatLng(lla, hlo))
+                .add(new LatLng(lla, llo))
+        );
+    }
+
+    // This method works for updating the camera view of map fragment
+    void updateMap() {
+        // Get coordinates of selected city
+        Double lla = SelectedData.selectedBBox.getLowerLa();
+        Double hla = SelectedData.selectedBBox.getHigherLa();
+        Double llo = SelectedData.selectedBBox.getLowerLon();
+        Double hlo = SelectedData.selectedBBox.getHigherLon();
+
+        // Calculate the center of capability
+        LatLng center = new LatLng((lla+hla)/2.0,(llo+hlo)/2.0);
+
+        // Set zoom ratio
+        int zoom = (int) Math.log(320/(hlo - llo)) + 1;
         mMap.moveCamera(CameraUpdateFactory.newLatLng(center));
         mMap.isMyLocationEnabled();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoom));
