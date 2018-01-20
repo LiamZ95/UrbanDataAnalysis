@@ -387,7 +387,6 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         b.setData(data);
         // Show bar chart
         b.invalidate();
-
     }
 
 }

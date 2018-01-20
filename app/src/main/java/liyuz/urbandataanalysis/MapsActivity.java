@@ -36,6 +36,8 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
+
 import com.google.common.collect.Lists;
 import com.google.maps.android.data.geojson.GeoJsonLineStringStyle;
 import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
@@ -45,7 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
     private ProgressDialog progressDialog;
-
+    private GeoJsonLayer geoJsonLayer;
     private final int HANDLER_FLAG = 0;
 
     @SuppressLint("HandlerLeak")
@@ -63,35 +65,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-//        Message message = new Message();
-//        message.what = HANDLER_FLAG;
-//        handler.sendMessage(message);
 
         // Show progress dialog
         LongOperation myTask = null;
         myTask = new LongOperation();
         myTask.execute();
 
-//        final String typeName = SelectedData.selectedCap.capName;
-//        final String geoName = SelectedData.selectedCap.capGeoName;
-//
-//        final double lla = MapSettings.selectedBBox.getLowerLa();
-//        final double llo = MapSettings.selectedBBox.getLowerLon();
-//        final double hla = MapSettings.selectedBBox.getHigherLa();
-//        final double hlo = MapSettings.selectedBBox.getHigherLon();
-//
-//        String url = "http://openapi.aurin.org.au/wfs?" +
-//                "request=GetFeature&service=WFS&version=1.1.0&" +
-//                "TypeName="+ typeName+ "&" +
-//                "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBOX" +
-//                "("+geoName+","+lla+","+llo+","+hla+","+hlo+")";
-//
-//        Log.i(TAG, url);
     }
 
 
@@ -132,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try{
             InputStream in = assetManager
-                    .open("2_cap_map.json");
+                    .open("map_area_domiciliary_care_regions_for_sa.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
@@ -151,7 +135,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
     private void sendRequest() {
+
         final Capability selectedCap = SelectedData.selectedCap;
         final BBox selectedBBox = MapSettings.selectedBBox;
         final String typeName = selectedCap.capName;
@@ -161,63 +147,88 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final Double hla = selectedBBox.getHigherLa();
         final Double hlo = selectedBBox.getHigherLon();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                Authenticator.setDefault (new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
-                    }
-                });
-                try{
-                    URL url = new URL("http://openapi.aurin.org.au/wfs?" +
-                            "request=GetFeature&service=WFS&version=1.1.0&" +
-                            "TypeName="+ typeName+ "&" +
-                            "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBOX" +
-                            "("+geoName+","+lla+","+llo+","+hla+","+hlo+")");
-                    Log.i(TAG, url.toString());
-
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(12000);
-                    connection.setReadTimeout(12000);
-
-                    InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-
-                    String data = response.toString();
-
-                    // Parse JSON
-//                    parseJSON(data);
-                    Message message = new Message();
-                    message.what = HANDLER_FLAG;
-                    message.obj = data;
-                    handler.sendMessage(message);
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
+        HttpURLConnection connection = null;
+        Authenticator.setDefault (new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
             }
-        }).start();
+        });
+        try{
+            URL url = new URL("http://openapi.aurin.org.au/wfs?" +
+                    "request=GetFeature&service=WFS&version=1.1.0&" +
+                    "TypeName="+ typeName+ "&" +
+                    "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBOX" +
+                    "("+geoName+","+lla+","+llo+","+hla+","+hlo+")");
+            Log.i(TAG, url.toString());
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(12000);
+            connection.setReadTimeout(12000);
+
+            InputStream in = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            String data = response.toString();
+
+            in.close();
+            reader.close();
+
+            // Parse JSON
+//                    parseJSON(data);
+            Message message = new Message();
+            message.what = HANDLER_FLAG;
+            message.obj = data;
+            handler.sendMessage(message);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
+
+    // Shown progress dialog
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(MapsActivity.this);
+            progressDialog.setTitle("Receiving data from AURIN");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            openLocalFile();
+//            sendRequest();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        }
+
+    }
+
 
     private void parseJSON(String rawData) {
         try {
 
             JSONObject jsonObject = new JSONObject(rawData);
-            GeoJsonLayer geoJsonLayer = new GeoJsonLayer(mMap, jsonObject);
+            geoJsonLayer = new GeoJsonLayer(mMap, jsonObject);
 
             visualizeMap(geoJsonLayer);
 
@@ -227,6 +238,99 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+
+    private void visualizeMap(final GeoJsonLayer geoJsonLayer) {
+
+        ArrayList<GeoJsonFeature> featuresList = Lists.newArrayList(geoJsonLayer.getFeatures());
+        String selectedColor = MapSettings.selectedMapColor;
+
+        for (final GeoJsonFeature feature : featuresList) {
+            String type = feature.getGeometry().getGeometryType();
+
+            switch (type) {
+                case "MultiPolygon": {
+                    final int color = getRandomColor(selectedColor);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            GeoJsonPolygonStyle style = new GeoJsonPolygonStyle();
+                            // Set polygon color
+                            style.setFillColor(color);
+                            style.setStrokeWidth(2);
+                            style.toPolygonOptions().clickable(true);
+                            feature.setPolygonStyle(style);
+                            geoJsonLayer.addLayerToMap();
+                        }
+                    });
+                    break;
+                }
+
+
+                case "Point": {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setMarker(feature);
+                        }
+                    });
+                    break;
+                }
+
+                case "Polygon": {
+                    final int color = getRandomColor(selectedColor);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            GeoJsonPolygonStyle style = new GeoJsonPolygonStyle();
+                            style.setFillColor(color);
+                            style.setStrokeWidth(2);
+                            style.toPolygonOptions().clickable(true);
+                            feature.setPolygonStyle(style);
+                            geoJsonLayer.addFeature(feature);
+                            geoJsonLayer.addLayerToMap();
+                        }
+                    });
+
+                    break;
+                }
+
+                case "LineString": {
+                    final int color = getRandomColor(selectedColor);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            GeoJsonLineStringStyle style = new GeoJsonLineStringStyle();
+                            style.setColor(color);
+                            style.setWidth(20);
+                            feature.setLineStringStyle(style);
+                            geoJsonLayer.addLayerToMap();
+                        }
+                    });
+                    break;
+                }
+
+                case "MultiLineString": {
+                    final int color = getRandomColor(selectedColor);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            GeoJsonLineStringStyle style = new GeoJsonLineStringStyle();
+                            style.setColor(color);
+                            style.setWidth(10);
+                            feature.setLineStringStyle(style);
+                            geoJsonLayer.addLayerToMap();
+                        }
+                    });
+                    break;
+                }
+
+                default:
+                    Toast.makeText(this, "Error during visualizing map!", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
 
 
     private void setMarker(GeoJsonFeature feature) {
@@ -251,97 +355,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    // Shown progress dialog
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(MapsActivity.this);
-            progressDialog.setTitle("Receiving data from AURIN");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
 
-        @Override
-        protected String doInBackground(String... strings) {
-            openLocalFile();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
-        }
-
-    }
-
-    private void visualizeMap(GeoJsonLayer geoJsonLayer) {
-
-        ArrayList<GeoJsonFeature> featuresList = Lists.newArrayList(geoJsonLayer.getFeatures());
-
-        for (final GeoJsonFeature feature : featuresList) {
-            String type = feature.getGeometry().getGeometryType();
-
-            switch (type) {
-                case "MultiPolygon": {
-                    // Color
-                    GeoJsonPolygonStyle style = new GeoJsonPolygonStyle();
-                    // Set polygon color
-                    style.setFillColor(Color.RED);
-                    style.setStrokeWidth(2);
-                    style.toPolygonOptions().clickable(true);
-                    feature.setPolygonStyle(style);
-                    geoJsonLayer.addLayerToMap();
-                }
-
+    private Integer getRandomColor(String colorStr) {
+        ArrayList<Integer> selectedColorList = new ArrayList<>();
+        Integer colorInt = 0;
+        switch(colorStr) {
+            case "Material colors":{
+                selectedColorList = new ArrayList<>(ColorValues.materialColors);
                 break;
-                case "Point": {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setMarker(feature);
-                        }
-                    });
-                    break;
-                }
+            }
+            case "Red":{
+                selectedColorList = new ArrayList<>(ColorValues.reds);
+                break;
+            }
+            case "Blue": {
+                selectedColorList = new ArrayList<>(ColorValues.blues);
+                break;
+            }
+            case "Green": {
+                selectedColorList = new ArrayList<>(ColorValues.greens);
+                break;
+            }
+            case "Gray": {
+                selectedColorList = new ArrayList<>(ColorValues.grays);
+                break;
+            }
+            case "Purple": {
+                selectedColorList = new ArrayList<>(ColorValues.purples);
+                break;
+            }
 
-                case "Polygon": {
-                    GeoJsonPolygonStyle style = new GeoJsonPolygonStyle();
-                    style.setFillColor(Color.RED);
-                    style.setStrokeWidth(2);
-                    style.toPolygonOptions().clickable(true);
-                    feature.setPolygonStyle(style);
-                    geoJsonLayer.addFeature(feature);
-                    geoJsonLayer.addLayerToMap();
-                    break;
-                }
-
-                case "LineString": {
-                    GeoJsonLineStringStyle style = new GeoJsonLineStringStyle();
-                    style.setColor(Color.BLUE);
-                    style.setWidth(20);
-                    feature.setLineStringStyle(style);
-                    //getPosition(feature);
-                    //layer.addFeature(feature);
-                    geoJsonLayer.addLayerToMap();
-                    break;
-                }
-
-                case "MultiLineString": {
-                    GeoJsonLineStringStyle style = new GeoJsonLineStringStyle();
-                    style.setColor(Color.BLUE);
-                    style.setWidth(10);
-                    feature.setLineStringStyle(style);
-                    geoJsonLayer.addLayerToMap();
-                    break;
-                }
-
-                default:
-                    Toast.makeText(this, "Error during visualizing map!", Toast.LENGTH_SHORT).show();
-                    break;
+            default: {
+                selectedColorList = new ArrayList<>(ColorValues.materialColors);
+                break;
             }
         }
+
+        int listLength = selectedColorList.size();
+        Random random = new Random();
+        int arrayIndex = random.nextInt(listLength);
+        colorInt = selectedColorList.get(arrayIndex);
+
+        return colorInt;
     }
 }

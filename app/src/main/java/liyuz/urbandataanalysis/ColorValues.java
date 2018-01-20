@@ -6,14 +6,14 @@ import java.util.ArrayList;
 
 class ColorValues {
 
+    protected static ArrayList<Integer> reds = new ArrayList<>();
+    protected static ArrayList<Integer> blues = new ArrayList<>();
+    protected static ArrayList<Integer> greens = new ArrayList<>();
+    protected static ArrayList<Integer> grays = new ArrayList<>();
+    protected static ArrayList<Integer> purples = new ArrayList<>();
+    protected static ArrayList<Integer> materialColors = new ArrayList<>();
 
-
-    public static ArrayList<Integer> reds = new ArrayList<>();
-    public static ArrayList<Integer> blues = new ArrayList<>();
-    public static ArrayList<Integer> greens = new ArrayList<>();
-    public static ArrayList<Integer> grays = new ArrayList<>();
-    public static ArrayList<Integer> purples = new ArrayList<>();
-    public static int transparency = (int) (70 * 2.55);
+    protected static int transparency = (int) (70 * 2.55);
 
     static void setTransparency() {
         if (SelectedData.isMap) {
@@ -63,6 +63,10 @@ class ColorValues {
     static int purple6 = Color.argb(transparency, 156,39,176);
     static int purple7 = Color.argb(transparency, 142,36,170);
     static int purple8 = Color.argb(transparency, 123,31,162);
+    static int material1 = Color.argb(transparency,18, 80, 44);
+    static int material2 = Color.argb(transparency, 95, 77, 6);
+    static int material3 = Color.argb(transparency, 91, 30, 24);
+    static int material4 = Color.argb(transparency, 20, 60, 86);
 
     static {
         reds.add(red1);
@@ -105,5 +109,10 @@ class ColorValues {
         purples.add(purple6);
         purples.add(purple7);
         purples.add(purple8);
+        materialColors.add(material1);
+        materialColors.add(material2);
+        materialColors.add(material3);
+        materialColors.add(material4);
+
     }
 }
