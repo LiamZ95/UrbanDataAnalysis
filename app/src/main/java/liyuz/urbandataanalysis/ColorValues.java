@@ -4,17 +4,25 @@ import android.graphics.Color;
 
 import java.util.ArrayList;
 
-/**
- * Created by Liyu Zhang on 18/1/18.
- */
+class ColorValues {
 
-public class ColorValues {
+
+
     public static ArrayList<Integer> reds = new ArrayList<>();
     public static ArrayList<Integer> blues = new ArrayList<>();
     public static ArrayList<Integer> greens = new ArrayList<>();
     public static ArrayList<Integer> grays = new ArrayList<>();
     public static ArrayList<Integer> purples = new ArrayList<>();
-    public static int transparency = (int) (ChartSettings.selectedChartOpacity * 2.55);
+    public static int transparency = (int) (70 * 2.55);
+
+    static void setTransparency() {
+        if (SelectedData.isMap) {
+            transparency = (int) (MapSettings.selectedMapOpacity * 2.55);
+        } else {
+            transparency = (int) (ChartSettings.selectedChartOpacity * 2.55);
+        }
+    }
+
     static int red1 = Color.argb(transparency, 255,235,238);
     static int red2 = Color.argb(transparency, 255,205,210);
     static int red3 = Color.argb(transparency, 239,154,154);

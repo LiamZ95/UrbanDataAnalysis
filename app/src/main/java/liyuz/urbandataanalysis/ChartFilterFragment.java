@@ -173,7 +173,6 @@ public class ChartFilterFragment extends Fragment {
         cityBtn.setEnabled(false);
 
 
-
 //        String typeName = SelectedData.selectedCap.capName;
 //        String urlStr = "http://openapi.aurin.org.au/wfs?request=" +
 //                "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typeName;
@@ -443,8 +442,8 @@ public class ChartFilterFragment extends Fragment {
                 }
 
                 // Show chart in a new activity
-//                Intent intent = new Intent(getActivity(), ChartActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(getActivity(), ChartActivity.class);
+                startActivity(intent);
 
             }
         });
@@ -467,8 +466,8 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-//            sendRequest();
-            openLocalFile();
+            sendRequest();
+//            openLocalFile();
             return null;
         }
 

@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity
                             // set the organization logo for each capability
                             cap.image_id = getOrgLogo(organization);
 
-                            if(! BigData.big_data.contains(cap.capTitle)) {
+                            if(! UDADataProcessing.titleList.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
                                 capCount += 1;
 //                                Log.i(TAG + "Total cap num: ", String.valueOf(capCount));

@@ -5,4 +5,5 @@ package liyuz.urbandataanalysis;
 class SelectedData {
     static Capability selectedCap;
     static BBox selectedBBox;
+    static Boolean isMap = true;
 }

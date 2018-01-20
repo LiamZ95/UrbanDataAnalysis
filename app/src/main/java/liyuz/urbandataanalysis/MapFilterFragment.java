@@ -479,8 +479,14 @@ public class MapFilterFragment extends Fragment {
                     Log.i(TAG + "Selected BBox", String.valueOf(MapSettings.selectedBBox.getHigherLa()));
                 }
 
-//                Intent intent = new Intent(getActivity(), MapsActivity.class);
-//                startActivity(intent);
+                SelectedData.isMap = true;
+                // Set transparency
+                SelectedData.isMap = false;
+                ColorValues.setTransparency();
+                Log.i(TAG, "transparency: " + String.valueOf(ColorValues.transparency));
+
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -501,8 +507,8 @@ public class MapFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-//            sendRequest();
-            openLocalFile();
+            sendRequest();
+//            openLocalFile();
             return null;
         }
 
