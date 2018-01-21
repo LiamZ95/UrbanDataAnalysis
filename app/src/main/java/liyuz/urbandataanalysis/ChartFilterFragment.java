@@ -514,8 +514,10 @@ public class ChartFilterFragment extends Fragment {
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    Toast.makeText(getActivity().getApplicationContext(), "Error in connecting AURIN", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Toast.makeText(getActivity().getApplicationContext(), "Error in connecting AURIN", Toast.LENGTH_SHORT).show();
                 }finally {
                     if (connection != null) {
                         connection.disconnect();

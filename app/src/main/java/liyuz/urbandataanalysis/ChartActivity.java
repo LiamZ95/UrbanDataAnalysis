@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -44,7 +46,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class ChartActivity extends AppCompatActivity implements OnChartValueSelectedListener {
-    private final String TAG = getClass().getSimpleName() + "###";
+    private final String TAG = getClass().getSimpleName();
     private BarChart barChart;
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<Float> classifiers = new ArrayList<>();
@@ -60,20 +62,21 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private String classifierTitle = ChartSettings.selectedChartClassifier;
     private final int HANDLER_FLAG = 0;
 
-    private int dataSetSize;
+    private float averageValue = 0;
+
+    private boolean showType = false;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == HANDLER_FLAG) {
-                visualizeChart(barChart);
+                String rawData = (String) msg.obj;
+                parseJSON(rawData);
+                visualizeChartPlus(barChart);
             }
         }
     };
-
-
-//    private Handler myHandler = new MyHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +108,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    // Expand the layout process in the background
                     expandableLayout.expand();
                 } else {
                     expandableLayout.collapse();
@@ -118,9 +122,6 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     @Override
     public void onValueSelected(Entry e, Highlight h) {
         int i = objectIdList.indexOf(e.getX());
-//        Toast.makeText(this, "Entry touched", Toast.LENGTH_SHORT).show();
-
-        Log.i("index: ", String.valueOf(i));
         String xTvStr = "objectid: " + String.valueOf(Math.round(objectIdList.get(i)));
         xTv.setText(xTvStr);
         String yTvStr = classifierTitle + ": " + String.valueOf(classifiers.get(i));
@@ -151,15 +152,11 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         protected String doInBackground(String... strings) {
 //            sendRequest();
             openLocalFile();
-            Message message = new Message();
-            message.what = HANDLER_FLAG;
-            handler.sendMessage(message);
             return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
-            Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
     }
@@ -173,49 +170,42 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         final double hla = ChartSettings.selectedBBox.getHigherLa();
         final double hlo = ChartSettings.selectedBBox.getHigherLon();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection;
-                Authenticator.setDefault (new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
-                    }
-                });
-                try{
-                    URL url = new URL("http://openapi.aurin.org.au/wfs?" +
-                            "request=GetFeature&service=WFS&version=1.1.0&" +
-                            "TypeName="+ typeName+ "&" +
-                            "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
-                            "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
-                            + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier);
-
-                    Log.i("ChartUrl->", url.toString());
-
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(8000);
-                    connection.setReadTimeout(8000);
-                    InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    String data = response.toString();
-//                    Message message = new Message();
-//                    message.what = CHARTMSGId;
-//                    message.obj = data;
-//                    myHandler.sendMessage(message);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        HttpURLConnection connection;
+        Authenticator.setDefault (new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
             }
-        }).start();
+        });
+        try{
+            URL url = new URL("http://openapi.aurin.org.au/wfs?" +
+                    "request=GetFeature&service=WFS&version=1.1.0&" +
+                    "TypeName="+ typeName+ "&" +
+                    "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
+                    "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
+                    + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier);
+
+            Log.i("ChartUrl->", url.toString());
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(8000);
+            connection.setReadTimeout(8000);
+            InputStream in = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            String data = response.toString();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void openLocalFile() {
         AssetManager assetManager = getApplicationContext().getAssets();
@@ -238,8 +228,10 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         Log.i(TAG + "Open local file", url);
 
         try{
+//            InputStream in = assetManager
+//                    .open("2_cap_bssid_latitude_chart.json");
             InputStream in = assetManager
-                    .open("2_cap_bssid_latitude_chart.json");
+                    .open("ad_free_wifi_type_longi.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
@@ -251,13 +243,16 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             Log.d(TAG, "All data read from local json file");
 
             // Parse json data
-            parseJSON(data);
-            dataSetSize = objectIdList.size();
-            Log.i("DataSetSize", String.valueOf(dataSetSize));
-
-            for (Float f: objectIdList) {
-                Log.i("objectListItem", String.valueOf(f));
-            }
+            Message message = new Message();
+            message.what = HANDLER_FLAG;
+            message.obj = data;
+            handler.sendMessage(message);
+//            dataSetSize = objectIdList.size();
+//            Log.i("DataSetSize", String.valueOf(dataSetSize));
+//
+//            for (Float f: objectIdList) {
+//                Log.i("objectListItem", String.valueOf(f));
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -268,60 +263,121 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             JSONObject jsonObject = new JSONObject(jsonData);
             JSONArray jsonArray = new JSONArray((jsonObject.getString("features")));
 
+            String selectedAttribute = ChartSettings.selectedChartAttribute;
+            String selectedClassifier = ChartSettings.selectedChartClassifier;
+            float classifierValueSum = 0;
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jObject = jsonArray.getJSONObject(i);
                 String properties = jObject.getString("properties");
                 JSONObject propertyObj = new JSONObject(properties);
 
-                String selectedAttribute = ChartSettings.selectedChartAttribute;
-                String selectedClassifier = ChartSettings.selectedChartClassifier;
-
                 String attributeData = propertyObj.getString(selectedAttribute);
                 String classifierData = propertyObj.getString(selectedClassifier);
-
+                float classifierValueTemp = Float.parseFloat(classifierData);
+                classifierValueSum += classifierValueTemp;
                 attributes.add(attributeData);
-                classifiers.add(Float.parseFloat(classifierData));
+                classifiers.add(classifierValueTemp);
                 // Use object id as X-Axis value
                 objectIdList.add(Float.parseFloat(propertyObj.getString("objectid")));
-
-//                Log.i(TAG, String.valueOf(i));
-
             }
+
+            averageValue = classifierValueSum / classifiers.size();
+
         } catch (JSONException e) {
             Toast.makeText(this, "JSON parse error", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
 
-    // This handler solves memory leaks by using weak reference
-//    private static class MyHandler extends Handler {
-//        private final int CHARTMSGID = 3;
-//        private final WeakReference<ChartActivity> mActivity;
-//
-//        public MyHandler(ChartActivity activity) {
-//            mActivity = new WeakReference<ChartActivity>(activity);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-////            if (msg.what == CHARTMSGID) {
-////                String jsonData = (String) msg.obj;
-////                try {
-////                    parseJson(jsonData);
-////
-////                }
-////            }
-//        }
-//    }
-
-
     // All setting about bar chart
-    private void visualizeChart(BarChart b) {
-        // Set background color
-//        b.setBackgroundColor(Color.parseColor("#00673d"));
-        // Set description for the chart
-        String descStr = "objectid(X-Axis) against " + classifierTitle + "(Y-Axis), " +
-                "tap each bar to check its attribute";
+    private void visualizeChart(BarChart b, boolean showType) {
+        if (showType) {
+            String descStr = "Grouped data, type(X-Axis) against its total amount(Y-Axis)";
+            Description description = new Description();
+            description.setText(descStr);
+            b.setDescription(description);
+
+            // Customize bar chart
+            b.setDrawValueAboveBar(true);
+            b.setDrawBarShadow(false);
+
+            b.setTouchEnabled(true);
+            b.setDragEnabled(true);
+            b.setScaleEnabled(true);
+
+            b.setHighlightFullBarEnabled(true);
+            b.animateXY(3000, 3000);
+
+            // What will shown on xAxis is the item from classifier, like object
+            XAxis xAxis = b.getXAxis();
+            // Customize XAxis
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(true);
+            xAxis.setDrawLabels(true);
+            xAxis.setTextColor(Color.BLACK);
+            xAxis.setTextSize(10f);
+            xAxis.setCenterAxisLabels(true);
+
+            for (int i = 0; i < attributes.size(); i++) {
+
+            }
+        }
+        else {
+            String descStr = "objectid(X-Axis) against " + classifierTitle + "(Y-Axis), " +
+                    "tap each bar to check its attribute";
+            Description description = new Description();
+            description.setText(descStr);
+            b.setDescription(description);
+
+            // Customize bar chart
+            b.setDrawValueAboveBar(true);
+            b.setDrawBarShadow(false);
+            b.setPinchZoom(false);
+
+            b.setTouchEnabled(true);
+            b.setDragEnabled(true);
+            b.setScaleEnabled(true);
+
+            b.setHighlightFullBarEnabled(true);
+            b.animateXY(1000, 1000);
+
+            // What will shown on xAxis is the item from classifier, like object
+            XAxis xAxis = b.getXAxis();
+            // Customize XAxis
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(true);
+            xAxis.setDrawLabels(true);
+            xAxis.setTextColor(Color.BLACK);
+            xAxis.setTextSize(10f);
+            xAxis.setCenterAxisLabels(true);
+
+            for (int i = 0; i < classifiers.size(); i++) {
+                entryList.add(new BarEntry(objectIdList.get(i), classifiers.get(i)));
+            }
+
+            Log.i(TAG, "All entry added");
+            BarDataSet barDataSet = new BarDataSet(entryList, ChartSettings.selectedChartAttribute);
+
+            // Set the bar color
+            if (ChartSettings.selectedChartColor.equals("Material colors")) {
+                barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+            } else {
+                barDataSet.setColors(ColorValues.getRandomColor(ChartSettings.selectedChartColor));
+            }
+
+            // Show value above each bar
+            barDataSet.setDrawValues(true);
+            BarData data = new BarData(barDataSet);
+
+            b.setData(data);
+            // Show bar chart
+            b.invalidate();
+        }
+    }
+
+    private void visualizeChartPlus(BarChart b) {
+        String descStr = attributeTitle + "(X-Axis) against " + classifierTitle + "(Y-Axis), " +
+                "tap each bar to check detail";
         Description description = new Description();
         description.setText(descStr);
         b.setDescription(description);
@@ -329,55 +385,34 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         // Customize bar chart
         b.setDrawValueAboveBar(true);
         b.setDrawBarShadow(false);
+        b.setPinchZoom(false);
 
         b.setTouchEnabled(true);
         b.setDragEnabled(true);
         b.setScaleEnabled(true);
 
+        LimitLine ll = new LimitLine(averageValue, "Average： " + String.valueOf(averageValue));
+        ll.setLineColor(Color.RED);
+        ll.setLineWidth(2f);
+        ll.setTextColor(Color.BLACK);
+        ll.setTextSize(12f);
         b.setHighlightFullBarEnabled(true);
-        b.animateXY(1000, 1000);
-
-        // What will shown on xAxis is the item from classifier, like object
-        XAxis xAxis = b.getXAxis();
-        // Customize XAxis
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(true);
-        xAxis.setDrawLabels(true);
-        xAxis.setTextColor(Color.BLACK);
-        xAxis.setTextSize(10f);
-        xAxis.setCenterAxisLabels(true);
 
         for (int i = 0; i < classifiers.size(); i++) {
             entryList.add(new BarEntry(objectIdList.get(i), classifiers.get(i)));
         }
-        Log.i(TAG, "All entry added");
-        BarDataSet barDataSet = new BarDataSet(entryList, "Tap each entry to view attribute");
+
+        YAxis leftYAxis = b.getAxisLeft();
+//        leftYAxis.setDrawLimitLinesBehindData(true);
+        leftYAxis.addLimitLine(ll);
+
+        BarDataSet barDataSet = new BarDataSet(entryList, ChartSettings.selectedChartAttribute);
 
         // Set the bar color
-        if (ChartSettings.selectedChartColor != "Material colors") {
-            switch (ChartSettings.selectedChartColor) {
-                case "Red":
-                    barDataSet.setColors(Color.parseColor("#ff0000"));
-                    break;
-                case "Blue":
-                    barDataSet.setColors(Color.parseColor("##33ccff"));
-                    break;
-                case "Green":
-                    barDataSet.setColors(Color.parseColor("##009900"));
-                    break;
-                case "Gray":
-                    barDataSet.setColors(Color.parseColor("#c2c2d6"));
-                    break;
-                case "Purple":
-                    barDataSet.setColors(Color.parseColor("#9900cc"));
-                    break;
-                default:
-                    barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-                    break;
-            }
-        }
-        else {
+        if (ChartSettings.selectedChartColor.equals("Material colors")) {
             barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        } else {
+            barDataSet.setColors(ColorValues.getColorInt(ChartSettings.selectedChartColor));
         }
 
         // Show value above each bar
@@ -386,7 +421,8 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
         b.setData(data);
         // Show bar chart
-        b.invalidate();
+        b.animateXY(3000, 3000);
+
     }
 
 }

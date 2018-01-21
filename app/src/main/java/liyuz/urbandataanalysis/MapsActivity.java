@@ -127,8 +127,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String data = stringBuilder.toString();
             Log.d(TAG, "All data read from local json file");
 
-            // Parse json data
-            parseJSON(data);
+            Message message = new Message();
+            message.what = HANDLER_FLAG;
+            message.obj = data;
+            handler.sendMessage(message);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -250,7 +252,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             switch (type) {
                 case "MultiPolygon": {
-                    final int color = getRandomColor(selectedColor);
+                    final int color = ColorValues.getRandomColor(selectedColor);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -278,7 +280,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 case "Polygon": {
-                    final int color = getRandomColor(selectedColor);
+                    final int color = ColorValues.getRandomColor(selectedColor);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -296,7 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 case "LineString": {
-                    final int color = getRandomColor(selectedColor);
+                    final int color = ColorValues.getRandomColor(selectedColor);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -311,7 +313,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 case "MultiLineString": {
-                    final int color = getRandomColor(selectedColor);
+                    final int color = ColorValues.getRandomColor(selectedColor);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -355,47 +357,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
-    private Integer getRandomColor(String colorStr) {
-        ArrayList<Integer> selectedColorList = new ArrayList<>();
-        Integer colorInt = 0;
-        switch(colorStr) {
-            case "Material colors":{
-                selectedColorList = new ArrayList<>(ColorValues.materialColors);
-                break;
-            }
-            case "Red":{
-                selectedColorList = new ArrayList<>(ColorValues.reds);
-                break;
-            }
-            case "Blue": {
-                selectedColorList = new ArrayList<>(ColorValues.blues);
-                break;
-            }
-            case "Green": {
-                selectedColorList = new ArrayList<>(ColorValues.greens);
-                break;
-            }
-            case "Gray": {
-                selectedColorList = new ArrayList<>(ColorValues.grays);
-                break;
-            }
-            case "Purple": {
-                selectedColorList = new ArrayList<>(ColorValues.purples);
-                break;
-            }
-
-            default: {
-                selectedColorList = new ArrayList<>(ColorValues.materialColors);
-                break;
-            }
-        }
-
-        int listLength = selectedColorList.size();
-        Random random = new Random();
-        int arrayIndex = random.nextInt(listLength);
-        colorInt = selectedColorList.get(arrayIndex);
-
-        return colorInt;
-    }
 }

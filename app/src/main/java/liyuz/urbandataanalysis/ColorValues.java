@@ -3,6 +3,7 @@ package liyuz.urbandataanalysis;
 import android.graphics.Color;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 class ColorValues {
 
@@ -14,6 +15,83 @@ class ColorValues {
     protected static ArrayList<Integer> materialColors = new ArrayList<>();
 
     protected static int transparency = (int) (70 * 2.55);
+
+    static Integer getRandomColor(String colorStr) {
+        ArrayList<Integer> selectedColorList = new ArrayList<>();
+        Integer colorInt;
+        switch(colorStr) {
+            case "Material colors":{
+                selectedColorList = new ArrayList<>(ColorValues.materialColors);
+                break;
+            }
+            case "Red":{
+                selectedColorList = new ArrayList<>(ColorValues.reds);
+                break;
+            }
+            case "Blue": {
+                selectedColorList = new ArrayList<>(ColorValues.blues);
+                break;
+            }
+            case "Green": {
+                selectedColorList = new ArrayList<>(ColorValues.greens);
+                break;
+            }
+            case "Gray": {
+                selectedColorList = new ArrayList<>(ColorValues.grays);
+                break;
+            }
+            case "Purple": {
+                selectedColorList = new ArrayList<>(ColorValues.purples);
+                break;
+            }
+
+            default: {
+                selectedColorList = new ArrayList<>(ColorValues.materialColors);
+                break;
+            }
+        }
+
+        int listLength = selectedColorList.size();
+        Random random = new Random();
+        int arrayIndex = random.nextInt(listLength);
+        colorInt = selectedColorList.get(arrayIndex);
+
+        return colorInt;
+    }
+
+
+    static Integer getColorInt(String colorStr) {
+        Integer colorInt;
+        switch(colorStr) {
+            case "Red":{
+                colorInt = reds.get(0);
+                break;
+            }
+            case "Blue": {
+                colorInt = blues.get(0);
+                break;
+            }
+            case "Green": {
+                colorInt = greens.get(0);
+                break;
+            }
+            case "Gray": {
+                colorInt = grays.get(0);
+                break;
+            }
+            case "Purple": {
+                colorInt = purples.get(0);
+                break;
+            }
+            default: {
+                colorInt = reds.get(0);
+                break;
+            }
+        }
+
+        return colorInt;
+    }
+
 
     static void setTransparency() {
         if (SelectedData.isMap) {
