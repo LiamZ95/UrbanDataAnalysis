@@ -10,15 +10,18 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+//import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.LimitLine;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -27,8 +30,14 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-import net.cachapa.expandablelayout.ExpandableLayout;
+//import net.cachapa.expandablelayout.ExpandableLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,18 +62,23 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private ArrayList<Float> objectIdList = new ArrayList<>();
     private ArrayList<BarEntry> entryList = new ArrayList<>();
     private ProgressDialog progressDialog;
+    private LinearLayout progressLayout, detailLayout;
+//    private ScrollView scrollView;
 
-    private TextView xTv, yTv, attrTv;
+    private TextView xTv, yTv, attrTv, detailTv;
     private SwitchCompat switchCompat;
-    private ExpandableLayout expandableLayout;
+//    private ExpandableLayout expandableLayout;
 
     private String attributeTitle = ChartSettings.selectedChartAttribute;
     private String classifierTitle = ChartSettings.selectedChartClassifier;
     private final int HANDLER_FLAG = 0;
+    private final int DETAIL_FLAG = 1;
+
+    private boolean detailAllLoaded = false;
 
     private float averageValue = 0;
 
-    private boolean showType = false;
+    private ArrayList<Feature> featureList = new ArrayList<>();
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -73,7 +87,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             if (msg.what == HANDLER_FLAG) {
                 String rawData = (String) msg.obj;
                 parseJSON(rawData);
-                visualizeChartPlus(barChart);
+                visualizeChart(barChart);
             }
         }
     };
@@ -95,7 +109,11 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         yTv = (TextView)findViewById(R.id.chart_y_content_tv);
         attrTv = (TextView)findViewById(R.id.chart_attr_content_tv);
         switchCompat = (SwitchCompat) findViewById(R.id.chart_switch);
-        expandableLayout = (ExpandableLayout) findViewById(R.id.chart_expandable_lo);
+//        expandableLayout = (ExpandableLayout) findViewById(R.id.chart_expandable_lo);
+        progressLayout = (LinearLayout) findViewById(R.id.progress_layout);
+        detailTv = (TextView) findViewById(R.id.scroll_detail_tv);
+//        scrollView = (ScrollView) findViewById(R.id.chart_scroll_view);
+        detailLayout = (LinearLayout) findViewById(R.id.chart_detail_lo) ;
 
         xTv.setText("objectid");
         yTv.setText(classifierTitle);
@@ -109,13 +127,17 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
                     // Expand the layout process in the background
-                    expandableLayout.expand();
+//                    expandableLayout.expand();
+                    detailLayout.setVisibility(View.VISIBLE);
+                    DetailTask detailTask = null;
+                    detailTask = new DetailTask();
+                    detailTask.execute();
                 } else {
-                    expandableLayout.collapse();
+                    detailLayout.setVisibility(View.INVISIBLE);
+//                    expandableLayout.collapse();
                 }
             }
         });
-
     }
 
     // Define task to execute when barChart item is selected
@@ -128,7 +150,9 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         yTv.setText(yTvStr);
         String attributeStr = attributeTitle + ": " + attributes.get(i);
         attrTv.setText(attributeStr);
-
+        if (detailAllLoaded) {
+            showJSONDetail(i);
+        }
     }
 
     @Override
@@ -151,7 +175,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         @Override
         protected String doInBackground(String... strings) {
 //            sendRequest();
-            openLocalFile();
+            openLocalFile(HANDLER_FLAG);
             return null;
         }
 
@@ -207,7 +231,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     }
 
 
-    private void openLocalFile() {
+    private void openLocalFile(int flag) {
         AssetManager assetManager = getApplicationContext().getAssets();
 
         final String typeName = SelectedData.selectedCap.capName;
@@ -242,17 +266,18 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             String data = stringBuilder.toString();
             Log.d(TAG, "All data read from local json file");
 
+            in.close();
+            reader.close();
             // Parse json data
-            Message message = new Message();
-            message.what = HANDLER_FLAG;
-            message.obj = data;
-            handler.sendMessage(message);
-//            dataSetSize = objectIdList.size();
-//            Log.i("DataSetSize", String.valueOf(dataSetSize));
-//
-//            for (Float f: objectIdList) {
-//                Log.i("objectListItem", String.valueOf(f));
-//            }
+            if (flag == HANDLER_FLAG) {
+                Message message = new Message();
+                message.what = flag;
+                message.obj = data;
+                handler.sendMessage(message);
+            }
+            else {
+                parseJSONDetail(data);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -289,93 +314,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         }
     }
 
-    // All setting about bar chart
-    private void visualizeChart(BarChart b, boolean showType) {
-        if (showType) {
-            String descStr = "Grouped data, type(X-Axis) against its total amount(Y-Axis)";
-            Description description = new Description();
-            description.setText(descStr);
-            b.setDescription(description);
-
-            // Customize bar chart
-            b.setDrawValueAboveBar(true);
-            b.setDrawBarShadow(false);
-
-            b.setTouchEnabled(true);
-            b.setDragEnabled(true);
-            b.setScaleEnabled(true);
-
-            b.setHighlightFullBarEnabled(true);
-            b.animateXY(3000, 3000);
-
-            // What will shown on xAxis is the item from classifier, like object
-            XAxis xAxis = b.getXAxis();
-            // Customize XAxis
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setDrawGridLines(true);
-            xAxis.setDrawLabels(true);
-            xAxis.setTextColor(Color.BLACK);
-            xAxis.setTextSize(10f);
-            xAxis.setCenterAxisLabels(true);
-
-            for (int i = 0; i < attributes.size(); i++) {
-
-            }
-        }
-        else {
-            String descStr = "objectid(X-Axis) against " + classifierTitle + "(Y-Axis), " +
-                    "tap each bar to check its attribute";
-            Description description = new Description();
-            description.setText(descStr);
-            b.setDescription(description);
-
-            // Customize bar chart
-            b.setDrawValueAboveBar(true);
-            b.setDrawBarShadow(false);
-            b.setPinchZoom(false);
-
-            b.setTouchEnabled(true);
-            b.setDragEnabled(true);
-            b.setScaleEnabled(true);
-
-            b.setHighlightFullBarEnabled(true);
-            b.animateXY(1000, 1000);
-
-            // What will shown on xAxis is the item from classifier, like object
-            XAxis xAxis = b.getXAxis();
-            // Customize XAxis
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setDrawGridLines(true);
-            xAxis.setDrawLabels(true);
-            xAxis.setTextColor(Color.BLACK);
-            xAxis.setTextSize(10f);
-            xAxis.setCenterAxisLabels(true);
-
-            for (int i = 0; i < classifiers.size(); i++) {
-                entryList.add(new BarEntry(objectIdList.get(i), classifiers.get(i)));
-            }
-
-            Log.i(TAG, "All entry added");
-            BarDataSet barDataSet = new BarDataSet(entryList, ChartSettings.selectedChartAttribute);
-
-            // Set the bar color
-            if (ChartSettings.selectedChartColor.equals("Material colors")) {
-                barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-            } else {
-                barDataSet.setColors(ColorValues.getRandomColor(ChartSettings.selectedChartColor));
-            }
-
-            // Show value above each bar
-            barDataSet.setDrawValues(true);
-            BarData data = new BarData(barDataSet);
-
-            b.setData(data);
-            // Show bar chart
-            b.invalidate();
-        }
-    }
-
-    private void visualizeChartPlus(BarChart b) {
+    private void visualizeChart(BarChart b) {
         String descStr = attributeTitle + "(X-Axis) against " + classifierTitle + "(Y-Axis), " +
                 "tap each bar to check detail";
         Description description = new Description();
@@ -421,8 +360,75 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
         b.setData(data);
         // Show bar chart
-        b.animateXY(3000, 3000);
+        b.animateXY(1000, 1000);
 
     }
+
+    private class DetailTask extends AsyncTask<Integer, String, String> {
+        @Override
+        protected void onPreExecute() {
+            progressLayout.setVisibility(View.VISIBLE);
+            detailTv.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            detailAllLoaded = true;
+            progressLayout.setVisibility(View.GONE);
+            detailTv.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(Integer... integers) {
+            openLocalFile(DETAIL_FLAG);
+            return null;
+        }
+    }
+
+    private void parseJSONDetail(String jsonData) {
+        Gson gson = new Gson();
+        JsonElement jsonElement = new JsonParser().parse(jsonData);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        JsonArray jsonArray = jsonObject.getAsJsonArray("features");
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject eachObj = jsonArray.get(i).getAsJsonObject();
+            String data = gson.toJson(eachObj);
+            Feature feature = gson.fromJson(data, Feature.class);
+            featureList.add(feature);
+        }
+    }
+
+    private void showJSONDetail(int i) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String res = gson.toJson(featureList.get(i));
+        detailTv.setText(res);
+        detailTv.setMovementMethod(new ScrollingMovementMethod());
+    }
+
+    class Feature {
+        private String type;
+        private String id;
+        private String geometry;
+        private Property properties;
+
+        public Feature(String type, String id, String geometry, Property properties) {
+            this.type = type;
+            this.id = id;
+            this.geometry = geometry;
+            this.properties = properties;
+        }
+    }
+    class Property {
+        private int objectid;
+
+        private Float[] bbox;
+
+        public Property(int objectid, Float[] bbox) {
+            this.objectid = objectid;
+            this.bbox = bbox;
+        }
+    }
+
+
 
 }

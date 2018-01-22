@@ -466,8 +466,8 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            sendRequest();
-//            openLocalFile();
+//            sendRequest();
+            openLocalFile();
             return null;
         }
 

@@ -10,10 +10,10 @@
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart_chart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"/>
+        android:layout_height="350dp" />
 
     <LinearLayout
+        android:id="@+id/chart_switch_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -38,14 +38,12 @@
             />
     </LinearLayout>
 
-
     <LinearLayout
+        android:id="@+id/chart_info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-
-        android:layout_marginTop="5dp"
-        android:layout_weight="1">
+        android:layout_marginTop="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,6 +77,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"/>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,26 +141,54 @@
                 android:textColor="@color/black"
                 android:layout_marginBottom="5dp"/>
         </LinearLayout>
-        
-        <net.cachapa.expandablelayout.ExpandableLayout
-            android:layout_marginTop="5dp"
-            android:id="@+id/chart_expandable_lo"
-            app:el_duration="1000"
-            app:el_expanded="false"
-            app:el_parallax="0.5"
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/chart_detail_lo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="5dp">
+
+        <LinearLayout
+            android:id="@+id/progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+            <ProgressBar
+                android:id="@+id/chart_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="20dp"-->
+                <!--android:gravity="center"-->
+                <!--android:lines="2"-->
+                <!--android:maxLines="2"-->
+                <!--android:text="Loading data from AURIN\nPlease wait..."-->
+                <!--android:textColor="@color/black"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textStyle="bold" />-->
+        </LinearLayout>
+
+        <TextView
+            android:layout_gravity="center"
+            android:id="@+id/scroll_detail_tv"
+            android:gravity="center"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
-            <TextView
-                android:id="@+id/expanded_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Detail information Detail information Detail information Detail information Detail information "
-                android:textColor="@color/white"
-                android:textSize="50sp"
-                android:layout_gravity="center"/>
-        </net.cachapa.expandablelayout.ExpandableLayout>
-
+            android:maxLines="20"
+            android:scrollbars="vertical"
+            android:textColor="@color/white"
+            android:text="Click bar chart to view detail"/>
     </LinearLayout>
 
 </LinearLayout>
