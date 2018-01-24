@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-//import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,10 +58,11 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private BarChart barChart;
     private ArrayList<String> attributes = new ArrayList<>();
     private ArrayList<Float> classifiers = new ArrayList<>();
-    private ArrayList<Float> objectIdList = new ArrayList<>();
+    private ArrayList<Integer> objectIdList = new ArrayList<>();
     private ArrayList<BarEntry> entryList = new ArrayList<>();
     private ProgressDialog progressDialog;
     private LinearLayout progressLayout, detailLayout;
+    private static String data;
 //    private ScrollView scrollView;
 
     private TextView xTv, yTv, attrTv, detailTv;
@@ -143,8 +143,8 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     // Define task to execute when barChart item is selected
     @Override
     public void onValueSelected(Entry e, Highlight h) {
-        int i = objectIdList.indexOf(e.getX());
-        String xTvStr = "objectid: " + String.valueOf(Math.round(objectIdList.get(i)));
+        int i = objectIdList.indexOf((int)e.getX());
+        String xTvStr = "objectid: " + String.valueOf(objectIdList.get(i));
         xTv.setText(xTvStr);
         String yTvStr = classifierTitle + ": " + String.valueOf(classifiers.get(i));
         yTv.setText(yTvStr);
@@ -158,160 +158,6 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     @Override
     public void onNothingSelected() {
         attrTv.setText("No entry selected");
-    }
-
-
-    // Shown progress dialog
-    private class LongOperation extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(ChartActivity.this);
-            progressDialog.setTitle("Receiving data from AURIN");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-//            sendRequest();
-            openLocalFile(HANDLER_FLAG);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            progressDialog.dismiss();
-        }
-    }
-
-    private void sendRequest() {
-
-        final String typeName = SelectedData.selectedCap.capName;
-        final String geoName = SelectedData.selectedCap.capGeoName;
-        final double lla = ChartSettings.selectedBBox.getLowerLa();
-        final double llo = ChartSettings.selectedBBox.getLowerLon();
-        final double hla = ChartSettings.selectedBBox.getHigherLa();
-        final double hlo = ChartSettings.selectedBBox.getHigherLon();
-
-        HttpURLConnection connection;
-        Authenticator.setDefault (new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
-            }
-        });
-        try{
-            URL url = new URL("http://openapi.aurin.org.au/wfs?" +
-                    "request=GetFeature&service=WFS&version=1.1.0&" +
-                    "TypeName="+ typeName+ "&" +
-                    "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
-                    "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
-                    + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier);
-
-            Log.i("ChartUrl->", url.toString());
-
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(8000);
-            connection.setReadTimeout(8000);
-            InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            String data = response.toString();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void openLocalFile(int flag) {
-        AssetManager assetManager = getApplicationContext().getAssets();
-
-        final String typeName = SelectedData.selectedCap.capName;
-        final String geoName = SelectedData.selectedCap.capGeoName;
-
-        final double lla = ChartSettings.selectedBBox.getLowerLa();
-        final double llo = ChartSettings.selectedBBox.getLowerLon();
-        final double hla = ChartSettings.selectedBBox.getHigherLa();
-        final double hlo = ChartSettings.selectedBBox.getHigherLon();
-
-        String url = "http://openapi.aurin.org.au/wfs?" +
-                "request=GetFeature&service=WFS&version=1.1.0&" +
-                "TypeName="+ typeName+ "&" +
-                "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
-                "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
-                + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier;
-
-        Log.i(TAG + "Open local file", url);
-
-        try{
-//            InputStream in = assetManager
-//                    .open("2_cap_bssid_latitude_chart.json");
-            InputStream in = assetManager
-                    .open("ad_free_wifi_type_longi.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-
-            String data = stringBuilder.toString();
-            Log.d(TAG, "All data read from local json file");
-
-            in.close();
-            reader.close();
-            // Parse json data
-            if (flag == HANDLER_FLAG) {
-                Message message = new Message();
-                message.what = flag;
-                message.obj = data;
-                handler.sendMessage(message);
-            }
-            else {
-                parseJSONDetail(data);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void parseJSON(String jsonData) {
-        try {
-            JSONObject jsonObject = new JSONObject(jsonData);
-            JSONArray jsonArray = new JSONArray((jsonObject.getString("features")));
-
-            String selectedAttribute = ChartSettings.selectedChartAttribute;
-            String selectedClassifier = ChartSettings.selectedChartClassifier;
-            float classifierValueSum = 0;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jObject = jsonArray.getJSONObject(i);
-                String properties = jObject.getString("properties");
-                JSONObject propertyObj = new JSONObject(properties);
-
-                String attributeData = propertyObj.getString(selectedAttribute);
-                String classifierData = propertyObj.getString(selectedClassifier);
-                float classifierValueTemp = Float.parseFloat(classifierData);
-                classifierValueSum += classifierValueTemp;
-                attributes.add(attributeData);
-                classifiers.add(classifierValueTemp);
-                // Use object id as X-Axis value
-                objectIdList.add(Float.parseFloat(propertyObj.getString("objectid")));
-            }
-
-            averageValue = classifierValueSum / classifiers.size();
-
-        } catch (JSONException e) {
-            Toast.makeText(this, "JSON parse error", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
     }
 
     private void visualizeChart(BarChart b) {
@@ -364,6 +210,32 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
     }
 
+
+    // Shown progress dialog
+    private class LongOperation extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(ChartActivity.this);
+            progressDialog.setTitle("Receiving data from AURIN");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            sendRequest(HANDLER_FLAG);
+//            openLocalFile(HANDLER_FLAG);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            progressDialog.dismiss();
+        }
+    }
+
+
     private class DetailTask extends AsyncTask<Integer, String, String> {
         @Override
         protected void onPreExecute() {
@@ -380,8 +252,40 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
         @Override
         protected String doInBackground(Integer... integers) {
-            openLocalFile(DETAIL_FLAG);
+//            openLocalFile(DETAIL_FLAG);
+            parseJSONDetail(data);
             return null;
+        }
+    }
+
+    private void parseJSON(String jsonData) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonData);
+            JSONArray jsonArray = new JSONArray((jsonObject.getString("features")));
+
+            String selectedAttribute = ChartSettings.selectedChartAttribute;
+            String selectedClassifier = ChartSettings.selectedChartClassifier;
+            float classifierValueSum = 0;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jObject = jsonArray.getJSONObject(i);
+                String properties = jObject.getString("properties");
+                JSONObject propertyObj = new JSONObject(properties);
+
+                String attributeData = propertyObj.getString(selectedAttribute);
+                String classifierData = propertyObj.getString(selectedClassifier);
+                float classifierValueTemp = Float.parseFloat(classifierData);
+                classifierValueSum += classifierValueTemp;
+                attributes.add(attributeData);
+                classifiers.add(classifierValueTemp);
+                // Use object id as X-Axis value
+                objectIdList.add(i);
+            }
+
+            averageValue = classifierValueSum / classifiers.size();
+
+        } catch (JSONException e) {
+            Toast.makeText(this, "JSON parse error", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 
@@ -426,6 +330,115 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
         public Property(int objectid, Float[] bbox) {
             this.objectid = objectid;
             this.bbox = bbox;
+        }
+    }
+
+    private void sendRequest(int flag) {
+
+        final String typeName = SelectedData.selectedCap.capName;
+        final String geoName = SelectedData.selectedCap.capGeoName;
+        final double lla = ChartSettings.selectedBBox.getLowerLa();
+        final double llo = ChartSettings.selectedBBox.getLowerLon();
+        final double hla = ChartSettings.selectedBBox.getHigherLa();
+        final double hlo = ChartSettings.selectedBBox.getHigherLon();
+
+        HttpURLConnection connection;
+        Authenticator.setDefault (new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
+            }
+        });
+        try{
+            URL url = new URL("http://openapi.aurin.org.au/wfs?" +
+                    "request=GetFeature&service=WFS&version=1.1.0&" +
+                    "TypeName="+ typeName+ "&" +
+                    "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
+                    "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
+                    + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier);
+
+            Log.i("ChartUrl->", url.toString());
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(8000);
+            connection.setReadTimeout(8000);
+            InputStream in = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            data = response.toString();
+            in.close();
+            reader.close();
+            // Parse json data
+            if (flag == HANDLER_FLAG) {
+                Message message = new Message();
+                message.what = flag;
+                message.obj = data;
+                handler.sendMessage(message);
+            }
+            else {
+                parseJSONDetail(data);
+            }
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void openLocalFile(int flag) {
+        AssetManager assetManager = getApplicationContext().getAssets();
+
+        final String typeName = SelectedData.selectedCap.capName;
+        final String geoName = SelectedData.selectedCap.capGeoName;
+
+        final double lla = ChartSettings.selectedBBox.getLowerLa();
+        final double llo = ChartSettings.selectedBBox.getLowerLon();
+        final double hla = ChartSettings.selectedBBox.getHigherLa();
+        final double hlo = ChartSettings.selectedBBox.getHigherLon();
+
+        String url = "http://openapi.aurin.org.au/wfs?" +
+                "request=GetFeature&service=WFS&version=1.1.0&" +
+                "TypeName="+ typeName+ "&" +
+                "MaxFeatures=1000&outputFormat=json&CQL_FILTER=BBox" +
+                "("+geoName+","+lla+","+llo+","+hla+","+hlo+")&PropertyName="
+                + ChartSettings.selectedChartAttribute +","+ ChartSettings.selectedChartClassifier;
+
+        Log.i(TAG + "Open local file", url);
+
+        try{
+            InputStream in = assetManager
+                    .open("test1.json");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+
+            data = stringBuilder.toString();
+            Log.d(TAG, "All data read from local json file");
+
+            in.close();
+            reader.close();
+            // Parse json data
+            if (flag == HANDLER_FLAG) {
+                Message message = new Message();
+                message.what = flag;
+                message.obj = data;
+                handler.sendMessage(message);
+            }
+            else {
+                parseJSONDetail(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

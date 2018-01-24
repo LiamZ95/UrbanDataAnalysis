@@ -61,7 +61,7 @@ public class ChartFilterFragment extends Fragment {
 
     private String selectedAttribute;
     private String selectedClassifier;
-    private String selectedColor, selectedLevel;
+    private String selectedColor;
     private int selectedOpacity = 70;
 
     private String selectedState, selectedCity;
@@ -192,9 +192,7 @@ public class ChartFilterFragment extends Fragment {
                         Log.i(TAG, tempState);
                         stateCheckedItem = i;
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -225,9 +223,7 @@ public class ChartFilterFragment extends Fragment {
                         DetailActivity activity = (DetailActivity)getActivity();
                         activity.updateMap(false);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -252,9 +248,7 @@ public class ChartFilterFragment extends Fragment {
                         Log.i(TAG, tempCity);
                         cityCheckedItem = i;
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -272,9 +266,7 @@ public class ChartFilterFragment extends Fragment {
                         activity.updateMap(false);
                         Log.i(TAG, selectedCity);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -288,7 +280,6 @@ public class ChartFilterFragment extends Fragment {
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Select an attribute");
-
                 final String[] attrArray = attributes.toArray(new String[attributes.size()]);
                 builder.setSingleChoiceItems(attrArray, attrCheckedItem, new DialogInterface.OnClickListener() {
                     @Override
@@ -297,9 +288,7 @@ public class ChartFilterFragment extends Fragment {
                         attrCheckedItem = i;
                         Log.i(TAG, tempAttribute);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -308,9 +297,7 @@ public class ChartFilterFragment extends Fragment {
                         String tempStr = "Selected Attribute: " + selectedAttribute;
                         attributeTv.setText(tempStr);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -333,9 +320,7 @@ public class ChartFilterFragment extends Fragment {
                         classCheckedItem = i;
                         Log.i(TAG, tempClassifier);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -344,9 +329,7 @@ public class ChartFilterFragment extends Fragment {
                         classBtn.setText(selectedClassifier);
                         classifierTv.setText(temp);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -368,9 +351,7 @@ public class ChartFilterFragment extends Fragment {
                         colorCheckedItem = i;
                         Log.i(TAG, tempColor);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -379,9 +360,7 @@ public class ChartFilterFragment extends Fragment {
                         colorTv.setText(temp);
                         colorBtn.setText(selectedColor);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -424,9 +403,8 @@ public class ChartFilterFragment extends Fragment {
                 ChartSettings.selectedChartColor = selectedColor;
                 ChartSettings.selectedChartOpacity = selectedOpacity;
 
-                Log.i(TAG + " Selected State", selectedState);
-                Log.i(TAG + " Selected City", selectedCity);
-
+//                Log.i(TAG + " Selected State", selectedState);
+//                Log.i(TAG + " Selected City", selectedCity);
 //                Log.i(TAG + "attr: ", selectedChartAttribute);
 //                Log.i(TAG + "class", selectedChartClassifier);
 //                Log.i(TAG + "color", selectedChartColor);
@@ -444,7 +422,6 @@ public class ChartFilterFragment extends Fragment {
                 // Show chart in a new activity
                 Intent intent = new Intent(getActivity(), ChartActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -466,8 +443,8 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-//            sendRequest();
-            openLocalFile();
+            sendRequest();
+//            openLocalFile();
             return null;
         }
 
@@ -477,55 +454,7 @@ public class ChartFilterFragment extends Fragment {
         }
     }
 
-    // sending the http request for type descriptions of certain data set
-    private void sendRequest() {
-        final String typename = SelectedData.selectedCap.capName;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                Authenticator.setDefault (new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
-                    }
-                });
-                try{
-                    URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
-                            "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
-                    Log.d(TAG, url.toString());
 
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(8000);
-                    connection.setReadTimeout(8000);
-                    InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    String data = response.toString();
-                    parseXML(data);
-
-                    Message message = new Message();
-                    message.what = HANDLER_FLAG;
-                    myHandler.sendMessage(message);
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity().getApplicationContext(), "Error in connecting AURIN", Toast.LENGTH_SHORT).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity().getApplicationContext(), "Error in connecting AURIN", Toast.LENGTH_SHORT).show();
-                }finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
-            }
-        }).start();
-    }
 
     // paring the xml with pull methods.
     private void parseXML (String xmlData) {
@@ -620,4 +549,53 @@ public class ChartFilterFragment extends Fragment {
         }
     }
 
+    // sending the http request for type descriptions of certain data set
+    private void sendRequest() {
+        final String typename = SelectedData.selectedCap.capName;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                Authenticator.setDefault (new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
+                    }
+                });
+                try{
+                    URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
+                            "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
+                    Log.d(TAG, url.toString());
+
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(8000);
+                    connection.setReadTimeout(8000);
+                    InputStream in = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    String data = response.toString();
+                    parseXML(data);
+
+                    Message message = new Message();
+                    message.what = HANDLER_FLAG;
+                    myHandler.sendMessage(message);
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity().getApplicationContext(), "Error in connecting AURIN", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity().getApplicationContext(), "Error in connecting AURIN", Toast.LENGTH_SHORT).show();
+                }finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
+    }
 }

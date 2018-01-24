@@ -59,4 +59,14 @@ public class CapAdapter extends BaseAdapter{
 
         return mView;
     }
+
+    void refresh(ArrayList<Capability> newList) {
+        this.capList = newList;
+        notifyDataSetChanged();
+    }
+
+    void restore() {
+        this.capList = AllDataSets.capList;
+        notifyDataSetChanged();
+    }
 }

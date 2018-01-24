@@ -197,9 +197,7 @@ public class MapFilterFragment extends Fragment {
                         Log.i(TAG, tempState);
                         stateCheckedItem = i;
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -230,9 +228,7 @@ public class MapFilterFragment extends Fragment {
                         DetailActivity activity = (DetailActivity)getActivity();
                         activity.updateMap(false);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -257,9 +253,7 @@ public class MapFilterFragment extends Fragment {
                         Log.i(TAG, tempCity);
                         cityCheckedItem = i;
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -278,9 +272,7 @@ public class MapFilterFragment extends Fragment {
 
                         Log.i(TAG, selectedCity);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -303,9 +295,7 @@ public class MapFilterFragment extends Fragment {
                         attrCheckedItem = i;
                         Log.i(TAG, tempAttribute);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -314,9 +304,7 @@ public class MapFilterFragment extends Fragment {
                         String tempStr = "Selected Attribute: " + selectedAttribute;
                         attributeTv.setText(tempStr);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -339,9 +327,7 @@ public class MapFilterFragment extends Fragment {
                         classCheckedItem = i;
                         Log.i(TAG, tempClassifier);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -350,9 +336,7 @@ public class MapFilterFragment extends Fragment {
                         classBtn.setText(selectedClassifier);
                         classifierTv.setText(temp);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -374,9 +358,7 @@ public class MapFilterFragment extends Fragment {
                         lvlCheckedItem = i;
                         Log.i(TAG, tempLevel);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -386,9 +368,7 @@ public class MapFilterFragment extends Fragment {
                         lvlBtn.setText(selectedLevel);
 
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -410,9 +390,7 @@ public class MapFilterFragment extends Fragment {
                         colorCheckedItem = i;
                         Log.i(TAG, tempColor);
                     }
-                });
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Handles actions to perform when user confirm their operations
@@ -421,9 +399,7 @@ public class MapFilterFragment extends Fragment {
                         colorTv.setText(temp);
                         colorBtn.setText(selectedColor);
                     }
-                });
-
-                builder.setNegativeButton("Cancel", null);
+                }).setNegativeButton("Cancel", null);
 
                 // Create and show alert dialog
                 AlertDialog dialog = builder.create();
@@ -460,14 +436,14 @@ public class MapFilterFragment extends Fragment {
                 MapSettings.selectedMapColor = selectedColor;
                 MapSettings.selectedMapOpacity = selectedOpacity;
 
-                Log.i(TAG + "attr: ", selectedAttribute);
-                Log.i(TAG + "class", selectedClassifier);
-                Log.i(TAG + "lvl", selectedLevel);
-                Log.i(TAG + "color", selectedColor);
-                Log.i(TAG + "op", String.valueOf(selectedOpacity));
-
-                Log.i(TAG + " Selected State", selectedState);
-                Log.i(TAG + " Selected City", selectedCity);
+//                Log.i(TAG + "attr: ", selectedAttribute);
+//                Log.i(TAG + "class", selectedClassifier);
+//                Log.i(TAG + "lvl", selectedLevel);
+//                Log.i(TAG + "color", selectedColor);
+//                Log.i(TAG + "op", String.valueOf(selectedOpacity));
+//
+//                Log.i(TAG + " Selected State", selectedState);
+//                Log.i(TAG + " Selected City", selectedCity);
 
                 if (useDefaultBBox) {
                     Log.i(TAG, "Use default BBox");
@@ -518,53 +494,50 @@ public class MapFilterFragment extends Fragment {
         }
     }
 
-    // sending the http request for type descriptions of certain data set
-    private void sendRequest() {
+
+
+    private void sendRequestInOneThread() {
         final String typename = SelectedData.selectedCap.capName;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpURLConnection connection = null;
-                Authenticator.setDefault (new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
-                    }
-                });
-                try{
-                    URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
-                            "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
-                    Log.i(TAG, url.toString());
 
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(15000);
-                    connection.setReadTimeout(15000);
-                    InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    String data = response.toString();
-
-                    parseXML(data);
-
-                    Message message = new Message();
-                    message.what = HANDLER_FLAG;
-                    myHandler.sendMessage(message);
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
-                }
+        HttpURLConnection connection = null;
+        Authenticator.setDefault (new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
             }
-        }).start();
+        });
+        try{
+            URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
+                    "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
+            Log.i(TAG, url.toString());
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(15000);
+            InputStream in = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            String data = response.toString();
+
+            parseXML(data);
+
+            Message message = new Message();
+            message.what = HANDLER_FLAG;
+            myHandler.sendMessage(message);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     // paring the xml with pull methods.
@@ -644,7 +617,6 @@ public class MapFilterFragment extends Fragment {
             message.what = HANDLER_FLAG;
             myHandler.sendMessage(message);
 
-
             for (String classifier : classifiers) {
                 Log.i(TAG, classifier);
             }
@@ -652,6 +624,55 @@ public class MapFilterFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // sending the http request for type descriptions of certain data set
+    private void sendRequest() {
+        final String typename = SelectedData.selectedCap.capName;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+                Authenticator.setDefault (new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
+                    }
+                });
+                try{
+                    URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
+                            "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
+                    Log.i(TAG, url.toString());
+
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    InputStream in = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    String data = response.toString();
+
+                    parseXML(data);
+
+                    Message message = new Message();
+                    message.what = HANDLER_FLAG;
+                    myHandler.sendMessage(message);
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }finally {
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
     }
 
 }

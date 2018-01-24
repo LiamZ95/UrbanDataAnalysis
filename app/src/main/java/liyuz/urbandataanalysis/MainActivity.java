@@ -1,6 +1,8 @@
 package liyuz.urbandataanalysis;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -45,13 +47,17 @@ public class MainActivity extends AppCompatActivity
     private final String TAG = getClass().getSimpleName();
     private ProgressDialog progressDialog;
     private Boolean homeFlag = false;
-    private Boolean hasTransac = false;
+    private Boolean hasTransaction = false;
     private int capCount = 0;
     private Fragment fragment = null;
     private Fragment homeFragment;
     private Fragment currentShownFragment;
     private FragmentManager mainFragmentManager;
+    FloatingActionButton refreshFab, filterFab;
     MaterialSearchView materialSearchView;
+    private boolean hasSelectedOrganization = false;
+    final ArrayList<Capability> selectedOrgs = new ArrayList<>();
+    private View rootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +83,98 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Urban Data Analysis ");
         toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Refresh button
+        refreshFab = (FloatingActionButton) findViewById(R.id.fab);
+        refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                if (! (getCurrentFragment() instanceof ListFragment)) {
+                    Snackbar.make(view, "Refresh only works for data set list", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
+                    mainFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    Snackbar.make(view, "Refresh all data set", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    ListFragment listFragment = (ListFragment) getCurrentFragment();
+                    listFragment.restoreList();
+                }
             }
         });
+
+        // Organization filter button
+        filterFab = (FloatingActionButton) findViewById(R.id.fab2);
+        filterFab.setEnabled(false);
+        filterFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Select an organization");
+                final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
+                final String[] organizationArray = candidates.toArray(new String[candidates.size()]);
+                selectedOrgs.clear();
+                final ArrayList<String> tempOrgs = new ArrayList<>();
+                builder.setMultiChoiceItems(organizationArray, null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                        if (b) {
+                            tempOrgs.add(organizationArray[i]);
+                            Log.i(TAG, "Add " + organizationArray[i]);
+                        }
+//                        else {
+//                            if (tempOrgs.contains(organizationArray[i])) {
+//                                Log.i(TAG, "Remove " + organizationArray[i]);
+//                                tempOrgs.remove(i);
+//                            }
+//                        }
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        hasSelectedOrganization = true;
+                        // What to do when user hit ok
+                        currentShownFragment = getCurrentFragment();
+                        if (!(currentShownFragment instanceof ListFragment)) {
+                            Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
+                            mainFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+
+                        ListFragment filterFragment = (ListFragment) getCurrentFragment();
+                        if (!tempOrgs.contains("All Organizations")) {
+                            for (int j = 0; j < AllDataSets.capList.size(); j++) {
+                                String capOrg = AllDataSets.capList.get(j).capOrganization;
+                                for (int k = 0; k < tempOrgs.size(); k++) {
+                                    String targetOrg = tempOrgs.get(k);
+                                    if (targetOrg.equals(capOrg)) {
+                                        selectedOrgs.add(AllDataSets.capList.get(j));
+                                    }
+                                }
+                            }
+                            filterFragment.changeList(selectedOrgs);
+                        } else {
+                            filterFragment.restoreList();
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // What to do when user hit cancel
+                    }
+                });
+                // Create and show alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
 
         // For navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -104,15 +194,12 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewShown() {
                 currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
-                    Toast.makeText(getApplicationContext(), "Redirect to Data List", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
-//                            .add(currentShownFragment, "currentFragment")
-//                            .addToBackStack("currentFragment")
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .addToBackStack(null)
                             .commit();
                 }
-
             }
 
             @Override
@@ -127,6 +214,7 @@ public class MainActivity extends AppCompatActivity
         materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
                 return false;
             }
 
@@ -138,7 +226,7 @@ public class MainActivity extends AppCompatActivity
                     if (currentShownFragment.isAdded()) {
 
                     }
-                    Toast.makeText(getApplicationContext(), "Redirect to Data List", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
 //                            .add(currentShownFragment, "currentFragment")
@@ -148,6 +236,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 else {
                     ListFragment searchFragment = (ListFragment) getCurrentFragment();
+                    // Update list according to text in search view
                     if (newText != null && !newText.isEmpty()) {
                         String validText = newText.toLowerCase();
                         ArrayList<Capability> allCaps = new ArrayList<>(AllDataSets.capList);
@@ -195,19 +284,25 @@ public class MainActivity extends AppCompatActivity
             if (materialSearchView.isSearchOpen()) {
                 materialSearchView.closeSearch();
             } else {
-                if (hasTransac) {
+                if (hasTransaction) {
                     homeFlag = false;
-                    hasTransac = false;
+                    hasTransaction = false;
                     super.onBackPressed();
                 }
                 else {
                     // !homeFlag means current fragment is at listFragment and the back is not pressed before
-                    if (!homeFlag) {
-                        homeFlag = true;
-                        Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        super.onBackPressed();
+                    if (getCurrentFragment() instanceof ListFragment && hasSelectedOrganization) {
+                        ListFragment currentFragment = (ListFragment) getCurrentFragment();
+                        hasSelectedOrganization = false;
+                        currentFragment.restoreList();
+                    } else {
+                        if (!homeFlag) {
+                            homeFlag = true;
+                            Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            super.onBackPressed();
+                        }
                     }
                 }
             }
@@ -227,16 +322,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -251,7 +342,7 @@ public class MainActivity extends AppCompatActivity
         mainFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         if (id == R.id.nav_list) {
-            Toast.makeText(this, "Going to Data List", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Going to data list", Toast.LENGTH_SHORT).show();
             fragment = new ListFragment();
         } else if (id == R.id.nav_web) {
             Toast.makeText(this, "Going to AURIN", Toast.LENGTH_SHORT).show();
@@ -285,9 +376,10 @@ public class MainActivity extends AppCompatActivity
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        hasTransac = true;
+        hasTransaction = true;
         return true;
     }
+
 
     // sending http request for all dataset, and then parse the received data
     private void sendRequest() {
@@ -333,6 +425,9 @@ public class MainActivity extends AppCompatActivity
 
     // parsing the XML with pull method
     private void parseXML(String xmlData) {
+        AllDataSets.capList.clear();
+        AllDataSets.organizationList.clear();
+        AllDataSets.organizationList.add("All Organizations");
         try {
             String name ="";
             String title = "";
@@ -428,18 +523,17 @@ public class MainActivity extends AppCompatActivity
                             cap.capName = name;
                             cap.capTitle = title;
                             cap.capOrganization = organization;
+                            if (! AllDataSets.organizationList.contains(organization)) {
+                                AllDataSets.organizationList.add(organization);
+                            }
                             cap.capAbstracts = abstracts;
-
                             keywordsStr = keywordsStr.substring(2);
-
                             cap.capKeywords = keywordsStr;
                             keywordsStr = "";
                             cap.capGeoName = geoName;
-
                             cap.capCorners = corners;
 //                            Log.i("Corners", corners);
                             corners = "";
-
                             cap.capBBox.setHigherLa(hla);
                             cap.capBBox.setHigherLon(hlo);
                             cap.capBBox.setLowerLa(lla);
@@ -452,7 +546,7 @@ public class MainActivity extends AppCompatActivity
                             // set the organization logo for each capability
                             cap.image_id = getOrgLogo(organization);
 
-                            if(! UDADataProcessing.titleList.contains(cap.capTitle)) {
+                            if(! AllDataSets.titleList.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
                                 capCount += 1;
 //                                Log.i(TAG + "Total cap num: ", String.valueOf(capCount));
@@ -460,13 +554,11 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                     }
-
                     default:
                         break;
                 }
                 eventType = xmlPullParser.next();
             }
-
             Log.i(TAG, "Parsing finished!: " + String.valueOf(capCount));
         } catch (XmlPullParserException e) {
             e.printStackTrace();
@@ -474,7 +566,6 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
-
 
 
     @Override
@@ -536,6 +627,7 @@ public class MainActivity extends AppCompatActivity
             mainFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, homeFragment)
                     .commit();
+            filterFab.setEnabled(true);
         }
     }
 
@@ -648,7 +740,7 @@ public class MainActivity extends AppCompatActivity
                 result = R.drawable.logo_melbourne_water_corporation;
                 break;
             default:
-                result = R.drawable.logo_defalut_org_image;
+                result = R.drawable.logo_default;
                 break;
         }
 

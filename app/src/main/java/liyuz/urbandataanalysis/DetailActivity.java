@@ -119,7 +119,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
     // This method works for updating the camera view of map fragment
     void updateMap(boolean showDefaultBBox) {
-
+        mMap.clear();
         Double lla, hla, llo, hlo;
 
         if (showDefaultBBox) {

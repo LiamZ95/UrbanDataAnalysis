@@ -27,12 +27,10 @@ public class ListFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-
     public ListFragment() {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static ListFragment newInstance(String param1, String param2) {
         ListFragment fragment = new ListFragment();
         Bundle args = new Bundle();
@@ -82,12 +80,15 @@ public class ListFragment extends Fragment {
         return mView;
     }
 
-    public void changeList(ArrayList<Capability> filteredList) {
-        CapAdapter newCapAdapter = new CapAdapter(this.getActivity().getApplicationContext(), filteredList);
-        lv.setAdapter(newCapAdapter);
+    void changeList(ArrayList<Capability> filteredList) {
+//        CapAdapter newCapAdapter = new CapAdapter(this.getActivity().getApplicationContext(), filteredList);
+//        lv.setAdapter(newCapAdapter);
+        mainAdapter.refresh(filteredList);
     }
 
-    public void restoreList() {
-        lv.setAdapter(mainAdapter);
+    void restoreList() {
+//        lv.setAdapter(mainAdapter);
+        mainAdapter.restore();
     }
+
 }
