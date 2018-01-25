@@ -156,9 +156,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     for (String key : feature.getPropertyKeys()) {
                         String temp = key + ": " + feature.getProperty(key).toString();
                         Log.i(TAG, temp);
-                        alertStr += temp + "\n";
+                        alertStr += temp + "\n\n";
                     }
-                    new AlertDialog.Builder(getApplicationContext())
+                    new AlertDialog.Builder(MapsActivity.this)
                             .setTitle("Polygon detail")
                             .setMessage(alertStr)
                             .setNegativeButton("DISMISS", null)
@@ -166,7 +166,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
-            Log.d(TAG, "All data loaded on map!");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -180,16 +179,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String type = feature.getGeometry().getGeometryType();
             switch (type) {
                 case "MultiPolygon": {
-                    String test1 = feature.getId();
-                    Log.i(TAG, "test1: "+test1);
-                    String test2 = feature.getProperty("objectid");
-                    Log.i(TAG, "test2: "+test2);
-                    for(String s : feature.getPropertyKeys()) {
-                        Log.i(TAG, "Property: " + s);
-                    }
-                    for(String s : feature.getPropertyKeys()) {
-
-                    }
                     final int color = ColorValues.getRandomColor(selectedColor);
                     runOnUiThread(new Runnable() {
                         @Override
