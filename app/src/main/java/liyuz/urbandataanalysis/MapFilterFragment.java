@@ -483,8 +483,8 @@ public class MapFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            sendRequest();
-//            openLocalFile();
+//            sendRequest();
+            openLocalFile();
             return null;
         }
 
