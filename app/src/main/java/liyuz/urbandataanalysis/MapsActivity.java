@@ -12,6 +12,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
+    private Button detailBtn;
     private ProgressDialog progressDialog;
     private GeoJsonLayer geoJsonLayer;
     private final int HANDLER_FLAG = 0;
@@ -74,11 +77,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        detailBtn = (Button) findViewById(R.id.map_detail_btn);
 
         // Show progress dialog
         LongOperation myTask = null;
         myTask = new LongOperation();
         myTask.execute();
+
+        detailBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
     }
 
@@ -152,7 +163,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             geoJsonLayer.setOnFeatureClickListener(new GeoJsonLayer.GeoJsonOnFeatureClickListener() {
                 @Override
                 public void onFeatureClick(Feature feature) {
-                    String alertStr = "";
+                    String alertStr = "type: " + feature.getGeometry().getGeometryType()
+                            + "\n\nid: " + feature.getId();
                     for (String key : feature.getPropertyKeys()) {
                         String temp = key + ": " + feature.getProperty(key).toString();
                         Log.i(TAG, temp);
