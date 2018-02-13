@@ -13,12 +13,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,11 +79,13 @@ public class ChartFilterFragment extends Fragment {
     private String TAG = getClass().getSimpleName();
     private final int HANDLER_FLAG = 0;
 
+    private LinearLayout filterLo;
+    private LinearLayout pbLo;
+
     @SuppressLint("HandlerLeak")
     private Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-
             if (msg.what == HANDLER_FLAG) {
 
                 // Update UI
@@ -111,6 +115,7 @@ public class ChartFilterFragment extends Fragment {
         }
     };
 
+
     public ChartFilterFragment() {
         // Required empty public constructor
     }
@@ -122,12 +127,6 @@ public class ChartFilterFragment extends Fragment {
         View mView = inflater.inflate(R.layout.fragment_filter_chart, container, false);
 
         // Values to be shown in textViews when the fragment is started
-
-        // Show progress dialog
-        LongOperation myTask = null;
-        myTask = new LongOperation();
-        myTask.execute();
-
         attributeTv = (TextView) mView.findViewById(R.id.chart_filter_attr_tv);
         classifierTv = (TextView) mView.findViewById(R.id.chart_filter_class_tv);
         colorTv = (TextView) mView.findViewById(R.id.chart_filter_color_tv);
@@ -144,6 +143,14 @@ public class ChartFilterFragment extends Fragment {
         cityTv = (TextView) mView.findViewById(R.id.chart_filter_city_tv);
         stateBtn = (Button) mView.findViewById(R.id.filter_chart_state_btn);
         cityBtn = (Button) mView.findViewById(R.id.filter_chart_city_btn);
+
+        filterLo = (LinearLayout) mView.findViewById(R.id.chart_filter_lo);
+        pbLo = (LinearLayout) mView.findViewById(R.id.chart_filter_pb_lo);
+
+        // Show progress dialog
+        LongOperation myTask = null;
+        myTask = new LongOperation();
+        myTask.execute();
 
         BBoxSwitch = (SwitchCompat) mView.findViewById(R.id.filter_chart_switch);
         BBoxSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -171,12 +178,6 @@ public class ChartFilterFragment extends Fragment {
         });
 
         cityBtn.setEnabled(false);
-
-
-//        String typeName = SelectedData.selectedCap.capName;
-//        String urlStr = "http://openapi.aurin.org.au/wfs?request=" +
-//                "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typeName;
-//        Log.i(TAG, urlStr);
 
         // Alert dialog for select city
         stateBtn.setOnClickListener(new View.OnClickListener() {
@@ -433,16 +434,25 @@ public class ChartFilterFragment extends Fragment {
         @Override
         protected void onPreExecute() {
 
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Receiving and data from AURIN");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog = new ProgressDialog(getActivity());
+//            progressDialog.setTitle("Receiving and data from AURIN");
+//            progressDialog.setMessage("Please wait...");
+//            progressDialog.setCancelable(false);
+//            progressDialog.show();
 
+            pbLo.setVisibility(View.VISIBLE);
+            filterLo.setVisibility(View.INVISIBLE);
         }
 
         @Override
         protected String doInBackground(String... strings) {
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             sendRequest();
 //            openLocalFile();
             return null;
@@ -450,7 +460,9 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String s) {
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
+            pbLo.setVisibility(View.GONE);
+            filterLo.setVisibility(View.VISIBLE);
         }
     }
 
@@ -578,6 +590,7 @@ public class ChartFilterFragment extends Fragment {
                         response.append(line);
                     }
                     String data = response.toString();
+
                     parseXML(data);
 
                     Message message = new Message();

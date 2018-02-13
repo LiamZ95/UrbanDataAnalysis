@@ -4,175 +4,203 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="liyuz.urbandataanalysis.ChartFilterFragment">
-
-    <TextView
-        android:id="@+id/chart_filter_state_tv"
-        android:layout_marginTop="10dp"
-        android:paddingStart="40dp"
-        android:textSize="15sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Select State: None"/>
-
-    <Button
-        android:id="@+id/filter_chart_state_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Click to change"
-        android:textColor="@color/white"
-        android:background="@drawable/filer_btn"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:textSize="20sp"
-        android:textAllCaps="false"/>
-
-    <TextView
-        android:id="@+id/chart_filter_city_tv"
-        android:paddingStart="40dp"
-        android:textSize="15sp"
-        android:layout_marginTop="20dp"
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Select City: None"/>
-
-    <Button
-        android:id="@+id/filter_chart_city_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Click to change"
-        android:textColor="@color/white"
-        android:background="@drawable/filer_btn"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:textSize="20sp"
-        android:textAllCaps="false"/>
-
     <LinearLayout
+        android:id="@+id/chart_filter_pb_lo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
         android:gravity="center"
-        android:background="@color/colorPrimary">
+        android:orientation="vertical"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <TextView
+            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Use Default Bounding Box"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="14dp"
-            android:paddingEnd="10dp"/>
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/filter_chart_switch"
-            style="@style/SwitchCompatStyle"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="match_parent"
+            android:text="Loading data from AURIN..."
+            android:textColor="@color/black"
+            android:textSize="15dp"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/chart_filter_attr_tv"
-        android:layout_marginTop="20dp"
-        android:paddingStart="40dp"
-        android:textSize="15sp"
+    <LinearLayout
+        android:id="@+id/chart_filter_lo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Select Attribute: None"/>
+        android:orientation="vertical"
+        android:visibility="visible">
+        <TextView
+            android:id="@+id/chart_filter_state_tv"
+            android:layout_marginTop="10dp"
+            android:paddingStart="40dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Select State: None"/>
 
-    <Button
-        android:id="@+id/filter_chart_attribute_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Click to change"
-        android:textColor="@color/white"
-        android:background="@drawable/filer_btn"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:textSize="20sp"
-        android:textAllCaps="false"/>
+        <Button
+            android:id="@+id/filter_chart_state_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click to change"
+            android:textColor="@color/white"
+            android:background="@drawable/filer_btn"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textSize="20sp"
+            android:textAllCaps="false"/>
 
-    <TextView
-        android:id="@+id/chart_filter_class_tv"
-        android:layout_marginTop="20dp"
-        android:paddingStart="40dp"
-        android:textSize="15sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Select Classifier: None"/>
+        <TextView
+            android:id="@+id/chart_filter_city_tv"
+            android:paddingStart="40dp"
+            android:textSize="15sp"
+            android:layout_marginTop="20dp"
 
-    <Button
-        android:id="@+id/filter_chart_classifier_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Click to change"
-        android:textColor="@color/white"
-        android:background="@drawable/filer_btn"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:textSize="20sp"
-        android:textAllCaps="false"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Select City: None"/>
 
-    <TextView
-        android:id="@+id/chart_filter_color_tv"
-        android:layout_marginTop="20dp"
-        android:paddingStart="40dp"
-        android:textSize="15sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Select Palette Color: None"/>
+        <Button
+            android:id="@+id/filter_chart_city_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click to change"
+            android:textColor="@color/white"
+            android:background="@drawable/filer_btn"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textSize="20sp"
+            android:textAllCaps="false"/>
 
-    <Button
-        android:id="@+id/filter_chart_color_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Click to change"
-        android:textColor="@color/white"
-        android:background="@drawable/filer_btn"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        android:textSize="20sp"
-        android:textAllCaps="false"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:background="@color/colorPrimary">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Use Default Bounding Box"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="14dp"
+                android:paddingEnd="10dp"/>
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/filter_chart_switch"
+                style="@style/SwitchCompatStyle"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
 
-    <TextView
-        android:layout_marginTop="20dp"
-        android:paddingStart="40dp"
-        android:textSize="15sp"
-        android:id="@+id/seek_progress_tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="Select Opacity: 70%"/>
-    <SeekBar
-        android:layout_marginTop="20dp"
-        android:id="@+id/filter_chart_seek_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:progressTint="@color/colorPrimary"
-        android:max="100"
-        android:progress="70"
+        <TextView
+            android:id="@+id/chart_filter_attr_tv"
+            android:layout_marginTop="20dp"
+            android:paddingStart="40dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Select Attribute: None"/>
 
-        android:layout_marginBottom="10dp"/>
+        <Button
+            android:id="@+id/filter_chart_attribute_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click to change"
+            android:textColor="@color/white"
+            android:background="@drawable/filer_btn"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textSize="20sp"
+            android:textAllCaps="false"/>
 
-    <Button
-        android:id="@+id/filter_chart_show_btn"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/detail_btn"
-        android:textColor="@color/white"
-        android:textSize="25sp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:text="show"
-        android:layout_marginBottom="30dp"/>
+        <TextView
+            android:id="@+id/chart_filter_class_tv"
+            android:layout_marginTop="20dp"
+            android:paddingStart="40dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Select Classifier: None"/>
+
+        <Button
+            android:id="@+id/filter_chart_classifier_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click to change"
+            android:textColor="@color/white"
+            android:background="@drawable/filer_btn"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textSize="20sp"
+            android:textAllCaps="false"/>
+
+        <TextView
+            android:id="@+id/chart_filter_color_tv"
+            android:layout_marginTop="20dp"
+            android:paddingStart="40dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Select Palette Color: None"/>
+
+        <Button
+            android:id="@+id/filter_chart_color_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click to change"
+            android:textColor="@color/white"
+            android:background="@drawable/filer_btn"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:textSize="20sp"
+            android:textAllCaps="false"/>
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:paddingStart="40dp"
+            android:textSize="15sp"
+            android:id="@+id/seek_progress_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Select Opacity: 70%"/>
+        <SeekBar
+            android:layout_marginTop="20dp"
+            android:id="@+id/filter_chart_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progressTint="@color/colorPrimary"
+            android:max="100"
+            android:progress="70"
+
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/filter_chart_show_btn"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/detail_btn"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="show"
+            android:layout_marginBottom="30dp"/>
+    </LinearLayout>
+
+
 
 
 </LinearLayout>

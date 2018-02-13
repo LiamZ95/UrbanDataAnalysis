@@ -42,7 +42,6 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.google.common.collect.Lists;
 import com.google.maps.android.data.geojson.GeoJsonLineStringStyle;
@@ -160,6 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                }
 //            });
 
+            // Alert dialog for detail information of geojsonlayer
             geoJsonLayer.setOnFeatureClickListener(new GeoJsonLayer.GeoJsonOnFeatureClickListener() {
                 @Override
                 public void onFeatureClick(Feature feature) {

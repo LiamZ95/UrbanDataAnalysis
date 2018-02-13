@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +80,9 @@ public class MapFilterFragment extends Fragment {
 
     private final int HANDLER_FLAG = 0;
 
+    private LinearLayout pbLo;
+    private LinearLayout filterLo;
+
     private String TAG = getClass().getSimpleName();
 
     @SuppressLint("HandlerLeak")
@@ -128,11 +132,6 @@ public class MapFilterFragment extends Fragment {
         // Inflate the layout for this fragment
         View mView = inflater.inflate(R.layout.fragment_filter_map, container, false);
 
-        // Load data
-        LongOperation myTask = null;
-        myTask = new LongOperation();
-        myTask.execute();
-
         // Initializing
         attributeTv = (TextView) mView.findViewById(R.id.map_filter_attr_tv);
         classifierTv = (TextView) mView.findViewById(R.id.map_filter_class_tv);
@@ -154,6 +153,14 @@ public class MapFilterFragment extends Fragment {
         cityBtn = (Button) mView.findViewById(R.id.map_city_btn);
 
         BBoxSwitch = (SwitchCompat) mView.findViewById(R.id.filter_map_switch);
+
+        pbLo = (LinearLayout) mView.findViewById(R.id.map_filter_pb_lo);
+        filterLo = (LinearLayout) mView.findViewById(R.id.map_filter_lo);
+
+        // Load data
+        LongOperation myTask = null;
+        myTask = new LongOperation();
+        myTask.execute();
 
         // Setting for the switch
         BBoxSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -436,15 +443,6 @@ public class MapFilterFragment extends Fragment {
                 MapSettings.selectedMapColor = selectedColor;
                 MapSettings.selectedMapOpacity = selectedOpacity;
 
-//                Log.i(TAG + "attr: ", selectedAttribute);
-//                Log.i(TAG + "class", selectedClassifier);
-//                Log.i(TAG + "lvl", selectedLevel);
-//                Log.i(TAG + "color", selectedColor);
-//                Log.i(TAG + "op", String.valueOf(selectedOpacity));
-//
-//                Log.i(TAG + " Selected State", selectedState);
-//                Log.i(TAG + " Selected City", selectedCity);
-
                 if (useDefaultBBox) {
                     Log.i(TAG, "Use default BBox");
                     MapSettings.selectedBBox = SelectedData.selectedCap.capBBox;
@@ -473,24 +471,27 @@ public class MapFilterFragment extends Fragment {
         @Override
         protected void onPreExecute() {
 
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setTitle("Receiving and data from AURIN");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-
+//            progressDialog = new ProgressDialog(getActivity());
+//            progressDialog.setTitle("Receiving and data from AURIN");
+//            progressDialog.setMessage("Please wait...");
+//            progressDialog.setCancelable(false);
+//            progressDialog.show();
+            pbLo.setVisibility(View.VISIBLE);
+            filterLo.setVisibility(View.INVISIBLE);
         }
 
         @Override
         protected String doInBackground(String... strings) {
-//            sendRequest();
-            openLocalFile();
+            sendRequest();
+//            openLocalFile();
             return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
+            pbLo.setVisibility(View.GONE);
+            filterLo.setVisibility(View.VISIBLE);
         }
     }
 
