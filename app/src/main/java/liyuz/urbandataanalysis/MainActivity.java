@@ -56,8 +56,9 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton refreshFab, filterFab;
     MaterialSearchView materialSearchView;
     private boolean hasSelectedOrganization = false;
-    final ArrayList<Capability> selectedOrgs = new ArrayList<>();
-    private View rootView;
+    final ArrayList<Capability> selectedOrganizations = new ArrayList<>();
+    private ArrayList<Capability> targetCapList = new ArrayList<>();
+    private boolean querySubmitted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity
                 builder.setTitle("Select an organization");
                 final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
                 final String[] organizationArray = candidates.toArray(new String[candidates.size()]);
-                selectedOrgs.clear();
+                selectedOrganizations.clear();
                 final ArrayList<String> tempOrgs = new ArrayList<>();
                 builder.setMultiChoiceItems(organizationArray, null, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
@@ -154,11 +155,11 @@ public class MainActivity extends AppCompatActivity
                                 for (int k = 0; k < tempOrgs.size(); k++) {
                                     String targetOrg = tempOrgs.get(k);
                                     if (targetOrg.equals(capOrg)) {
-                                        selectedOrgs.add(AllDataSets.capList.get(j));
+                                        selectedOrganizations.add(AllDataSets.capList.get(j));
                                     }
                                 }
                             }
-                            filterFragment.changeList(selectedOrgs);
+                            filterFragment.changeList(selectedOrganizations);
                         } else {
                             filterFragment.restoreList();
                         }
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewShown() {
                 currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
-                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .addToBackStack(null)
@@ -206,7 +207,14 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewClosed() {
                 // If search view is closed, restore to original list view
                 ListFragment searchFragment = (ListFragment) getCurrentFragment();
-                searchFragment.restoreList();
+//                searchFragment.restoreList();
+                if (querySubmitted) {
+                    searchFragment.changeList(targetCapList);
+                }
+                else {
+                    searchFragment.restoreList();
+                }
+
             }
         });
 
@@ -214,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                querySubmitted = true;
                 return false;
             }
 
@@ -226,11 +234,9 @@ public class MainActivity extends AppCompatActivity
                     if (currentShownFragment.isAdded()) {
 
                     }
-                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
-//                            .add(currentShownFragment, "currentFragment")
-//                            .addToBackStack("currentFragment")
                             .addToBackStack(null)
                             .commit();
                 }
@@ -263,6 +269,8 @@ public class MainActivity extends AppCompatActivity
                         }
                         // Update list view
                         searchFragment.changeList(targetCaps);
+                        targetCapList.clear();
+                        targetCapList = new ArrayList<>(targetCaps);
                     } else {
                         // Restore
                         searchFragment.restoreList();
@@ -274,10 +282,13 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
     // Defined the behavior when back button is hit
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -291,11 +302,19 @@ public class MainActivity extends AppCompatActivity
                 }
                 else {
                     // !homeFlag means current fragment is at listFragment and the back is not pressed before
-                    if (getCurrentFragment() instanceof ListFragment && hasSelectedOrganization) {
+                    if (getCurrentFragment() instanceof ListFragment) {
                         ListFragment currentFragment = (ListFragment) getCurrentFragment();
-                        hasSelectedOrganization = false;
-                        currentFragment.restoreList();
-                    } else {
+                        if (hasSelectedOrganization) {
+                            hasSelectedOrganization = false;
+                            currentFragment.restoreList();
+                        } else if (querySubmitted) {
+                            querySubmitted = false;
+                            currentFragment.restoreList();
+                        } else {
+                            super.onBackPressed();
+                        }
+                    }
+                    else {
                         if (!homeFlag) {
                             homeFlag = true;
                             Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
@@ -308,6 +327,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -396,10 +416,8 @@ public class MainActivity extends AppCompatActivity
                 });
                 try{
                     URL url = new URL("http://openapi.aurin.org.au/wfs?service=WFS&version=1.1.0&request=GetCapabilities");
-//                    Log.i("Main####", "Sent request to AURIN");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
-                    // Set big timeout for testing, was 8000
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);
 
@@ -462,15 +480,12 @@ public class MainActivity extends AppCompatActivity
                         if ("Name".equals(nodeName)) {
                             // get the content after nodeName
                             name = safeNextText(xmlPullParser);
-//                            Log.i("Name", name);
                         }
                         else if ("Title".equals(nodeName)){
                             title = safeNextText(xmlPullParser);
                             String[] tempArray = title.split(" Data provider: ");
                             title = tempArray[0];
-//                            Log.i("Title", title);
                             organization = tempArray[1];
-//                            Log.i("Organization", organization);
                         }
                         else if ("Abstract".equals(nodeName)){
                             String abstracts1 = safeNextText(xmlPullParser);
@@ -532,16 +547,11 @@ public class MainActivity extends AppCompatActivity
                             keywordsStr = "";
                             cap.capGeoName = geoName;
                             cap.capCorners = corners;
-//                            Log.i("Corners", corners);
                             corners = "";
                             cap.capBBox.setHigherLa(hla);
                             cap.capBBox.setHigherLon(hlo);
                             cap.capBBox.setLowerLa(lla);
                             cap.capBBox.setLowerLon(llo);
-
-//                            Log.i("Abstract: ", abstracts);
-//                            Log.i("keywords", keywordsStr);
-//                            Log.i("GeoName", geoName);
 
                             // set the organization logo for each capability
                             cap.image_id = getOrgLogo(organization);
@@ -549,7 +559,6 @@ public class MainActivity extends AppCompatActivity
                             if(! AllDataSets.titleList.contains(cap.capTitle)) {
                                 AllDataSets.capList.add(cap);
                                 capCount += 1;
-//                                Log.i(TAG + "Total cap num: ", String.valueOf(capCount));
                             }
                         }
                         break;
@@ -614,7 +623,6 @@ public class MainActivity extends AppCompatActivity
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 //            sendRequest();
             return null;
         }
@@ -624,9 +632,11 @@ public class MainActivity extends AppCompatActivity
             progressDialog.dismiss();
             // Set ListFragment as default fragment shown in MainActivity
             homeFragment = new ListFragment();
+
             mainFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, homeFragment)
+                    .replace(R.id.fragment_container, homeFragment, "HomeListFragment")
                     .commit();
+
             filterFab.setEnabled(true);
         }
     }
