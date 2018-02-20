@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = getClass().getSimpleName();
     private ProgressDialog progressDialog;
-    private Boolean homeFlag = false;
-    private Boolean hasTransaction = false;
+    private Boolean doubleBackToExit = false;
+    private Boolean hasMovedToOtherFragment = false;
     private int capCount = 0;
     private Fragment fragment = null;
     private Fragment homeFragment;
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     MaterialSearchView materialSearchView;
     private boolean hasSelectedOrganization = false;
     final ArrayList<Capability> selectedOrganizations = new ArrayList<>();
+    final ArrayList<String> selectedOrganizationsNames = new ArrayList<>();
     private ArrayList<Capability> targetCapList = new ArrayList<>();
     private boolean querySubmitted = false;
 
@@ -113,61 +114,67 @@ public class MainActivity extends AppCompatActivity
         filterFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                currentShownFragment = getCurrentFragment();
+                if (!(currentShownFragment instanceof ListFragment)) {
+                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
+                    mainFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
+                            .addToBackStack(null)
+                            .commit();
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Select an organization");
+                builder.setTitle("Select organizations");
                 final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
                 final String[] organizationArray = candidates.toArray(new String[candidates.size()]);
-                selectedOrganizations.clear();
-                final ArrayList<String> tempOrgs = new ArrayList<>();
-                builder.setMultiChoiceItems(organizationArray, null, new DialogInterface.OnMultiChoiceClickListener() {
+                final boolean[] checkedOrganizations = new boolean[candidates.size()];
+
+                for (int i = 0; i < checkedOrganizations.length; i++) {
+                    checkedOrganizations[i] = false;
+                }
+
+                final ListFragment filterFragment = (ListFragment) getCurrentFragment();
+                builder.setMultiChoiceItems(organizationArray, checkedOrganizations, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                        if (b) {
-                            tempOrgs.add(organizationArray[i]);
-                            Log.i(TAG, "Add " + organizationArray[i]);
+                    public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
+                        if (isChecked) {
+                            selectedOrganizationsNames.add(organizationArray[position]);
+                            checkedOrganizations[position] = true;
+                        } else {
+                            selectedOrganizationsNames.remove(organizationArray[position]);
+                            checkedOrganizations[position] = false;
                         }
-//                        else {
-//                            if (tempOrgs.contains(organizationArray[i])) {
-//                                Log.i(TAG, "Remove " + organizationArray[i]);
-//                                tempOrgs.remove(i);
-//                            }
-//                        }
                     }
                 }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         hasSelectedOrganization = true;
-                        // What to do when user hit ok
-                        currentShownFragment = getCurrentFragment();
-                        if (!(currentShownFragment instanceof ListFragment)) {
-                            Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
-                            mainFragmentManager.beginTransaction()
-                                    .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-
-                        ListFragment filterFragment = (ListFragment) getCurrentFragment();
-                        if (!tempOrgs.contains("All Organizations")) {
+                        if (! selectedOrganizationsNames.contains("All Organizations")) {
                             for (int j = 0; j < AllDataSets.capList.size(); j++) {
                                 String capOrg = AllDataSets.capList.get(j).capOrganization;
-                                for (int k = 0; k < tempOrgs.size(); k++) {
-                                    String targetOrg = tempOrgs.get(k);
-                                    if (targetOrg.equals(capOrg)) {
+                                for (int k = 0; k < selectedOrganizationsNames.size(); k++) {
+                                    String targetName = selectedOrganizationsNames.get(k);
+                                    if (targetName.equals(capOrg)) {
                                         selectedOrganizations.add(AllDataSets.capList.get(j));
                                     }
                                 }
                             }
+
                             filterFragment.changeList(selectedOrganizations);
                         } else {
                             filterFragment.restoreList();
                         }
                     }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // What to do when user hit cancel
+                        dialogInterface.dismiss();
+                    }
+                }).setNeutralButton("Clear all", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        filterFragment.restoreList();
+                        selectedOrganizations.clear();
                     }
                 });
                 // Create and show alert dialog
@@ -229,7 +236,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             // This function
             public boolean onQueryTextChange(String newText) {
-                Fragment currentShownFragment = getCurrentFragment();
+                currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
                     if (currentShownFragment.isAdded()) {
 
@@ -286,7 +293,6 @@ public class MainActivity extends AppCompatActivity
     // Defined the behavior when back button is hit
     @Override
     public void onBackPressed() {
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -295,28 +301,28 @@ public class MainActivity extends AppCompatActivity
             if (materialSearchView.isSearchOpen()) {
                 materialSearchView.closeSearch();
             } else {
-                if (hasTransaction) {
-                    homeFlag = false;
-                    hasTransaction = false;
+                if (hasMovedToOtherFragment) {
+                    doubleBackToExit = false;
+                    hasMovedToOtherFragment = false;
                     super.onBackPressed();
                 }
                 else {
-                    // !homeFlag means current fragment is at listFragment and the back is not pressed before
                     if (getCurrentFragment() instanceof ListFragment) {
-                        ListFragment currentFragment = (ListFragment) getCurrentFragment();
+                        ListFragment currentShownFragment = (ListFragment) getCurrentFragment();
                         if (hasSelectedOrganization) {
                             hasSelectedOrganization = false;
-                            currentFragment.restoreList();
+                            currentShownFragment.restoreList();
                         } else if (querySubmitted) {
                             querySubmitted = false;
-                            currentFragment.restoreList();
+                            currentShownFragment.restoreList();
                         } else {
                             super.onBackPressed();
                         }
                     }
                     else {
-                        if (!homeFlag) {
-                            homeFlag = true;
+                        // !doubleBackToExit means current fragment is at listFragment and the back is not pressed before
+                        if (!doubleBackToExit) {
+                            doubleBackToExit = true;
                             Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
                         }
                         else {
@@ -396,7 +402,7 @@ public class MainActivity extends AppCompatActivity
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        hasTransaction = true;
+        hasMovedToOtherFragment = true;
         return true;
     }
 

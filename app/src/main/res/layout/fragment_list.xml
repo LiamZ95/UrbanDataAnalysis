@@ -3,13 +3,18 @@
     android:id="@+id/list_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="liyuz.urbandataanalysis.ListFragment">
+    tools:context="liyuz.urbandataanalysis.ListFragment"
+    android:background="@color/defaultGrey">
 
     <ListView
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
         android:id="@+id/list_fragment_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:dividerHeight="5dp">
+        android:dividerHeight="5dp"
+        android:divider="@color/defaultGrey">
     </ListView>
 
 </LinearLayout>
