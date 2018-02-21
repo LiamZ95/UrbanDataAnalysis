@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -48,7 +49,6 @@ public class MainActivity extends AppCompatActivity
     private final String TAG = getClass().getSimpleName();
     private ProgressDialog progressDialog;
     private Boolean doubleBackToExit = false;
-    private Boolean hasMovedToOtherFragment = false;
     private int capCount = 0;
     private Fragment fragment = null;
     private Fragment homeFragment;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     final ArrayList<String> selectedOrganizationsNames = new ArrayList<>();
     private ArrayList<Capability> targetCapList = new ArrayList<>();
     private boolean querySubmitted = false;
-
+    private boolean[] checkedItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +69,6 @@ public class MainActivity extends AppCompatActivity
 
         // Fragment manager
         mainFragmentManager = getSupportFragmentManager();
-
-        // Send http request and parse the received xml data
-//        sendRequestWithURLConnection();
 
         // Setting for progress dialog
         LongOperation myTask = null;
@@ -128,22 +125,22 @@ public class MainActivity extends AppCompatActivity
                 builder.setTitle("Select organizations");
                 final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
                 final String[] organizationArray = candidates.toArray(new String[candidates.size()]);
-                final boolean[] checkedOrganizations = new boolean[candidates.size()];
-
-                for (int i = 0; i < checkedOrganizations.length; i++) {
-                    checkedOrganizations[i] = false;
-                }
 
                 final ListFragment filterFragment = (ListFragment) getCurrentFragment();
-                builder.setMultiChoiceItems(organizationArray, checkedOrganizations, new DialogInterface.OnMultiChoiceClickListener() {
+                final boolean[] tempCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
+                builder.setMultiChoiceItems(organizationArray, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
                         if (isChecked) {
-                            selectedOrganizationsNames.add(organizationArray[position]);
-                            checkedOrganizations[position] = true;
+                            if (! selectedOrganizationsNames.contains(organizationArray[position])) {
+                                selectedOrganizationsNames.add(organizationArray[position]);
+                            }
+                            tempCheckedItems[position] = true;
                         } else {
-                            selectedOrganizationsNames.remove(organizationArray[position]);
-                            checkedOrganizations[position] = false;
+                            if (selectedOrganizationsNames.contains(organizationArray[position])) {
+                                selectedOrganizationsNames.remove(organizationArray[position]);
+                            }
+                            tempCheckedItems[position] = false;
                         }
                     }
                 }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -152,19 +149,23 @@ public class MainActivity extends AppCompatActivity
                         hasSelectedOrganization = true;
                         if (! selectedOrganizationsNames.contains("All Organizations")) {
                             for (int j = 0; j < AllDataSets.capList.size(); j++) {
-                                String capOrg = AllDataSets.capList.get(j).capOrganization;
+                                Capability candidateCap = AllDataSets.capList.get(j);
+                                String capOrg = candidateCap.capOrganization;
                                 for (int k = 0; k < selectedOrganizationsNames.size(); k++) {
                                     String targetName = selectedOrganizationsNames.get(k);
-                                    if (targetName.equals(capOrg)) {
-                                        selectedOrganizations.add(AllDataSets.capList.get(j));
+                                    if (targetName.equals(capOrg) && (! selectedOrganizations.contains(candidateCap))) {
+                                        selectedOrganizations.add(candidateCap);
                                     }
                                 }
                             }
-
                             filterFragment.changeList(selectedOrganizations);
                         } else {
                             filterFragment.restoreList();
                         }
+                        if (selectedOrganizationsNames.size() == 0) {
+                            filterFragment.restoreList();
+                        }
+                        checkedItems = tempCheckedItems;
                     }
                 }).setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
                     @Override
@@ -176,6 +177,10 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialogInterface, int i) {
                         filterFragment.restoreList();
                         selectedOrganizations.clear();
+                        selectedOrganizationsNames.clear();
+                        for (int j = 0; j < checkedItems.length; j++) {
+                            checkedItems[j] = false;
+                        }
                     }
                 });
                 // Create and show alert dialog
@@ -203,7 +208,6 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewShown() {
                 currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
-//                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .addToBackStack(null)
@@ -215,14 +219,12 @@ public class MainActivity extends AppCompatActivity
             public void onSearchViewClosed() {
                 // If search view is closed, restore to original list view
                 ListFragment searchFragment = (ListFragment) getCurrentFragment();
-//                searchFragment.restoreList();
                 if (querySubmitted) {
                     searchFragment.changeList(targetCapList);
                 }
                 else {
                     searchFragment.restoreList();
                 }
-
             }
         });
 
@@ -242,7 +244,6 @@ public class MainActivity extends AppCompatActivity
                     if (currentShownFragment.isAdded()) {
 
                     }
-//                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .addToBackStack(null)
@@ -280,7 +281,6 @@ public class MainActivity extends AppCompatActivity
                         targetCapList.clear();
                         targetCapList = new ArrayList<>(targetCaps);
                     } else {
-                        // Restore
                         searchFragment.restoreList();
                     }
                 }
@@ -302,49 +302,19 @@ public class MainActivity extends AppCompatActivity
             if (materialSearchView.isSearchOpen()) {
                 materialSearchView.closeSearch();
             } else {
-//                if (hasMovedToOtherFragment) {
-//                    doubleBackToExit = false;
-//                    hasMovedToOtherFragment = false;
-//                    super.onBackPressed();
-//                }
-//                else {
-//                    if (getCurrentFragment() instanceof ListFragment) {
-//                        ListFragment currentShownFragment = (ListFragment) getCurrentFragment();
-//                        if (hasSelectedOrganization) {
-//                            hasSelectedOrganization = false;
-//                            currentShownFragment.restoreList();
-//                        } else if (querySubmitted) {
-//                            querySubmitted = false;
-//                            currentShownFragment.restoreList();
-//                        } else {
-//                            super.onBackPressed();
-//                        }
-//                    }
-//                    else {
-//                        // !doubleBackToExit means current fragment is at listFragment and the back is not pressed before
-//                        if (!doubleBackToExit) {
-//                            doubleBackToExit = true;
-//                            Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
-//                        }
-//                        else {
-//                            super.onBackPressed();
-//                        }
-//                    }
-//                }
                 if (getCurrentFragment() instanceof ListFragment) {
                     ListFragment currentShownFragment = (ListFragment) getCurrentFragment();
-
                     if (hasSelectedOrganization) {
                         hasSelectedOrganization = false;
+                        selectedOrganizations.clear();
+                        selectedOrganizationsNames.clear();
                         currentShownFragment.restoreList();
                         return;
                     }
-
                     if (querySubmitted) {
                         querySubmitted = false;
                         super.onBackPressed();
                     }
-
                     if (!doubleBackToExit) {
                         Toast.makeText(this, "Please BACK again to exit", Toast.LENGTH_LONG).show();
                         new Handler().postDelayed(new Runnable() {
@@ -352,7 +322,7 @@ public class MainActivity extends AppCompatActivity
                             public void run() {
                                 doubleBackToExit = true;
                             }
-                        }, 2000);
+                        }, 1000);
                     } else {
                         super.onBackPressed();
                     }
@@ -362,7 +332,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -431,7 +400,6 @@ public class MainActivity extends AppCompatActivity
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        hasMovedToOtherFragment = true;
         return true;
     }
 
@@ -667,19 +635,21 @@ public class MainActivity extends AppCompatActivity
             progressDialog.dismiss();
             // Set ListFragment as default fragment shown in MainActivity
             homeFragment = new ListFragment();
-
             mainFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, homeFragment, "HomeListFragment")
                     .commit();
 
             filterFab.setEnabled(true);
+            checkedItems = new boolean[AllDataSets.organizationList.size()];
+            for (int i = 0; i < checkedItems.length; i++) {
+                checkedItems[i] = false;
+            }
         }
     }
 
     // Get current shown fragment
     private Fragment getCurrentFragment() {
-        Fragment currentFragment = mainFragmentManager.findFragmentById(R.id.fragment_container);
-        return currentFragment;
+        return mainFragmentManager.findFragmentById(R.id.fragment_container);
     }
 
     private int getOrgLogo(String organization) {
@@ -788,7 +758,6 @@ public class MainActivity extends AppCompatActivity
                 result = R.drawable.logo_default;
                 break;
         }
-
         return result;
     }
 }
