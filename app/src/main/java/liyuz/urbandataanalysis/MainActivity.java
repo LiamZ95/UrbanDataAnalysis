@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -301,34 +302,62 @@ public class MainActivity extends AppCompatActivity
             if (materialSearchView.isSearchOpen()) {
                 materialSearchView.closeSearch();
             } else {
-                if (hasMovedToOtherFragment) {
-                    doubleBackToExit = false;
-                    hasMovedToOtherFragment = false;
+//                if (hasMovedToOtherFragment) {
+//                    doubleBackToExit = false;
+//                    hasMovedToOtherFragment = false;
+//                    super.onBackPressed();
+//                }
+//                else {
+//                    if (getCurrentFragment() instanceof ListFragment) {
+//                        ListFragment currentShownFragment = (ListFragment) getCurrentFragment();
+//                        if (hasSelectedOrganization) {
+//                            hasSelectedOrganization = false;
+//                            currentShownFragment.restoreList();
+//                        } else if (querySubmitted) {
+//                            querySubmitted = false;
+//                            currentShownFragment.restoreList();
+//                        } else {
+//                            super.onBackPressed();
+//                        }
+//                    }
+//                    else {
+//                        // !doubleBackToExit means current fragment is at listFragment and the back is not pressed before
+//                        if (!doubleBackToExit) {
+//                            doubleBackToExit = true;
+//                            Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
+//                        }
+//                        else {
+//                            super.onBackPressed();
+//                        }
+//                    }
+//                }
+                if (getCurrentFragment() instanceof ListFragment) {
+                    ListFragment currentShownFragment = (ListFragment) getCurrentFragment();
+
+                    if (hasSelectedOrganization) {
+                        hasSelectedOrganization = false;
+                        currentShownFragment.restoreList();
+                        return;
+                    }
+
+                    if (querySubmitted) {
+                        querySubmitted = false;
+                        super.onBackPressed();
+                    }
+
+                    if (!doubleBackToExit) {
+                        Toast.makeText(this, "Please BACK again to exit", Toast.LENGTH_LONG).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                doubleBackToExit = true;
+                            }
+                        }, 2000);
+                    } else {
+                        super.onBackPressed();
+                    }
+                } else {
                     super.onBackPressed();
-                }
-                else {
-                    if (getCurrentFragment() instanceof ListFragment) {
-                        ListFragment currentShownFragment = (ListFragment) getCurrentFragment();
-                        if (hasSelectedOrganization) {
-                            hasSelectedOrganization = false;
-                            currentShownFragment.restoreList();
-                        } else if (querySubmitted) {
-                            querySubmitted = false;
-                            currentShownFragment.restoreList();
-                        } else {
-                            super.onBackPressed();
-                        }
-                    }
-                    else {
-                        // !doubleBackToExit means current fragment is at listFragment and the back is not pressed before
-                        if (!doubleBackToExit) {
-                            doubleBackToExit = true;
-                            Toast.makeText(this, "Double click to exit the app", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            super.onBackPressed();
-                        }
-                    }
                 }
             }
         }
