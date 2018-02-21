@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -120,7 +122,6 @@ public class MainActivity extends AppCompatActivity
                             .addToBackStack(null)
                             .commit();
                 }
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Select organizations");
                 final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
@@ -184,8 +185,13 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 // Create and show alert dialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+                AlertDialog alertDialogObj = builder.create();
+                ListView listView = alertDialogObj.getListView();
+                listView.setDivider(new ColorDrawable(0xFFe6e6e6));
+                listView.setDividerHeight(15);
+                alertDialogObj.show();
             }
         });
 
