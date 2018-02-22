@@ -59,11 +59,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 // Disable button after it is clicked
                 chartBtn.setEnabled(false);
                 mapBtn.setEnabled(true);
-
                 Fragment chartFragment = new ChartFilterFragment();
                 detailFragmentManager.beginTransaction()
-                        .add(new DetailListFragment(), "previousFragment")
-                        .addToBackStack("previousFragment")
+                        .addToBackStack(null)
                         .replace(R.id.detail_activity_container, chartFragment, chartFragment.getTag())
                         .commit();
             }
@@ -75,11 +73,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 // Disable button after it is clicked
                 mapBtn.setEnabled(false);
                 chartBtn.setEnabled(true);
-
                 Fragment mapFragment = new MapFilterFragment();
                 detailFragmentManager.beginTransaction()
-                        .add(new DetailListFragment(), "previousFragment")
-                        .addToBackStack("previousFragment")
+                        .addToBackStack(null)
                         .replace(R.id.detail_activity_container, mapFragment, mapFragment.getTag())
                         .commit();
             }

@@ -5,14 +5,20 @@
     android:orientation="vertical"
     android:divider="@drawable/divider_drawable"
     android:showDividers="middle"
-    tools:context="liyuz.urbandataanalysis.DetailInfoFragment">
+    tools:context="liyuz.urbandataanalysis.DetailInfoFragment"
+
+    android:background="@color/defaultGrey">
 
     <LinearLayout
+        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="5dp"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@color/white">
         <TextView
             android:id="@+id/detail_info_tv1_1"
             android:layout_width="wrap_content"
@@ -43,7 +49,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="5dp"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@color/white">
         <TextView
             android:id="@+id/detail_info_tv2_1"
             android:layout_width="wrap_content"
@@ -74,7 +83,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="5dp"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@color/white">
         <TextView
             android:id="@+id/detail_info_tv3_1"
             android:layout_width="wrap_content"
@@ -105,7 +117,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="5dp"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@color/white">
         <TextView
             android:id="@+id/detail_info_tv4_1"
             android:layout_width="wrap_content"
@@ -136,7 +151,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="5dp"
-        android:paddingBottom="5dp">
+        android:paddingBottom="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@color/white"
+        android:layout_marginBottom="5dp">
         <TextView
             android:id="@+id/detail_info_tv5_1"
             android:layout_width="wrap_content"

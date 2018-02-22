@@ -43,7 +43,6 @@ import java.util.ArrayList;
 
 public class MapFilterFragment extends Fragment {
 
-    private Button areaBtn;
     private Button attrBtn;
     private Button classBtn;
     private Button lvlBtn;
@@ -476,12 +475,18 @@ public class MapFilterFragment extends Fragment {
 //            progressDialog.setMessage("Please wait...");
 //            progressDialog.setCancelable(false);
 //            progressDialog.show();
+
             pbLo.setVisibility(View.VISIBLE);
             filterLo.setVisibility(View.INVISIBLE);
         }
 
         @Override
         protected String doInBackground(String... strings) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             sendRequest();
 //            openLocalFile();
             return null;
@@ -611,7 +616,6 @@ public class MapFilterFragment extends Fragment {
             }
 
             String data = stringBuilder.toString();
-//            Log.d(TAG, "All data read from local xml file");
             parseXML(data);
 
             Message message = new Message();

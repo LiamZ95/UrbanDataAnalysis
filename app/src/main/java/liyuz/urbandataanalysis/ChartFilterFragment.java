@@ -115,7 +115,6 @@ public class ChartFilterFragment extends Fragment {
         }
     };
 
-
     public ChartFilterFragment() {
         // Required empty public constructor
     }
@@ -257,9 +256,7 @@ public class ChartFilterFragment extends Fragment {
                         cityBtn.setText(selectedCity);
                         String tempStr = "Selected City: " + selectedCity;
                         cityTv.setText(tempStr);
-//                        if (warnState) {
-//                            warnState = false;
-//                        }
+
                         // Set the BBox for changing mapView
                         SelectedData.selectedBBox = GeoInfo.cityBBox.get(selectedCity);
                         // Update map view in parent activity
@@ -392,13 +389,6 @@ public class ChartFilterFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-//                if (warnState) {
-//                    Toast.makeText(getContext(), "You have changed state, please select a city in the new state.", Toast.LENGTH_LONG)
-//                            .show();
-//                    Log.i(TAG + " Selected State", selectedState);
-//                    Log.i(TAG + " Selected City", selectedCity);
-//
-//                } else {
                 ChartSettings.selectedChartAttribute = selectedAttribute;
                 ChartSettings.selectedChartClassifier = selectedClassifier;
                 ChartSettings.selectedChartColor = selectedColor;
@@ -429,16 +419,9 @@ public class ChartFilterFragment extends Fragment {
         return  mView;
     }
 
-
     private class LongOperation extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
-
-//            progressDialog = new ProgressDialog(getActivity());
-//            progressDialog.setTitle("Receiving and data from AURIN");
-//            progressDialog.setMessage("Please wait...");
-//            progressDialog.setCancelable(false);
-//            progressDialog.show();
 
             pbLo.setVisibility(View.VISIBLE);
             filterLo.setVisibility(View.INVISIBLE);
@@ -446,13 +429,11 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             sendRequest();
 //            openLocalFile();
             return null;
@@ -460,13 +441,10 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String s) {
-//            progressDialog.dismiss();
             pbLo.setVisibility(View.GONE);
             filterLo.setVisibility(View.VISIBLE);
         }
     }
-
-
 
     // paring the xml with pull methods.
     private void parseXML (String xmlData) {
@@ -510,7 +488,6 @@ public class ChartFilterFragment extends Fragment {
                                 classifier = xmlPullParser.getAttributeValue(null, "name");
                                 classifiers.add(classifier);
                             }
-
                         }
                         break;
                     }

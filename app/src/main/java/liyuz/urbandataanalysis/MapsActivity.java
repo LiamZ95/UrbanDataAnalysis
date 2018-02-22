@@ -89,7 +89,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
-
     }
 
 
@@ -129,19 +128,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-            openLocalFile();
-//            sendRequest();
+//            openLocalFile();
+            sendRequest();
             return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
-            Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
 
     }
-
 
     private void parseJSON(String rawData) {
         try {
@@ -167,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             + "\n\nid: " + feature.getId();
                     for (String key : feature.getPropertyKeys()) {
                         String temp = key + ": " + feature.getProperty(key).toString();
-                        Log.i(TAG, temp);
+//                        Log.i(TAG, temp);
                         alertStr += temp + "\n\n";
                     }
                     new AlertDialog.Builder(MapsActivity.this)

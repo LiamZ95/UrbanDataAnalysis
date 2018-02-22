@@ -194,8 +194,7 @@ public class MainActivity extends AppCompatActivity
                 alertDialogObj.show();
             }
         });
-
-
+        
         // For navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

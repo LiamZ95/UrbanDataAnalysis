@@ -175,6 +175,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:text="Select Opacity: 70%"/>
+
         <SeekBar
             android:layout_marginTop="20dp"
             android:id="@+id/filter_chart_seek_bar"
@@ -183,8 +184,7 @@
             android:progressTint="@color/colorPrimary"
             android:max="100"
             android:progress="70"
-
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp" />
 
         <Button
             android:id="@+id/filter_chart_show_btn"

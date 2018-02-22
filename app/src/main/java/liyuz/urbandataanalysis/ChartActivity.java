@@ -72,7 +72,6 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
     private String attributeTitle = ChartSettings.selectedChartAttribute;
     private String classifierTitle = ChartSettings.selectedChartClassifier;
     private final int HANDLER_FLAG = 0;
-    private final int DETAIL_FLAG = 1;
 
     private boolean detailAllLoaded = false;
 
@@ -441,7 +440,4 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
             e.printStackTrace();
         }
     }
-
-
-
 }
