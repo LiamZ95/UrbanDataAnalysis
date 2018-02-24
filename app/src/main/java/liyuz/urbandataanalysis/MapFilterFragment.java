@@ -500,52 +500,6 @@ public class MapFilterFragment extends Fragment {
         }
     }
 
-
-
-    private void sendRequestInOneThread() {
-        final String typename = SelectedData.selectedCap.capName;
-
-        HttpURLConnection connection = null;
-        Authenticator.setDefault (new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication ("student", "dj78dfGF".toCharArray());
-            }
-        });
-        try{
-            URL url = new URL("http://openapi.aurin.org.au/wfs?request=" +
-                    "DescribeFeatureType&service=WFS&version=1.1.0&TypeName="+typename);
-            Log.i(TAG, url.toString());
-
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(15000);
-            InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            String data = response.toString();
-
-            parseXML(data);
-
-            Message message = new Message();
-            message.what = HANDLER_FLAG;
-            myHandler.sendMessage(message);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
     // paring the xml with pull methods.
     private void parseXML (String xmlData) {
 
@@ -607,7 +561,7 @@ public class MapFilterFragment extends Fragment {
         AssetManager assetManager = getActivity().getApplicationContext().getAssets();
         try{
             InputStream in = assetManager
-                    .open("aurin-datasource-INODE-UA_WISeR_internode_adelaide_free_wireless.xml");
+                    .open("test_chart_filter.xml");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
@@ -679,5 +633,4 @@ public class MapFilterFragment extends Fragment {
             }
         }).start();
     }
-
 }

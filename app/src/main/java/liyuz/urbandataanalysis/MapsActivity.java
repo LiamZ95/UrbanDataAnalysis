@@ -3,11 +3,9 @@ package liyuz.urbandataanalysis;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -20,11 +18,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.maps.android.data.Feature;
 import com.google.maps.android.data.geojson.GeoJsonFeature;
 import com.google.maps.android.data.geojson.GeoJsonLayer;
@@ -45,6 +42,7 @@ import java.util.ArrayList;
 
 import com.google.common.collect.Lists;
 import com.google.maps.android.data.geojson.GeoJsonLineStringStyle;
+import com.google.maps.android.data.geojson.GeoJsonPointStyle;
 import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -112,6 +110,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Move camera
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, zoom));
+        // Disable navigation and open in google map app icons
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
 
@@ -128,14 +128,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-//            openLocalFile();
-            sendRequest();
+            openLocalFile();
+//            sendRequest();
             return null;
         }
 
         @Override
         protected void onPostExecute(String s) {
-//            Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
 
@@ -149,14 +148,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             visualizeMap(geoJsonLayer);
 
-//            mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-//                @Override
-//                public void onPolygonClick(Polygon polygon) {
-//                    String polyId = polygon.getId();
-//                    Toast.makeText(getApplicationContext(), polyId, Toast.LENGTH_SHORT).show();
-//                }
-//            });
-
             // Alert dialog for detail information of geojsonlayer
             geoJsonLayer.setOnFeatureClickListener(new GeoJsonLayer.GeoJsonOnFeatureClickListener() {
                 @Override
@@ -164,12 +155,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     String alertStr = "type: " + feature.getGeometry().getGeometryType()
                             + "\n\nid: " + feature.getId();
                     for (String key : feature.getPropertyKeys()) {
-                        String temp = key + ": " + feature.getProperty(key).toString();
+//                        Log.i(TAG, key);
+                        String temp;
+                        if (feature.getProperty(key) == null) {
+                            temp = key + ": " + "null";
+                        } else {
+                            temp = key + ": " + feature.getProperty(key).toString();
+                        }
 //                        Log.i(TAG, temp);
                         alertStr += temp + "\n\n";
                     }
                     new AlertDialog.Builder(MapsActivity.this)
-                            .setTitle("Polygon detail")
+                            .setTitle("Object detail")
                             .setMessage(alertStr)
                             .setNegativeButton("DISMISS", null)
                             .show();
@@ -208,7 +205,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setMarker(feature);
+                            GeoJsonPointStyle style = new GeoJsonPointStyle();
+
+                            String bBoxStr = feature.getProperty("bbox");
+                            Log.d(TAG, bBoxStr);
+                            String location = bBoxStr.substring(1, bBoxStr.length()-1);
+                            String[] bBox = location.split(",");
+                            double llo = Double.parseDouble(bBox[0]);
+                            double lla = Double.parseDouble(bBox[1]);
+                            double hlo = Double.parseDouble(bBox[2]);
+                            double hla = Double.parseDouble(bBox[3]);
+                            double centerLo = (llo+hlo)/2.0;
+                            double centerLa = (lla+hla)/2.0;
+
+                            String title = MapSettings.selectedMapAttribute.concat(": ").concat(feature.getProperty(MapSettings.selectedMapAttribute));
+                            String value = MapSettings.selectedMapClassifier.concat(": ").concat(feature.getProperty(MapSettings.selectedMapClassifier));
+
+                            style.setTitle(title);
+                            style.setSnippet(value);
+                            style.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                            feature.setPointStyle(style);
+                            geoJsonLayer.addLayerToMap();
+
+//                            Marker marker = mMap.addMarker(style.toMarkerOptions().position(new LatLng(centerLa, centerLo)));
+//                            marker.setAlpha(1);
+
+//                            setMarker(feature);
                         }
                     });
                     break;
@@ -223,6 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             style.setStrokeWidth(2);
                             style.toPolygonOptions().clickable(true);
                             feature.setPolygonStyle(style);
+                            setMarker(feature);
                             geoJsonLayer.addFeature(feature);
                             geoJsonLayer.addLayerToMap();
                         }
@@ -307,7 +330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try{
             InputStream in = assetManager
-                    .open("map_area_domiciliary_care_regions_for_sa.json");
+                    .open("test_map_point_ad_free_wifi.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;

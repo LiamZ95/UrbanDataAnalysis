@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity
                 alertDialogObj.show();
             }
         });
-        
+
         // For navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -616,7 +616,7 @@ public class MainActivity extends AppCompatActivity
             // Open the text file containing data from AURIN to reduce the usage of this API
             AssetManager assetManager = getApplicationContext().getAssets();
             try{
-                InputStream in = assetManager.open("all_caps_15:01:2018.xml");
+                InputStream in = assetManager.open("all_caps.xml");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 StringBuilder stringBuilder = new StringBuilder();
                 String line;

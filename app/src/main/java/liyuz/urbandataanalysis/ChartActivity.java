@@ -413,7 +413,7 @@ public class ChartActivity extends AppCompatActivity implements OnChartValueSele
 
         try{
             InputStream in = assetManager
-                    .open("test1.json");
+                    .open("test_chart_data.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;

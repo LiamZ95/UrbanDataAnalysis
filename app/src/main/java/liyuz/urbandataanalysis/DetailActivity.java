@@ -27,6 +27,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private Capability selectedCap;
     private FragmentManager detailFragmentManager;
     private Fragment listFragment;
+    private boolean movedToFilterFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         detailFragmentManager = getSupportFragmentManager();
 
-//        selectedCap = (Capability) intent.getSerializableExtra("SelectedCapability");
         selectedCap = SelectedData.selectedCap;
 
         chartBtn = (Button) findViewById(R.id.detail_activity_chart_btn);
@@ -61,9 +61,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 mapBtn.setEnabled(true);
                 Fragment chartFragment = new ChartFilterFragment();
                 detailFragmentManager.beginTransaction()
-                        .addToBackStack(null)
-                        .replace(R.id.detail_activity_container, chartFragment, chartFragment.getTag())
-                        .commit();
+                            .add(new DetailInfoFragment(), null)
+                            .addToBackStack(null)
+                            .replace(R.id.detail_activity_container, chartFragment, chartFragment.getTag())
+                            .commit();
             }
         });
 
@@ -75,6 +76,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 chartBtn.setEnabled(true);
                 Fragment mapFragment = new MapFilterFragment();
                 detailFragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .add(new DetailInfoFragment(), null)
                         .addToBackStack(null)
                         .replace(R.id.detail_activity_container, mapFragment, mapFragment.getTag())
                         .commit();
@@ -111,6 +114,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .add(new LatLng(lla, hlo))
                 .add(new LatLng(lla, llo))
         );
+        // Disable navigation and open in google map app icons
+        mMap.getUiSettings().setMapToolbarEnabled(false);
     }
 
     // This method works for updating the camera view of map fragment

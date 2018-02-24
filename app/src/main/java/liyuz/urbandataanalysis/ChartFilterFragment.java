@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -511,7 +510,7 @@ public class ChartFilterFragment extends Fragment {
         AssetManager assetManager = getActivity().getApplicationContext().getAssets();
         try{
             InputStream in = assetManager
-                    .open("aurin-datasource-INODE-UA_WISeR_internode_adelaide_free_wireless.xml");
+                    .open("test_chart_filter.xml");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
