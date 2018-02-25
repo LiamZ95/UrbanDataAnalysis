@@ -60,9 +60,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 chartBtn.setEnabled(false);
                 mapBtn.setEnabled(true);
                 Fragment chartFragment = new ChartFilterFragment();
+                detailFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 detailFragmentManager.beginTransaction()
-                            .add(new DetailInfoFragment(), null)
-                            .addToBackStack(null)
+                            .add(new DetailInfoFragment(), "Info1")
+                            .addToBackStack("Info1")
                             .replace(R.id.detail_activity_container, chartFragment, chartFragment.getTag())
                             .commit();
             }
@@ -75,10 +76,11 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 mapBtn.setEnabled(false);
                 chartBtn.setEnabled(true);
                 Fragment mapFragment = new MapFilterFragment();
+                detailFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 detailFragmentManager.beginTransaction()
                         .addToBackStack(null)
-                        .add(new DetailInfoFragment(), null)
-                        .addToBackStack(null)
+                        .add(new DetailInfoFragment(), "Info2")
+                        .addToBackStack("Info2")
                         .replace(R.id.detail_activity_container, mapFragment, mapFragment.getTag())
                         .commit();
             }
