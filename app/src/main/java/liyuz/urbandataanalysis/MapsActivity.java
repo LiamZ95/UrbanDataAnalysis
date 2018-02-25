@@ -224,11 +224,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             style.setTitle(title);
                             style.setSnippet(value);
                             style.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+//                            style.setIcon(BitmapDescriptorFactory.fromAsset("marker_icon.png"));
                             feature.setPointStyle(style);
                             geoJsonLayer.addLayerToMap();
-
-//                            Marker marker = mMap.addMarker(style.toMarkerOptions().position(new LatLng(centerLa, centerLo)));
-//                            marker.setAlpha(1);
 
 //                            setMarker(feature);
                         }

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     private boolean querySubmitted = false;
     private boolean[] checkedItems;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -92,18 +92,14 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
 
                 if (! (getCurrentFragment() instanceof ListFragment)) {
-                    Snackbar.make(view, "Refresh only works for data set list", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .addToBackStack(null)
                             .commit();
+                    mainFragmentManager.executePendingTransactions();
+                    refreshALertDialog();
                 } else {
-                    Snackbar.make(view, "Refresh all data set", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    ListFragment listFragment = (ListFragment) getCurrentFragment();
-                    listFragment.restoreList();
+                    refreshALertDialog();
                 }
             }
         });
@@ -116,82 +112,18 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 currentShownFragment = getCurrentFragment();
                 if (!(currentShownFragment instanceof ListFragment)) {
-                    Toast.makeText(getApplicationContext(), "Redirect to data list", Toast.LENGTH_SHORT).show();
                     mainFragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, homeFragment, homeFragment.getTag())
                             .addToBackStack(null)
                             .commit();
-                }
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Select organizations");
-                final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
-                final String[] organizationArray = candidates.toArray(new String[candidates.size()]);
 
-                final ListFragment filterFragment = (ListFragment) getCurrentFragment();
-                final boolean[] tempCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
-                builder.setMultiChoiceItems(organizationArray, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
-                        if (isChecked) {
-                            if (! selectedOrganizationsNames.contains(organizationArray[position])) {
-                                selectedOrganizationsNames.add(organizationArray[position]);
-                            }
-                            tempCheckedItems[position] = true;
-                        } else {
-                            if (selectedOrganizationsNames.contains(organizationArray[position])) {
-                                selectedOrganizationsNames.remove(organizationArray[position]);
-                            }
-                            tempCheckedItems[position] = false;
-                        }
-                    }
-                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        hasSelectedOrganization = true;
-                        if (! selectedOrganizationsNames.contains("All Organizations")) {
-                            for (int j = 0; j < AllDataSets.capList.size(); j++) {
-                                Capability candidateCap = AllDataSets.capList.get(j);
-                                String capOrg = candidateCap.capOrganization;
-                                for (int k = 0; k < selectedOrganizationsNames.size(); k++) {
-                                    String targetName = selectedOrganizationsNames.get(k);
-                                    if (targetName.equals(capOrg) && (! selectedOrganizations.contains(candidateCap))) {
-                                        selectedOrganizations.add(candidateCap);
-                                    }
-                                }
-                            }
-                            filterFragment.changeList(selectedOrganizations);
-                        } else {
-                            filterFragment.restoreList();
-                        }
-                        if (selectedOrganizationsNames.size() == 0) {
-                            filterFragment.restoreList();
-                        }
-                        checkedItems = tempCheckedItems;
-                    }
-                }).setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).setNeutralButton("Clear all", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        filterFragment.restoreList();
-                        selectedOrganizations.clear();
-                        selectedOrganizationsNames.clear();
-                        for (int j = 0; j < checkedItems.length; j++) {
-                            checkedItems[j] = false;
-                        }
-                    }
-                });
-                // Create and show alert dialog
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-                AlertDialog alertDialogObj = builder.create();
-                ListView listView = alertDialogObj.getListView();
-                listView.setDivider(new ColorDrawable(0xFFe6e6e6));
-                listView.setDividerHeight(15);
-                alertDialogObj.show();
+                    mainFragmentManager.executePendingTransactions();
+
+                    showFilterAlertDialog();
+                }
+                else {
+                    showFilterAlertDialog();
+                }
             }
         });
 
@@ -295,6 +227,101 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void refreshALertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Refresh all data set?");
+        builder.setMessage("This means getting data from AURIN and will incur large mobile data usage.");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                LongOperation myTask = null;
+                myTask = new LongOperation();
+                myTask.execute();
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    
+    private void showFilterAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Select organizations");
+        final ArrayList<String> candidates = new ArrayList<>(AllDataSets.organizationList);
+        final String[] organizationArray = candidates.toArray(new String[candidates.size()]);
+
+        final ListFragment filterFragment = (ListFragment) getCurrentFragment();
+        final boolean[] tempCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
+        builder.setMultiChoiceItems(organizationArray, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int position, boolean isChecked) {
+                if (isChecked) {
+                    if (! selectedOrganizationsNames.contains(organizationArray[position])) {
+                        selectedOrganizationsNames.add(organizationArray[position]);
+                    }
+                    tempCheckedItems[position] = true;
+                } else {
+                    if (selectedOrganizationsNames.contains(organizationArray[position])) {
+                        selectedOrganizationsNames.remove(organizationArray[position]);
+                    }
+                    tempCheckedItems[position] = false;
+                }
+            }
+        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                hasSelectedOrganization = true;
+                if (! selectedOrganizationsNames.contains("All Organizations")) {
+                    for (int j = 0; j < AllDataSets.capList.size(); j++) {
+                        Capability candidateCap = AllDataSets.capList.get(j);
+                        String capOrg = candidateCap.capOrganization;
+                        for (int k = 0; k < selectedOrganizationsNames.size(); k++) {
+                            String targetName = selectedOrganizationsNames.get(k);
+                            if (targetName.equals(capOrg) && (! selectedOrganizations.contains(candidateCap))) {
+                                selectedOrganizations.add(candidateCap);
+                            }
+                        }
+                    }
+                    filterFragment.changeList(selectedOrganizations);
+                } else {
+                    filterFragment.restoreList();
+                }
+                if (selectedOrganizationsNames.size() == 0) {
+                    filterFragment.restoreList();
+                }
+                checkedItems = tempCheckedItems;
+            }
+        }).setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).setNeutralButton("Clear all", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                filterFragment.restoreList();
+                selectedOrganizations.clear();
+                selectedOrganizationsNames.clear();
+                for (int j = 0; j < checkedItems.length; j++) {
+                    checkedItems[j] = false;
+                }
+            }
+        });
+        // Create and show alert dialog
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+        AlertDialog alertDialogObj = builder.create();
+        ListView listView = alertDialogObj.getListView();
+        listView.setDivider(new ColorDrawable(0xFFe6e6e6));
+        listView.setDividerHeight(5);
+        alertDialogObj.show();
+    }
+
 
     // Defined the behavior when back button is hit
     @Override
@@ -371,28 +398,20 @@ public class MainActivity extends AppCompatActivity
         mainFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         if (id == R.id.nav_list) {
-            Toast.makeText(this, "Going to data list", Toast.LENGTH_SHORT).show();
             fragment = new ListFragment();
         } else if (id == R.id.nav_web) {
-            Toast.makeText(this, "Going to AURIN", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://aurin.org.au/");
         } else if (id == R.id.nav_terms) {
-            Toast.makeText(this, "Going to terms", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://aurin.org.au/compliance/aurin-terms-of-use/");
         } else if (id == R.id.nav_copyright) {
-            Toast.makeText(this, "Going to copyrights", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://aurin.org.au/compliance/copyright-and-attribution/");
         } else if (id == R.id.nav_help) {
-            Toast.makeText(this, "Going to help", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://docs.aurin.org.au");
         } else if (id == R.id.nav_issue) {
-            Toast.makeText(this, "Going to report issue", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://docs.aurin.org.au/aurin-online-bug-report/");
         } else if (id == R.id.nav_twitter) {
-            Toast.makeText(this, "Going to twitter", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://mobile.twitter.com/aurin_org_au");
         } else if (id == R.id.nav_facebook) {
-            Toast.makeText(this, "Going to facebook", Toast.LENGTH_SHORT).show();
             fragment = WebFragment.newInstance("https://m.facebook.com/aurin.org.au/");
         }
 
@@ -407,7 +426,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
     // sending http request for all dataset, and then parse the received data
     private void sendRequest() {
