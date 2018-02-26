@@ -77,6 +77,7 @@ public class ChartFilterFragment extends Fragment {
 
     private String TAG = getClass().getSimpleName();
     private final int HANDLER_FLAG = 0;
+    private boolean finishedLoadingData = false;
 
     private LinearLayout filterLo;
     private LinearLayout pbLo;
@@ -110,6 +111,8 @@ public class ChartFilterFragment extends Fragment {
                 tempAttribute = selectedAttribute;
                 tempClassifier = selectedClassifier;
                 tempColor = selectedColor;
+
+                finishedLoadingData = true;
             }
         }
     };
@@ -428,13 +431,15 @@ public class ChartFilterFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             sendRequest();
 //            openLocalFile();
+            while(!finishedLoadingData) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
         }
 

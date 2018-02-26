@@ -5,8 +5,9 @@
     android:orientation="vertical"
     tools:context="liyuz.urbandataanalysis.WebFragment">
     <LinearLayout
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="80dp"
         android:id="@+id/web_pb_lo"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"

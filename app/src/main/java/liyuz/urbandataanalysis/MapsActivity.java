@@ -2,6 +2,7 @@ package liyuz.urbandataanalysis;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -84,7 +85,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         detailBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getApplicationContext(), MapBoxActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -128,8 +130,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-            openLocalFile();
-//            sendRequest();
+//            openLocalFile();
+            sendRequest();
             return null;
         }
 
@@ -284,6 +286,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     break;
             }
         }
+
+        Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -337,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             String data = stringBuilder.toString();
-            Log.d(TAG, "All data read from local json file");
+//            Log.d(TAG, "All data read from local json file");
 
             Message message = new Message();
             message.what = HANDLER_FLAG;
