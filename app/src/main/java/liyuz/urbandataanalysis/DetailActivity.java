@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ScrollView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,11 +23,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap mMap;
     private Button chartBtn;
     private Button mapBtn;
-    private ListView detailLv;
     private Capability selectedCap;
     private FragmentManager detailFragmentManager;
     private Fragment listFragment;
-    private boolean movedToFilterFragment = false;
+    private ScrollView detailScrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +45,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         chartBtn = (Button) findViewById(R.id.detail_activity_chart_btn);
         mapBtn = (Button) findViewById(R.id.detail_activity_map_btn);
+        detailScrollView = (ScrollView) findViewById(R.id.detail_activity_container);
 
         // Set default fragment in the activity
         listFragment = new DetailInfoFragment();
@@ -59,6 +59,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 // Disable button after it is clicked
                 chartBtn.setEnabled(false);
                 mapBtn.setEnabled(true);
+                detailScrollView.smoothScrollTo(0, 0);
                 Fragment chartFragment = new ChartFilterFragment();
                 detailFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 detailFragmentManager.beginTransaction()
@@ -75,6 +76,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 // Disable button after it is clicked
                 mapBtn.setEnabled(false);
                 chartBtn.setEnabled(true);
+                detailScrollView.smoothScrollTo(0, 0);
                 Fragment mapFragment = new MapFilterFragment();
                 detailFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 detailFragmentManager.beginTransaction()

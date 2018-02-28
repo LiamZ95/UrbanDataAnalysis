@@ -7,6 +7,8 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -54,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressDialog progressDialog;
     private GeoJsonLayer geoJsonLayer;
     private final int HANDLER_FLAG = 0;
+    private View v;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -70,6 +73,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        v = findViewById(android.R.id.content);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -130,8 +135,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-//            openLocalFile();
-            sendRequest();
+            openLocalFile();
+//            sendRequest();
             return null;
         }
 
@@ -287,7 +292,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), "All data loaded!", Toast.LENGTH_LONG).show();
+        Snackbar.make(v, "All data loaded.", Snackbar.LENGTH_SHORT).show();
     }
 
 
@@ -310,7 +316,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Marker marker = mMap.addMarker(new MarkerOptions().position(markerAtPoint).title(title).snippet(value));
 
         marker.setAlpha(1);
-
     }
 
     private void openLocalFile() {
