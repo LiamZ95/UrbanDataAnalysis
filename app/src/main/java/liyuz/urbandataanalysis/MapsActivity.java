@@ -135,8 +135,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-            openLocalFile();
-//            sendRequest();
+//            openLocalFile();
+            sendRequest();
             return null;
         }
 
